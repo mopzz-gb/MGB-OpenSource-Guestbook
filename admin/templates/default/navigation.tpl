@@ -156,6 +156,14 @@
 	</tr>
 	<tr>
 		<td class="inner_navigation_l">
+		<img class="icon" src="templates/default/images/github.png" height="16" width="16" title="{LANG_GITHUB_NAV}" alt="{LANG_GITHUB_NAV}">
+		</td>
+		<td class="inner_navigation_r">
+		<span class="navigation"><a class="admin" href="{LINK_GITHUB}" title="{LANG_GITHUB_NAV}" target="_blank">{LANG_GITHUB_NAV}</a></span>
+		</td>
+	</tr>
+	<tr>
+		<td class="inner_navigation_l">
 		<img class="icon" src="templates/default/images/license.png" height="16" width="16" title="{LANG_LICENSE}" alt="{LANG_LICENSE}">
 		</td>
 		<td class="inner_navigation_r">

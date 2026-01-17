@@ -415,8 +415,7 @@
 					$r_edit_smilies = isset($_POST['r_edit_smilies']) ? (int)$_POST['r_edit_smilies'] : 0;
 					$r_banlists = isset($_POST['r_banlists']) ? (int)$_POST['r_banlists'] : 0;
 					$name = isset($_POST['name']) ? (int)$_POST['name'] : "";
-					$email = isset($_POST['email']) ? (int)$_POST['email'] : "";
-					
+					$email = isset($_POST['email']) ? (int)$_POST['email'] : "";					
 					
 					if ($user_level == 0) { $selected_r_admin = " selected"; $selected_r_moderator = NULL; } else { $selected_r_admin = NULL; $selected_r_moderator = " selected"; }
 					if ($user_is_active == 0) { $selected_user_is_active_0 = " selected"; $selected_user_is_active_1 = NULL; } else { $selected_user_is_active_0 = NULL; $selected_user_is_active_1 = " selected"; }

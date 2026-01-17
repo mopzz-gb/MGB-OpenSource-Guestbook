@@ -373,9 +373,8 @@
 	$lang['bugreport'] = "Fehler melden";
 	$lang['version'] = "Version";
 	$lang['manual'] = "Dokumentation";
-	$lang['twitter_nav'] = "MGB bei Twitter";
 	$lang['mastodon_nav'] = "MGB bei Mastodon";
-	$lang['fb_nav'] = "MGB auf Facebook";
+	$lang['github_nav'] = "MGB bei GitHub";
 	$lang['to_guestbook'] = "Zum G&auml;stebuch";
 	$lang['paypal'] = "Wenn Du das MGB n&uuml;tzlich findest, darfst Du gerne etwas spenden um die weitere Entwicklung zu unterst&uuml;tzen.";
 

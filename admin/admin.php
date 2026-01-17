@@ -320,6 +320,7 @@
 		'LINK_FORUM' 				=> "https://forum.m-gb.org/",
 		'LINK_VERSION' 				=> "admin.php?action=version".$sid,
 		'LINK_MASTODON' 			=> "https://troet.cafe/@mgb",
+		'LINK_GITHUB'	 			=> "https://github.com/mopzz-gb/MGB-OpenSource-Guestbook",
 		'LINK_TO_GUESTBOOK' 		=> "../index.php",
 
 		'LANG_SPAM' 				=> $lang['spam'],
