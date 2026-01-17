@@ -1,0 +1,1 @@
+<a href="http://www.twitter.com/{ENTRY_TWITTER}" target="_blank"><img class="icon" alt="Twitter: {ENTRY_TWITTER}" title="Twitter: {ENTRY_TWITTER}" src="images/iconsets/{ICONSET_PATH}/twitter.png"></a><img src="images/iconsets/{ICONSET_PATH}/space.png" alt="" title="" height="16" width="5">

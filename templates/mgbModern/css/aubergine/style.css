@@ -1,0 +1,147 @@
+/*
+  mgbModern Theme 0.7 - aubergine - for MGB 0.7.x
+  Created by mopzz
+  http://www.m-gb.org/
+*/
+
+/* import main.css */
+@import url('../main.css');
+
+/* BODY */
+body {
+	background-color: #C0C9EE;
+}
+
+/* LINKS */
+a:link, a:visited, a:active {
+	color: #878AF1;
+}
+
+a:hover {
+	color: #F2F8FD;
+}
+
+/* FONTS */
+span,
+span.title,
+span.quote_name,
+span.quote_text,
+td.entry_message_text,
+td.announcement_message_text,
+td.entry_comment {
+	color: #E1E1EC;
+}
+
+span.errormessage {
+	color: #000000;
+}
+
+span.name {
+	color: #FFFFFF;
+}
+
+span.copyright {
+	color: #878AF1;
+}
+
+blockquote {
+	border: 1px solid #615E93;
+	background-color: #4A4972;
+}
+
+/* TABLES */
+table.errormessage {
+	border: 2px solid #FF5151;
+}
+
+td.errormessage {
+	background-color: #FF6C6C;
+}
+
+table.border_main,
+td.border_main_entries,
+table.border_newentry,
+table.border_sendemail {
+	border: 1px solid #4A4972;
+}
+
+td.border_main_title,
+td.border_newentry_title,
+td.border_sendemail_title {
+	background-color: #434266;
+}
+
+table.entry {
+	border: 1px solid #615E93;
+}
+
+table.entry,
+table.announcement_message {
+	background-color: #4D4A75;
+}
+
+td.entry_message_text,
+td.announcement_message_text {
+	color: #E1E1EC;
+}
+
+td.entry_info,
+td.entry_comment {
+	border: 1px solid #615E93;
+}
+
+td.entry_comment {
+	color: #E1E1EC;
+}
+
+table.announcement_message,
+img.captcha,
+img.gravatar {
+	border: 2px solid #615E93;
+}
+
+td.border_main_entries,
+td.border_newentry_entry,
+td.border_sendemail_form {
+	background-color: #4A4972;
+}
+
+table.signin,
+table.sendemail {
+	background-color: #4D4A75;
+}
+
+table.signin,
+td.signin_l,
+td.signin_l2,
+td.signin_m,
+td.signin_r,
+td.signin_r2,
+td.signin_overall,
+table.sendemail,
+td.sendemail_l,
+td.sendemail_m,
+td.sendemail_r,
+td.sendemail_overall,
+td.entry_number,
+td.entry_name,
+td.entry_date,
+td.entry_message,
+td.entry_info,
+td.entry_comment {
+	border: 1px solid #615E93;
+}
+
+/* INPUTS AND BOXES [NEWENTRY.PHP, EMAIL.PHP] */
+input.main_textbox,
+input.main_textbox_captcha,
+input.main_button,
+input.main_button_bbcode,
+textarea,
+select.main_option {
+	background-color: #302F48;
+	color: #FFFFFF;
+	border: 1px solid #5A5D5A;
+}
+
+/* END OF FILE */

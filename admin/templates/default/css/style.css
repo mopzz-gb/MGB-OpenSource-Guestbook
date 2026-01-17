@@ -1,0 +1,548 @@
+/*
+  default admin theme - for MGB 0.6.x
+  Created by mopzz
+  http://www.m-gb.org/
+*/
+
+
+/* Body */
+body {
+	background-color: #F5F9FE; }
+
+span {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #000000; }
+
+
+/* Links */
+a:link, a:visited, a:active {
+	color: #BF0000;
+	text-decoration: none; }
+
+a:hover {
+	color: #E06000; }
+
+
+/* Fonts */
+span.title {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 14px;
+	color: #000000; }
+
+span.navigation {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px; }
+
+span.scrolling_function {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #000000; }
+
+span.copyright {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 9px;
+	color: #AFAFAF; }
+
+span.errormessage {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	color: #000000; }
+
+span.edit_caption {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	color: #000000; }
+
+span.old_version {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #BF0000; }
+
+span.same_version {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #009F00; }
+
+span.newer_version {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #009F00; }
+
+span.quote_name {
+	font-family: georgia, verdana, arial, helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 10px;
+	color: #000000; }
+
+span.quote_text {
+	font-family: georgia, verdana, arial, helvetica, sans-serif;
+	font-style: italic;
+	font-size: 12px;
+	color: #000000; }
+
+blockquote {
+	border: 1px solid #999999;
+	background-color: #E3ECFB;
+	padding: 3px; }
+
+
+/* General Tables */
+table.errormessage {
+	border: 1px solid #BF0000;
+	width: 300px; }
+
+td.errormessage {
+	border: none;
+	background-color: #EF5858;
+	padding: 3px; }
+
+
+/* Tables */
+table.login_status {
+	border: none;
+	width: 100%; }
+
+td.new_version_available {
+	border: none;
+	text-align: left;
+	vertical-align: middle; }
+
+td.login_status_text {
+	border: none;
+	text-align: right;
+	vertical-align: middle; }
+
+td.login_status_img {
+	border: none;
+	vertical-align: middle;
+	width: 16px; }
+
+td.login_l {
+	border: none;
+	width: 120px; }
+
+table.border {
+	border: 1px solid #DAE8FA;
+	width: 800px; }
+
+td.border_title {
+	border: none;
+	background-color: #D2E4F9; }
+
+td.border_status {
+	border: 2px solid #DAE8FA;
+	background-color: #E3ECFB;
+	text-align: right;
+	padding: 5px; }
+
+td.border_navigation {
+	border: none;
+	background-color: #E3ECFB;
+	text-align: left;
+	vertical-align: top;
+	padding: 10px; }
+
+td.border_include {
+	border: none;
+	background-color: #E3ECFB;
+	padding: 10px;
+	width: 600px;
+	vertical-align: top; }
+
+table.second_border {
+	border: 1px solid #DAE8FA;
+	background-color: #E3ECFB;
+	width: 100%; }
+
+td.second_border {
+	border: 1px solid #DAE8FA;
+	background-color: #E3ECFB;
+	width: 100%; }
+
+table.inner_navigation {
+	border: none;
+	width: 180px;
+	}
+
+td.inner_navigation_l {
+	border: none;
+	width: 16px;
+	}
+
+td.inner_navigation_r {
+	border: none;
+	width: 164px;
+	vertical-align: middle;
+	}
+
+table.settings {
+	border: 1px solid #EBF3FC;
+	background-color: #DAE8FA;
+	width: 550px; }
+
+td.settings_l {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top; }
+
+td.settings_r {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 200px; }
+
+td.settings_l_backup {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top; }
+
+td.settings_r_backup {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 350px; }
+
+td.settings_overall {
+	border: 1px solid #EBF3FC;
+	background-color: #D2E4F9;
+	padding: 5px; }
+
+table.entry {
+	border: 1px solid #EBF3FC;
+	background-color: #DAE8FA;
+	width: 550px;
+	margin: 2px; }
+
+td.entry_id {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	width: 10%;
+	vertical-align: top; }
+
+td.entry_name {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 25%;
+	vertical-align: top; }
+
+td.entry_message {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 65%;
+	vertical-align: top;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #000000; }
+
+td.entry_message_short {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 61%;
+	vertical-align: top;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #000000; }
+
+td.entry_icons {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 5%;
+	text-align: center;
+	vertical-align: top; }
+
+td.entry_icons_long {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 7%;
+	text-align: center;
+	vertical-align: top; }
+
+td.entry_ip {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top; }
+
+td.entry_content {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top; }
+
+td.entry_matches {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top;
+	width: 10%; }
+
+td.entry_email {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top; }
+
+td.entry_domain {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top; }
+
+td.entry_user_agent {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 100%;
+	vertical-align: top; }
+
+td.entry_timestamp {
+	border: 1px solid #EBF3FC;
+	width: 20%;
+	text-align: left;
+	vertical-align: top; }
+
+td.entry_site {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top; }
+
+td.entry_type {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top; }
+
+td.entry_comment {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	vertical-align: top; }
+	
+/* banlists */
+
+td.sort_id {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	width: 10%;
+	vertical-align: middle; }
+
+td.sort_content {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	width: auto;
+	vertical-align: middle; }
+
+td.sort_matches {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	width: 10%;
+	vertical-align: middle; }
+
+td.sort_timestamp {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	width: 20%;
+	vertical-align: middle; }
+
+td.sort_icons {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	width: 5%;
+	vertical-align: middle; }
+
+/* edit */
+
+table.edit {
+	border: 1px solid #EBF3FC;
+	background-color: #DAE8FA;
+	width: 550px; }
+
+td.edit_l {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 150px;
+	padding: 3px; }
+
+td.edit_r {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 400px;
+	padding: 3px; }
+
+table.edit_user {
+	border: 1px solid #EBF3FC;
+	background-color: #DAE8FA;
+	width: 250px;
+	margin: 2px; }
+
+td.edit_user_id {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	width: 10%;
+	vertical-align: middle; }
+
+td.edit_user_name {
+	border: 1px solid #EBF3FC;
+	width: 70%;
+	vertical-align: middle;
+	text-align: center; }
+
+td.edit_user_icons {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	width: 20%;
+	vertical-align: middle; }
+
+table.edit_user_single {
+	border: 1px solid #EBF3FC;
+	background-color: #DAE8FA;
+	width: 350px;
+	margin: 2px; }
+
+td.edit_user_l {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	padding: 3px; }
+
+td.edit_user_r {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 200px;
+	padding: 3px; }
+
+td.edit_user_overall {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 100%;
+	padding: 3px; }
+
+table.version {
+	border: 1px solid #EBF3FC;
+	background-color: #DAE8FA;
+	width: 350px;
+	margin: 2px; }
+
+td.version_l {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 200px;
+	padding: 3px; }
+
+td.version_r {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	padding: 3px; }
+
+td.version_overall {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 100%;
+	height: 2px; }
+
+table.dropbox {
+	border: none;
+	width: 100%;
+	margin: 2px; }
+
+td.dropbox_l {
+	width: 80%;
+	text-align: left; }
+
+td.dropbox_r {
+	width: 20%;
+	text-align: right; }
+
+
+/* Images */
+img.icon {
+	border: none;
+	height: 16px;
+	width: 16px; }
+
+
+/* Inputs and boxes */
+input.login {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 100px; }
+
+input.login_button {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F; }
+
+input.textbox {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 99%; }
+
+input.textbox_nr {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 100px; }
+
+input.textbox_nr_short {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 50px; }
+
+select.backups {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 100%; }
+
+select.option {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 150px; }
+
+select.option_long {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 200px; }
+
+select.option_very_long {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 100%; }
+
+input.button {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F; }
+
+textarea {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 100%;
+	height: 100px; }
+
+
+/* Divs */
+div.gap {
+	padding: 7px; }

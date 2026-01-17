@@ -1,0 +1,153 @@
+/*
+  mgbModern Theme 1.7 - flieder - for MGB 0.7.x
+  Created by mopzz
+  http://www.m-gb.org/
+*/
+
+/* import main.css */
+@import url('../main.css');
+
+/* BODY */
+body {
+	background-color: #D3B9EA;
+}
+
+/* LINKS */
+a:link, a:visited, a:active {
+	color: #4B2146;
+}
+
+a:hover {
+	color: #8640C6;
+}
+
+/* FONTS */
+span {
+	color: #4F2249;
+}
+
+span.title {
+	color: #EDE1F7;
+}
+
+span.quote_name,
+span.quote_text,
+td.entry_message_text,
+td.announcement_message_text,
+td.entry_comment {
+	color: #4D234E;
+}
+
+span.errormessage {
+	color: #4F2249;
+}
+
+span.name {
+	color: #790351;
+}
+
+span.copyright {
+	color: #4B2146;
+}
+
+blockquote {
+	border: 1px solid #EDE1F7;
+	background-color: #DFCAE3;
+}
+
+/* TABLES */
+table.errormessage {
+	border: 2px solid #920360;
+}
+
+td.errormessage {
+	background-color: #EA069A;
+}
+
+table.border_main,
+td.border_main_entries,
+table.border_newentry,
+table.border_sendemail {
+	border: 1px solid #8640C6;
+}
+
+td.border_main_title,
+td.border_newentry_title,
+td.border_sendemail_title {
+	background-color: #682E61;
+}
+
+table.entry {
+	border: 1px solid #EDE1F7;
+}
+
+table.entry,
+table.announcement_message {
+	background-color: #B885C0;
+}
+
+td.entry_message_text,
+td.announcement_message_text {
+	color: #4D234E;
+}
+
+td.entry_info,
+td.entry_comment {
+	border: 1px solid #EDE1F7;
+}
+
+td.entry_comment {
+	color: #4D234E;
+}
+
+table.announcement_message,
+img.captcha,
+img.gravatar {
+	border: 2px solid #EDE1F7;
+}
+
+td.border_main_entries,
+td.border_newentry_entry,
+td.border_sendemail_form {
+	background-color: #DFCAE3;
+}
+
+table.signin,
+table.sendemail {
+	background-color: #B885C0;
+}
+
+table.signin,
+td.signin_l,
+td.signin_l2,
+td.signin_m,
+td.signin_r,
+td.signin_r2,
+td.signin_overall,
+table.sendemail,
+td.sendemail_l,
+td.sendemail_m,
+td.sendemail_r,
+td.sendemail_overall,
+td.entry_number,
+td.entry_name,
+td.entry_date,
+td.entry_message,
+td.entry_info,
+td.entry_comment {
+	border: 1px solid #EDE1F7;
+}
+
+/* INPUTS AND BOXES [NEWENTRY.PHP, EMAIL.PHP] */
+input.main_textbox,
+input.main_textbox_captcha,
+input.main_button,
+input.main_button_bbcode,
+textarea,
+select.main_option {
+	background-color: #ECE0F5;
+	color: #4F2249;
+	border: 1px solid #790351
+}
+
+/* END OF FILE */

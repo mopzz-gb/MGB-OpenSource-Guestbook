@@ -1,0 +1,435 @@
+/*
+  mgbModern Theme 0.7 - dashboard - for MGB 0.7.x
+  Created by mopzz
+  http://www.m-gb.org/
+*/
+
+
+/* BODIES */
+html {
+	height: 100%; }
+
+body {
+	background-color: #D9E5FF; }
+
+
+/* Links */
+a:link, a:visited, a:active {
+	color: #0066CC;
+	text-decoration: none; }
+
+a:hover {
+	color: #0033FF; }
+
+a:tooltip {
+	color: #8B4513; }
+
+
+/* FONTS [GENERAL] */
+span {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #000000; }
+
+
+/* FONTS */
+span.title {
+	font-family: 'lucida console', verdana, arial, helvetica, sans-serif;
+	font-size: 16px;
+	color: #000000; }
+
+span.menu {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px; }
+
+span.scrolling_function	{
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold; }
+
+span.name {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #000000; }
+
+span.copyright {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 9px;
+	color: #AFAFAF; }
+
+span.errormessage {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	color: #000000; }
+
+span.quote_name {
+	font-family: georgia, verdana, arial, helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 10px;
+	color: #959595; } /* same like span.entry */
+
+span.quote_text {
+	font-family: georgia, verdana, arial, helvetica, sans-serif;
+	font-style: italic;
+	font-size: 12px;
+	color: #9A9A9A; } /* same like span.entry */
+
+blockquote {
+	border: 1px solid #D2D2D2; /* border of table.entry */
+	background-color: #F3F3F3; /* background of td.border_main_entries */
+	padding: 3px; }
+
+
+/* TABLES [GENERAL] */
+table.errormessage {
+	border: 1px solid #BF0000;
+	width: 500px; }
+
+td.errormessage {
+	border: none;
+	background-color: #EF5858;
+	padding: 3px; }
+
+
+/* TABLES [INDEX.PHP] */
+table.border_main {
+	border: 1px dashed #D2D2D2;
+	width: 600px; }
+
+td.border_main_title {
+	background-color: #F3F3F3; }
+
+td.border_main_entries {
+	background-color: #FFFFFF; }
+
+table.entry {
+	border: 1px dashed #DFDFDF;
+	background-color: transparent;
+	width: 90%; }
+
+td.entry_number {
+	border: 0px;
+	background-color: #F3F3F3;
+	text-align: center;
+	width: 7%; }
+
+td.entry_name {
+	border: 0px;
+	background-color: #F3F3F3;
+	text-align: left; }
+
+td.entry_date {
+	border: 0px;
+	background-color: #F3F3F3;
+	text-align: right;
+	padding-left: 5px;
+	padding-right: 5px;
+	width: 30%; }
+
+td.entry_message {
+	border-top: 1px dashed #DFDFDF;
+	text-align: left; }
+
+td.entry_message_text {
+	text-align: left;
+	width: 100%;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #000000; }
+
+td.entry_info {
+	border-top: 1px dashed #DFDFDF;
+	background-color: #F3F3F3;
+	text-align: left; }
+
+td.entry_comment {
+	border-top: 1px dashed #DFDFDF;
+	text-align: left;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #000000; }
+
+table.announcement {
+	border: 4px double #DFDFDF;
+	background-color: transparent;
+	width: 90%; }
+
+td.announcement_message {
+	border: none;
+	text-align: left; }
+
+td.announcement_message_text {
+	text-align: left;
+	width: 100%;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	color: #000000; }
+
+
+/* TABLES [NEWENTRY.PHP] */
+table.border_newentry {
+	border: 1px dashed #DFDFDF;
+	width: 600px; }
+
+td.border_newentry_title {
+	background-color: #F3F3F3; }
+
+td.border_newentry_entry {
+	background-color: #FFFFFF; }
+
+table.signin {
+	border: none;
+	background-color: #FFFFFF;
+	width: 500px; }
+
+td.signin_l {
+	border: none;
+	width: 100px;
+	padding: 3px; }
+
+td.signin_l2 {
+	border: none;
+	width: 70px;
+	padding: 3px; }
+
+td.signin_m {
+	border: none;
+	width: 290px;
+	padding: 3px; }
+
+td.signin_r {
+	border: none;
+	width: 10px;
+	padding: 3px; }
+
+td.signin_r2 {
+	border: none;
+	width: 428px;
+	padding: 3px; }
+
+td.signin_overall {
+	border: none;
+	width: 100%;
+	padding: 2px; }
+
+table.user_box {
+	width: 400px; }
+
+td.user_box_l {
+	width: 30px; }
+
+td.user_box_r {
+	width: 370px; }
+
+
+/* TABLES [EMAIL.PHP] */
+table.border_sendemail {
+	border: 1px dashed #DFDFDF;
+	width: 600px; }
+
+td.border_sendemail_title {
+	background-color: #F3F3F3; }
+
+td.border_sendemail_form {
+	background-color: #FFFFFF; }
+
+table.sendemail	{
+	border: none;
+	background-color: #FFFFFF;
+	width: 500px; }
+
+td.sendemail_l {
+	border: none;
+	width: 170px;
+	padding: 3px; }
+
+td.sendemail_m {
+	border: none;
+	width: 220px;
+	padding: 3px; }
+
+td.sendemail_r {
+	border: none;
+	width: 10px;
+	padding: 3px; }
+
+td.sendemail_overall {
+	border: none;
+	width: 100%;
+	padding: 2px; }
+
+table.sendemail_user_box {
+	width: 400px; }
+
+td.sendemail_user_box_l {
+	width: 30px; }
+
+td.sendemail_user_box_r	{
+	width: 370px; }
+
+
+/* IMAGES */
+img.smilies {
+	border: none; }
+
+img.icon {
+	border: none;
+	height: 16px;
+	width: 16px; }
+
+img.captcha {
+	border: 2px dashed #DFDFDF;
+	padding: 2px;
+	height: 40px;
+	width: 140px; }
+
+img.gravatar {
+	border: 1px outset #000000;
+	background-color: #F6F6F6;
+	padding: 2px;
+	margin-right: 4px; }
+
+img.entry {
+	border: none; }
+
+
+/* INPUTS AND BOXES [NEWENTRY.PHP, EMAIL.PHP] */
+input.main_textbox {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #F3F3F3;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 99%; }
+
+input.main_textbox:hover {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #FFFFFF;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 99%; }
+
+input.main_textbox:focus {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #FFFFFF;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 99%; }
+
+input.main_textbox_captcha {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	background-color: #F3F3F3;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 60px; }
+
+input.main_textbox_captcha:hover {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	background-color: #FFFFFF;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 60px; }
+
+input.main_textbox_captcha:focus {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	background-color: #FFFFFF;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 60px; }
+
+input.main_button {
+	background-color: #F3F3F3;
+	color: #000000;
+	border: 1px dashed #F3F3F3; }
+
+input.main_button:hover {
+	background-color: #FFFFFF;
+	color: #000000;
+	border: 1px dashed #F3F3F3; }
+
+input.main_button_bbcode {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #DFDFDF;
+	color: #000000;
+	border: 1px dashed #DFDFDF; }
+
+input.main_button_bbcode:hover {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #FFFFFF;
+	color: #000000;
+	border: 1px dashed #DFDFDF; }
+
+textarea {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #F3F3F3;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 100%;
+	height: 100px; }
+
+textarea:hover {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #FFFFFF;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 100%;
+	height: 100px; }
+
+textarea:focus {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #FFFFFF;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 100%;
+	height: 100px; }
+
+select.main_option {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #FFFFFF;
+	color: #000000;
+	border: 1px dashed #DFDFDF;
+	width: 100px; }
+
+
+/* DIVS */
+div.gap {
+	padding: 7px; }
+
+div.captcha {
+	padding: 3px;
+	width: 300px; }
+
+div.captcha_tooltip
+a.tooltip
+span.tooltip {
+	display: none; }
+
+div.captcha_tooltip
+a.tooltip:hover
+span.tooltip {
+	display: block;
+	position: relative;
+	width: 280px;
+	padding: 5px;
+	margin: 3px;
+	z-index: 100;
+	color: infotext;
+	background: infobackground;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	text-align: justify;
+	border: 2px solid #000000; }
+
+/* END OF FILE */

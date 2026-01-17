@@ -1,0 +1,1 @@
+<a href="http://www.icq.com/{ENTRY_ICQ_NUMBER}" target="_blank"><img class="icon" alt="ICQ# {ENTRY_ICQ_NUMBER}" title="ICQ# {ENTRY_ICQ_NUMBER}" src="images/iconsets/{ICONSET_PATH}/icq.png"></a><img src="images/iconsets/{ICONSET_PATH}/space.png" alt="" title="" height="16" width="5">

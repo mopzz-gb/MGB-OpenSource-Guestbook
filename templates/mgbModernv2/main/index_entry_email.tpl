@@ -1,0 +1,1 @@
+<a href="{ENTRY_EMAIL_PATH}"><img class="icon" src="{ENTRY_EMAIL_PIC}" alt="{LANG_EMAIL_OF}" title="{LANG_EMAIL_OF}" height="16" width="16"></a><img src="images/iconsets/{ICONSET_PATH}/space.png" alt="" title="" height="16" width="5">

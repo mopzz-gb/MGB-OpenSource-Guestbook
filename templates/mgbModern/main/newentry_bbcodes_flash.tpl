@@ -1,0 +1,1 @@
+				<input type="button" class="main_button_bbcode" name="{LANG_BBCODE_FLASH}" value="{LANG_BBCODE_FLASH}" onClick="insert('[flash=]', '[/flash]')" onmousemove="window.status='{LANG_BBCODE_FLASH}';" onmouseout="window.status=' ';" title="{LANG_BBCODE_HELP_FLASH}" alt="{LANG_BBCODE_HELP_FLASH}">

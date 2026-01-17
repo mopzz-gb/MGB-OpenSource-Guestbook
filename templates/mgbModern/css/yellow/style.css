@@ -1,0 +1,129 @@
+/*
+  mgbModern Theme 0.7 - yellow - for MGB 0.7.x
+  Created by mopzz
+  http://www.m-gb.org/
+*/
+
+/* import main.css */
+@import url('../main.css');
+
+/* BODY */
+body {
+	background-color: #FFFFCC;
+}
+
+/* LINKS */
+a:link,
+a:visited,
+a:active,
+a:tooltip {
+	color: #8B4513;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #D2691E;
+}
+
+/* FONTS [GENERAL] */
+span,
+span.title,
+span.name,
+span.quote_name,
+span.quote_text {
+	color: #FF6600;
+}
+
+span.copyright {
+	color: #AFAFAF;
+}
+
+span.errormessage {
+	color: #000000;
+}
+
+blockquote {
+	border: 1px solid #FFCC33;
+	background-color: #FFFF99;
+}
+
+/* TABLES [GENERAL] */
+table.errormessage {
+	border: 1px solid #BF0000;
+}
+
+td.errormessage {
+	background-color: #EF5858;
+}
+
+table.border_main,
+td.entry_number,
+td.entry_name,
+td.entry_date,
+td.entry_message,
+td.entry_info,
+table.border_newentry,
+td.signin_l,
+td.signin_l2,
+td.signin_m,
+td.signin_r,
+td.signin_r2,
+td.signin_overall,
+table.border_sendemail,
+td.sendemail_l,
+td.sendemail_m,
+td.sendemail_r,
+td.sendemail_overall,
+img.captcha,
+img.gravatar {
+	border: 1px solid #FFCC33;
+}
+
+td.border_main_title,
+td.border_newentry_title,
+td.border_sendemail_title {
+	background-color: #FFCC33;
+}
+
+td.border_main_entries,
+td.border_newentry_entry,
+td.border_sendemail_form {
+	background-color: #FFFF99;
+}
+
+table.entry,
+table.signin,
+table.sendemail {
+	border: 1px solid #FFCC33;
+	background-color: #FFFF66;
+}
+
+td.entry_message_text {
+	color: #FF6600;
+}
+
+td.entry_comment {
+	border: 1px solid #FFCC33;
+	color: #FF6600;
+}
+
+/* IMAGES */
+img.smilies,
+img.icon,
+img.entry {
+	border: none;
+}
+
+/* INPUTS AND BOXES */
+input.main_textbox,
+input.main_textbox_captcha,
+input.main_button,
+input.main_button_bbcode,
+textarea,
+select.main_option {
+	background-color: #FFFFCC;
+	color: #8B4513;
+	border: 1px solid #FFD700;
+}
+
+/* END OF FILE */

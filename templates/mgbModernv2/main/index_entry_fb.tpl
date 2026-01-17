@@ -1,0 +1,1 @@
+<a href="http://www.facebook.com/{ENTRY_FB}" target="_blank"><img class="icon" alt="Facebook: {ENTRY_FB}" title="Facebook: {ENTRY_FB}" src="images/iconsets/{ICONSET_PATH}/fb.png"></a><img src="images/iconsets/{ICONSET_PATH}/space.png" alt="" title="" height="16" width="5">

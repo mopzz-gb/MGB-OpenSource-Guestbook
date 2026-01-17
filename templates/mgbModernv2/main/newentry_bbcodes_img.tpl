@@ -1,0 +1,1 @@
+				<input type="button" class="main_button_bbcode" name="{LANG_BBCODE_IMG}" value="{LANG_BBCODE_IMG}" onClick="insert('[img]', '[/img]')" onmousemove="window.status='{LANG_BBCODE_IMG}';" onmouseout="window.status=' ';" title="{LANG_BBCODE_HELP_IMG}" alt="{LANG_BBCODE_HELP_IMG}">

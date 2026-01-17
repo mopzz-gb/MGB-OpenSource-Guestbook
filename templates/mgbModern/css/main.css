@@ -1,0 +1,313 @@
+/*
+  mgbModern Theme 1.7 - main.css - for MGB 0.7.x
+  Created by mopzz
+  http://www.m-gb.org/
+*/
+
+/* BODY */
+html {
+	height: 100%;
+}
+
+/* LINKS */
+a:link, a:visited, a:active {
+	text-decoration: none;
+}
+
+/* FONTS */
+
+span {
+	font-size: 10px;
+}
+
+span,
+span.menu,
+span.scrolling-function,
+span.name,
+span.copyright,
+span.errormessage {
+	font-family: verdana, arial, helvetica, sans-serif;
+}
+
+span.title {
+	font-family: 'lucida console', verdana, arial, helvetica, sans-serif;
+	font-size: 16px;
+}
+
+span.menu,
+span.scrolling-function,
+span.errormessage,
+span.quote_name,
+span.quote_text {
+	font-size: 12px;
+}
+
+span.scrolling_function,
+span.errormessage,
+span.quote_name {
+	font-weight: bold;
+}
+
+span.name {
+	font-size: 10px;
+}
+
+span.copyright {
+	font-size: 9px;
+}
+
+span.quote_name,
+span.quote_text {
+	font-family: georgia, verdana, arial, helvetica, sans-serif;
+}
+
+span.quote_text {
+	font-style: italic;
+}
+
+blockquote {
+	padding: 3px;
+}
+
+blockquote.code {
+	font-family: 'courier new', courier, helvetica, sans-serif;
+	font-size: 12px;
+	border: 1px solid #999999;
+	background-color: #E3ECFB;
+	padding: 3px;
+}
+
+
+/* TABLES */
+table.errormessage {
+	width: 60%;
+}
+
+td.errormessage {
+	border: none;
+	padding: 3px;
+}
+
+table.border_main,
+table.border_newentry,
+table.border_sendemail {
+	width: 95%;
+}
+
+table.entry,
+table.announcement_message {
+	width: 95%;
+}
+
+table.entry_message_with_gravatar {
+	width: 100%;
+}
+
+td.entry_number {
+	text-align: center;
+	width: 7%;
+}
+
+td.entry_name {
+	text-align: left;
+	width: 50%;
+}
+
+td.entry_date {
+	text-align: right;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+td.entry_message {
+	text-align: left;
+}
+
+td.entry_message_gravatar_left {
+	width: 10%;
+	text-align: left;
+}
+
+td.entry_message_gravatar_right {
+	width: 10%;
+	text-align: right;
+}
+
+td.entry_message_text,
+td.announcement_message_text {
+	text-align: left;
+	width: 90%;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+}
+
+td.entry_info {
+	text-align: left;
+}
+
+td.entry_comment {
+	text-align: left;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+}
+
+td.signin_l,
+td.signin_l2,
+td.signin_m,
+td.signin_r,
+td.signin_r2,
+td.sendemail_l,
+td.sendemail_m,
+td.sendemail_r {
+	padding: 3px;
+}
+
+table.signin,
+table.sendemail {
+	width: 100%;
+}
+
+td.signin_l {
+	width: 30%;
+}
+
+td.signin_l2 {
+	width: 30%;
+}
+
+td.signin_m {
+	width: 70%;
+}
+
+td.signin_r,
+td.sendemail_r {
+	width: 3%;
+}
+
+td.signin_r2 {
+	width: 70%;
+}
+
+td.signin_overall,
+td.sendemail_overall {
+	width: 100%;
+	padding: 2px;
+}
+
+table.user_box,
+table.sendemail_user_box {
+	width: 70%;
+}
+
+td.user_box_l,
+td.sendemail_user_box_l {
+	width: 30%;
+}
+
+td.user_box_r,
+td.sendemail_user_box_r {
+	width: 370px;
+}
+
+td.sendemail_l {
+	width: 170px;
+}
+
+td.sendemail_m {
+	width: 220px;
+}
+
+/* IMAGES */
+img.smilies,
+img.icon,
+img.entry {
+	border: none;
+}
+
+img.icon {
+	height: 16px;
+	width: 16px;
+}
+
+img.captcha {
+	height: 40px;
+	width: 140px;
+}
+
+img.gravatar {
+	margin-left: 5px;
+	margin-top: 3px;
+	margin-right: 3px;
+	margin-bottom: 5px;
+}
+
+img, embed, object, video {
+	max-width: 100%;
+}
+
+/* INPUTS AND BOXES */
+input.main_textbox,
+input.main_textbox_captcha,
+input.main_button,
+input.main_button_bbcode,
+textarea,
+select.main_option {
+		font-family: verdana, arial, helvetica, sans-serif;
+}
+
+input.main_textbox,
+input.main_button_bbcode,
+textarea,
+select.main_option {
+	font-size: 10px;
+}
+
+input.main_textbox {
+	width: 100%;
+}
+
+input.main_textbox_captcha {
+	font-size: 12px;
+	width: 20%;
+}
+
+textarea {
+	width: 100%;
+	height: 100px;
+}
+
+select.main_option {
+	width: 10%;
+}
+
+
+/* DIVS */
+div.gap {
+	padding: 7px; }
+
+div.captcha {
+	padding: 3px;
+	width: 300px; }
+
+div.captcha_tooltip
+a.tooltip
+span.tooltip {
+	display: none; }
+
+div.captcha_tooltip
+a.tooltip:hover
+span.tooltip {
+	display: block;
+	position: relative;
+	width: 280px;
+	padding: 5px;
+	margin: 3px;
+	z-index: 100;
+	color: infotext;
+	background: infobackground;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	text-align: justify;
+	border: 2px solid #000000; }
+
+/* END OF FILE */

@@ -1,0 +1,1 @@
+<td class="{GRAVATAR_CSS}" width="{GRAVATAR_SIZE}" valign="top">{IMG_GRAVATAR}</td>

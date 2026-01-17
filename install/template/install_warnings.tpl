@@ -1,0 +1,1 @@
+<div class="install_warnings">{ERROR_1}{ERROR_2}{ERROR_3}{ERROR_4}{ERROR_5}{ERROR}{NO_ERROR}</div>

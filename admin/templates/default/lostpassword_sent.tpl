@@ -1,0 +1,9 @@
+{TEMPLATE_HEADER}
+<center>
+<br>
+<span>{LOSTPASSWORD_STATUSMESSAGE}</span>
+<br>
+<br>
+</center>
+{TEMPLATE_COPYRIGHT}
+{TEMPLATE_FOOTER}

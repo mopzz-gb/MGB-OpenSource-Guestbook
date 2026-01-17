@@ -1,0 +1,143 @@
+/*
+  CSS for installation of MGB 0.6+
+  Created by mopzz
+  http://www.m-gb.org/
+*/
+
+
+
+/* body */
+body {
+	margin: 0px;
+	background-color: #F5F9FE; }
+
+
+/* links */
+a:link, a:visited, a:active { 
+	color: #BF0000;
+	text-decoration: none; }
+
+a:hover {
+	color: #E06000; }
+	
+
+/* font families */
+span.install_title {
+	font-family: Goergia, verdana, arial, helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	color: #000000; }
+	
+span.install_general {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000; }
+	
+span.install_general_bold {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #000000; }
+	
+span.install_copyright {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 9px;
+	color: #AFAFAF; }
+	
+span.install_error_low {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #000000; }
+	
+span.install_error_critical {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #DF0000; }
+	
+span.install_no_error {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #009F00; }
+	
+
+/* tables */
+table.install_errormessage {
+	border: 1px solid #BF0000;
+	width: 300px; }
+
+td.install_errormessage	{
+	border: none;
+	background-color: #EF5858;
+	padding: 3px; }
+	
+table.data {
+	border: 1px solid #EBF3FC;
+	background-color: #DAE8FA; }
+	
+td.data_overall {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	height: 30px; }
+	
+td.data_l {
+	border: 1px solid #EBF3FC;
+	text-align: left; }
+	
+td.data_r {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	width: 200px; }
+		
+
+/* inputs / buttons / selects*/
+input.install_button {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 100px; }
+	
+select.install_option_long {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 200px; }
+	
+input.install_textbox {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	background-color: #EFEFEF;
+	color: #000000;
+	border: 1px solid #7F7F7F;
+	width: 150px; }
+
+
+/* divs */
+div.title {
+	width: 100%;
+	padding-top: 5px;	
+	padding-bottom: 5px;
+	background-color: #DAE8FA; }
+	
+div.install_warnings {	
+	width: 500px;
+	border: 2px solid #000000;	
+	background: infobackground;
+	padding: 4px;
+	margin-top: 5px; }
+	
+div.explanation {
+	width: 500px; }
+	
+
+/* images */
+img {
+	width: 16px;
+	height: 16px;
+	border: none; }

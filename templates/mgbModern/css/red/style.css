@@ -1,0 +1,150 @@
+/*
+  mgbModern Theme 0.7 - red - for MGB 0.7.x
+  Created by mopzz
+  http://www.m-gb.org/
+*/
+
+/* import main.css */
+@import url('../main.css');
+
+/* BODY */
+body {
+	background-color: silver;
+}
+
+/* LINKS */
+a:link, a:visited, a:active {
+	color: #000000;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #FFD700;
+}
+
+
+/* FONTS */
+span {
+	color: white;
+}
+
+span.title,
+span.quote_name,
+span.quote_text,
+span.name,
+span.copyright,
+td.entry_message_text,
+td.announcement_message_text,
+td.entry_comment {
+	color: white;
+}
+
+span.copyright {
+	font-size: 9px;
+}
+
+blockquote {
+	border: 1px solid silver;
+	background-color: #DF2611;
+	padding: 3px;
+}
+
+/* TABLES */
+table.errormessage {
+	border: 1px solid #BF0000;
+}
+
+td.errormessage {
+	background-color: #EF5858;
+}
+
+
+/* TABLES */
+table.border_main {
+	border: 1px solid red;
+}
+
+td.border_main_title,
+td.border_newentry_title,
+td.border_sendemail_title {
+	background-color: #A01D0E;
+}
+
+td.border_main_entries,
+td.border_newentry_entry,
+td.border_sendemail_form {
+	background-color: #BC2010;
+}
+
+table.entry {
+	border: 1px solid silver;
+	background-color: #BC2010;
+}
+
+td.entry_number,
+td.entry_name,
+td.entry_date,
+td.entry_message,
+td.entry_info {
+	border: 1px solid silver;
+}
+
+td.entry_message_text {
+	color: white; }
+
+td.entry_comment {
+	border: 1px solid silver;
+	color: white; }
+
+table.border_newentry,
+table.border_sendemail {
+	border: 1px solid red;
+}
+
+table.signin,
+td.signin_l,
+td.signin_l2,
+td.signin_m,
+td.signin_r,
+td.signin_r2,
+td.signin_overall {
+	border: 1px solid #BC2010;
+	background-color: #DF2611;
+}
+
+table.sendemail,
+td.sendemail_l,
+td.sendemail_m,
+td.sendemail_r,
+td.sendemail_overall {
+	border: 1px solid #bc2010;
+	background-color: #DF2611;
+}
+
+/* IMAGES */
+img.smilies,
+img.icon,
+img.entry {
+	border: none; }
+
+img.captcha {
+	border: 1px solid #000000;
+}
+
+img.gravatar {
+	border: 1px solid #bc2010;
+}
+
+/* INPUTS AND BOXES */
+input.main_textbox,
+input.main_textbox_captcha,
+input.main_button,
+input.main_button_bbcode,
+textarea,
+select.main_option {
+	background-color: silver;
+	color: #393939;
+	border: 1px solid white;
+}
+
+/* END OF FILE */

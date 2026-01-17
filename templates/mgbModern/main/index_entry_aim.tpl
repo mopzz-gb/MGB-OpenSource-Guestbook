@@ -1,0 +1,1 @@
+<a href="aim:goim?screenname={ENTRY_AIM_NAME}&amp;message=Hello+Are+you+there?" target="_blank"><img class="icon" alt="AIM: {ENTRY_AIM_NAME}" title="AIM: {ENTRY_AIM_NAME}" src="images/iconsets/{ICONSET_PATH}/aim.png"></a><img src="images/iconsets/{ICONSET_PATH}/space.png" alt="" title="" height="16" width="5">
