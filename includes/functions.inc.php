@@ -890,32 +890,31 @@
 		}
 	}
 
-	// checks if username exists when adding new user
+	// checks if username exists when adding a new user
 	if(!function_exists("check_if_user_exists")) {
 		function check_if_user_exists($mysqli, $name, $email) {
 			include('../includes/config.inc.php');
 
-			$result = mgb_sql_connect($mysqli, "SELECT user_name FROM ".$db['prefix']."user WHERE user_name=".$name, "Error while loading user_name.", 1);
-			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
+			$stmt = $mysqli->prepare("SELECT 1 FROM ".$db['prefix']."user WHERE user_name = LOWER(?) LIMIT 1");
+			$stmt->bind_param("s", $name);
+			$stmt->execute();
+			$result = $stmt->get_result();
 
-			if(secure_value(strtolower($user['user_name'])) == strtolower($name)) {
-				return FALSE;
-			} else {
-				$ok = 1;
+			if ($result && $result->num_rows > 0) {
+				mgb_echo("existiert");
+				return false; // user name already exists
 			}
 
-			$result = mgb_sql_connect($mysqli, "SELECT user_email FROM ".$db['prefix']."user WHERE user_email=".$email, "Error while loading user_email.", 1);
-			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
+			$stmt = $mysqli->prepare("SELECT 1 FROM ".$db['prefix']."user WHERE user_email = LOWER(?) LIMIT 1");
+			$stmt->bind_param("s", $email);
+			$stmt->execute();
+			$result = $stmt->get_result();
 
-			if(secure_value(strtolower($user['user_email'])) == strtolower($email)) {
-				return FALSE;
-			} else {
-				$ok = 1;
+			if ($result && $result->num_rows > 0) {
+				return false; // user email already exists
 			}
 
-			if($ok == 1) {
-				return TRUE;
-			}
+			return TRUE;			
 		}
 	}
 

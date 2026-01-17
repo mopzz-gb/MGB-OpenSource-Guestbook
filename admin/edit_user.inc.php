@@ -283,8 +283,8 @@
 					$_POST['new_password_1'] = cleanstr($_POST['new_password_1']);
 					$_POST['new_password_2'] = cleanstr($_POST['new_password_2']);
 
-					if(login_ok($mysqli, secure_value($_SESSION['user_name']), secure_value($_SESSION['user_ID']), $_POST['old_password'])) {
-						if(!check_if_user_exists($mysqli, secure_value($_POST['name']), secure_value($_POST['email']))) {
+					if(login_ok($mysqli, $_SESSION['user_name'], $_SESSION['user_ID'], $_POST['old_password'])) {
+						if(!check_if_user_exists($mysqli, $_POST['name'], $_POST['email'])) {
 							$errorcode = 11; // user already exists
 						}
 					} else {
@@ -403,21 +403,36 @@
 
 					// $page_edit_user_adduser = mgb_template_language($page_edit_user_adduser, "../language/".$settings['language_path']."/lang_admin.php", $settings['debug_mode']); // last number defines debug mode
 
-					if ($_POST['user_level'] == 0) { $selected_r_admin = " selected"; $selected_r_moderator = NULL; } else { $selected_r_admin = NULL; $selected_r_moderator = " selected"; }
-					if ($_POST['user_is_active'] == 0) { $selected_user_is_active_0 = " selected"; $selected_user_is_active_1 = NULL; } else { $selected_user_is_active_0 = NULL; $selected_user_is_active_1 = " selected"; }
-					if ($_POST['r_settings'] == 0) { $selected_r_settings_0 = " selected"; $selected_r_settings_1 = NULL; } else { $selected_r_settings_0 = NULL; $selected_r_settings_1 = " selected"; }
-					if ($_POST['r_settings_database'] == 0) { $selected_r_settings_database_0 = " selected"; $selected_r_settings_database_1 = NULL; } else { $selected_r_settings_database_0 = NULL; $selected_r_settings_database_1 = " selected"; }
-					if ($_POST['r_activate'] == 0) { $selected_r_activate_0 = " selected"; $selected_r_activate_1 = NULL; } else { $selected_r_activate_0 = NULL; $selected_r_activate_1 = " selected"; }
-					if ($_POST['r_deactivate'] == 0) { $selected_r_deactivate_0 = " selected"; $selected_r_deactivate_1 = NULL; } else { $selected_r_deactivate_0 = NULL; $selected_r_deactivate_1 = " selected"; }
-					if ($_POST['r_delete'] == 0) { $selected_r_delete_0 = " selected"; $selected_r_delete_1 = NULL; } else { $selected_r_delete_0 = NULL; $selected_r_delete_1 = " selected"; }
-					if ($_POST['r_edit'] == 0) { $selected_r_edit_0 = " selected"; $selected_r_edit_1 = NULL; } else { $selected_r_edit_0 = NULL; $selected_r_edit_1 = " selected"; }
-					if ($_POST['r_spam'] == 0) { $selected_r_spam_0 = " selected"; $selected_r_spam_1 = NULL; } else { $selected_r_spam_0 = NULL; $selected_r_spam_1 = " selected"; }
-					if ($_POST['r_edit_smilies'] == 0) { $selected_r_edit_smilies_0 = " selected"; $selected_r_edit_smilies_1 = NULL; } else { $selected_r_edit_smilies_0 = NULL; $selected_r_edit_smilies_1 = " selected"; }
-					if ($_POST['r_banlists'] == 0) { $selected_r_banlists_0 = " selected"; $selected_r_banlists_1 = NULL; } else { $selected_r_banlists_0 = NULL; $selected_r_banlists_1 = " selected"; }
+					$user_level = isset($_POST['user_level']) ? (int)$_POST['user_level'] : 0;
+					$user_is_active = isset($_POST['user_is_active']) ? (int)$_POST['user_is_active'] : 0;
+					$r_settings = isset($_POST['r_settings']) ? (int)$_POST['r_settings'] : 0;
+					$r_settings_database = isset($_POST['r_settings_database']) ? (int)$_POST['r_settings_database'] : 0;
+					$r_activate = isset($_POST['r_activate']) ? (int)$_POST['r_activate'] : 0;
+					$r_deactivate = isset($_POST['r_deactivate']) ? (int)$_POST['r_deactivate'] : 0;
+					$r_delete = isset($_POST['r_delete']) ? (int)$_POST['r_delete'] : 0;
+					$r_edit = isset($_POST['r_edit']) ? (int)$_POST['r_edit'] : 0;
+					$r_spam = isset($_POST['r_spam']) ? (int)$_POST['r_spam'] : 0;
+					$r_edit_smilies = isset($_POST['r_edit_smilies']) ? (int)$_POST['r_edit_smilies'] : 0;
+					$r_banlists = isset($_POST['r_banlists']) ? (int)$_POST['r_banlists'] : 0;
+					$name = isset($_POST['name']) ? (int)$_POST['name'] : "";
+					$email = isset($_POST['email']) ? (int)$_POST['email'] : "";
+					
+					
+					if ($user_level == 0) { $selected_r_admin = " selected"; $selected_r_moderator = NULL; } else { $selected_r_admin = NULL; $selected_r_moderator = " selected"; }
+					if ($user_is_active == 0) { $selected_user_is_active_0 = " selected"; $selected_user_is_active_1 = NULL; } else { $selected_user_is_active_0 = NULL; $selected_user_is_active_1 = " selected"; }
+					if ($r_settings == 0) { $selected_r_settings_0 = " selected"; $selected_r_settings_1 = NULL; } else { $selected_r_settings_0 = NULL; $selected_r_settings_1 = " selected"; }
+					if ($r_settings_database == 0) { $selected_r_settings_database_0 = " selected"; $selected_r_settings_database_1 = NULL; } else { $selected_r_settings_database_0 = NULL; $selected_r_settings_database_1 = " selected"; }
+					if ($r_activate == 0) { $selected_r_activate_0 = " selected"; $selected_r_activate_1 = NULL; } else { $selected_r_activate_0 = NULL; $selected_r_activate_1 = " selected"; }
+					if ($r_deactivate == 0) { $selected_r_deactivate_0 = " selected"; $selected_r_deactivate_1 = NULL; } else { $selected_r_deactivate_0 = NULL; $selected_r_deactivate_1 = " selected"; }
+					if ($r_delete == 0) { $selected_r_delete_0 = " selected"; $selected_r_delete_1 = NULL; } else { $selected_r_delete_0 = NULL; $selected_r_delete_1 = " selected"; }
+					if ($r_edit == 0) { $selected_r_edit_0 = " selected"; $selected_r_edit_1 = NULL; } else { $selected_r_edit_0 = NULL; $selected_r_edit_1 = " selected"; }
+					if ($r_spam == 0) { $selected_r_spam_0 = " selected"; $selected_r_spam_1 = NULL; } else { $selected_r_spam_0 = NULL; $selected_r_spam_1 = " selected"; }
+					if ($r_edit_smilies == 0) { $selected_r_edit_smilies_0 = " selected"; $selected_r_edit_smilies_1 = NULL; } else { $selected_r_edit_smilies_0 = NULL; $selected_r_edit_smilies_1 = " selected"; }
+					if ($r_banlists == 0) { $selected_r_banlists_0 = " selected"; $selected_r_banlists_1 = NULL; } else { $selected_r_banlists_0 = NULL; $selected_r_banlists_1 = " selected"; }
 
 					$page_edit_user_adduser = mgb_template_replace([
-						'EDIT_USER_NAME' 					=> $_POST['name'],
-						'EDIT_USER_EMAIL' 					=> $_POST['email'],
+						'EDIT_USER_NAME' 					=> $name,
+						'EDIT_USER_EMAIL' 					=> $email,
 						'SELECTED_USER_IS_ACTIVE_0' 		=> $selected_user_is_active_0,
 						'SELECTED_USER_IS_ACTIVE_1' 		=> $selected_user_is_active_1,
 						'SELECTED_R_ADMIN' 					=> $selected_r_admin,
