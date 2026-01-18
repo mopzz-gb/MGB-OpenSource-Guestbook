@@ -24,6 +24,37 @@
 	//
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
+	// MGB_SQL_STR
+	// CREATED: 18.01.2026
+	// INFO: SECURE STRING FOR SQL INSERT
+	
+	if(!function_exists('mgb_sql_str')) {
+		function mgb_sql_str(mysqli $mysqli, string $value): string {
+			return $mysqli->real_escape_string($value);
+		}
+	}
+	
+	// MGB_SQL_INT
+	// CREATED: 18.01.2026
+	// INFO: SECURE INTEGER FOR SQL INSERT
+	
+	if(!function_exists('mgb_sql_int')) {
+		function mgb_sql_int($value): int {
+			return (int) $value;
+		}
+	}
+	
+	// MGB_SQL_PREFIX
+	// CREATED: 18.01.2026
+	// INFO: SECURE PREFIX FOR SQL INSERT
+	
+	if(!function_exists('mgb_sql_prefix')) {
+		function mgb_sql_prefix(string $value): string {
+			$prefix = preg_replace('/[^a-zA-Z0-9_]/', '', $value);
+			return $prefix;
+		}
+	}	
+
 	// MGB_ISIPBANNED
 	// CREATED: 02.01.2026
 	// INFO: CHECKS IF THE USER IP IS ALREADY BANNED
@@ -142,7 +173,7 @@
 					die();
 				} elseif(isset($mgb_installation_complete) AND $mgb_installation_complete == TRUE AND file_exists($path.'install') AND is_dir($path.'install')) {
 					require $path."install/includes/config.inc.php";
-					$sql = "SELECT version FROM ".$db['prefix']."settings";
+					$sql = "SELECT version FROM ".mgb_sql_prefix($db['prefix'])."settings";
 					$result = mgb_sql_connect($mysqli, $sql, "Error while retrieving version of MGB.", 1);
 					$existing_version = $result->fetch_assoc();
 					if(version_compare($existing_version['version'], MGB_VERSION, "!=")) {
@@ -450,7 +481,7 @@
 		function set_smilies($mysqli, $text) {
 			// load smilies
 			require "includes/config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."smilies ORDER BY ID DESC", "Error while loading smilies.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."smilies ORDER BY ID DESC", "Error while loading smilies.", 1);
 
 			for($i = 0; $i < mysqli_num_rows($result); $i++) {
 				$smiley[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
@@ -489,7 +520,7 @@
 		function delete_smilies($mysqli, $text) {
 			// load smilies
 			require "includes/config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."smilies ORDER BY ID DESC", "Error while loading smilies.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."smilies ORDER BY ID DESC", "Error while loading smilies.", 1);
 
 			for($i = 0; $i < mysqli_num_rows($result); $i++) {
 				$smiley[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
@@ -546,7 +577,7 @@
 
 			// load maximum width and height settings
 			require "config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".$db['prefix']."settings", "Error while loading img settings.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".mgb_sql_prefix($db['prefix'])."settings", "Error while loading img settings.", 1);
 			$settings = mysqli_fetch_array($result, MYSQLI_ASSOC);
 			if($settings['center_img'] == 1) { $center_1 = "<center>"; $center_2 = "</center>"; }
 
@@ -602,7 +633,7 @@
 		function img_1($mysqli, $treffer) {
 			// load maximum width and height settings
 			require "config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".$db['prefix']."settings", "Error while loading img settings.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".mgb_sql_prefix($db['prefix'])."settings", "Error while loading img settings.", 1);
 			$settings = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			if(isset($settings['allow_img_tag']) AND $settings['allow_img_tag'] == 1) {
@@ -640,7 +671,7 @@
 		function img_2($mysqli, $treffer) {
 			// load maximum width and height settings
 			require "config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".$db['prefix']."settings", "Error while loading img settings.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".mgb_sql_prefix($db['prefix'])."settings", "Error while loading img settings.", 1);
 			$settings = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			if(isset($settings['allow_img_tag']) AND $settings['allow_img_tag'] == 1) {
@@ -686,7 +717,7 @@
 		function flash($mysqli, $treffer) {
 			// load maximum width and height settings
 			require "config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT allow_flash_tag, max_flash_width, max_flash_height, center_flash FROM ".$db['prefix']."settings", "Error while loading flash settings.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT allow_flash_tag, max_flash_width, max_flash_height, center_flash FROM ".mgb_sql_prefix($db['prefix'])."settings", "Error while loading flash settings.", 1);
 			$settings = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			if(isset($settings['allow_flash_tag']) AND $settings['allow_flash_tag'] == 1) {
@@ -856,9 +887,11 @@
 			require ('../includes/config.inc.php');
 
 			if(!empty($ID)) {
-				$sql = "SELECT user_password FROM ".$db['prefix']."user WHERE ID='".$ID."'";
+				$ID = $mysqli->real_escape_string($ID);
+				$sql = "SELECT user_password FROM ".mgb_sql_prefix($db['prefix'])."user WHERE ID='".mgb_sql_int($ID)."'";
 			} else {
-				$sql = "SELECT user_password FROM ".$db['prefix']."user WHERE user_name='".$name."'";
+				$name = $mysqli->real_escape_string($name);
+				$sql = "SELECT user_password FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_name='".mgb_sql_str($mysqli, $name)."'";
 			}
 
 			$result = mgb_sql_connect($mysqli, $sql, "Error while checking login information!", 1);
@@ -869,7 +902,7 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_ip` = '".mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR'])."' WHERE user_name='".mgb_sql_str($mysqli, $name)."' LIMIT 1", "Error while updating user information.", 0);
 				return TRUE;
 			} elseif($user['user_password'] === $old_password) {
 				$newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -877,9 +910,9 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_ip` = '".mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR'])."' WHERE user_name='".mgb_sql_str($mysqli, $name)."' LIMIT 1", "Error while updating user information.", 0);
 				// update user_password in database
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_password` = '".$newHash."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_password` = '".$newHash."' WHERE user_name='".mgb_sql_str($mysqli, $name)."' LIMIT 1", "Error while updating user information.", 0);
 				return TRUE;
 			} else {
 				unset($ID);
@@ -895,7 +928,7 @@
 		function check_if_user_exists($mysqli, $name, $email) {
 			include('../includes/config.inc.php');
 
-			$stmt = $mysqli->prepare("SELECT 1 FROM ".$db['prefix']."user WHERE user_name = LOWER(?) LIMIT 1");
+			$stmt = $mysqli->prepare("SELECT 1 FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_name = LOWER(?) LIMIT 1");
 			$stmt->bind_param("s", $name);
 			$stmt->execute();
 			$result = $stmt->get_result();
@@ -904,7 +937,7 @@
 				return false; // user name already exists
 			}
 
-			$stmt = $mysqli->prepare("SELECT 1 FROM ".$db['prefix']."user WHERE user_email = LOWER(?) LIMIT 1");
+			$stmt = $mysqli->prepare("SELECT 1 FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_email = LOWER(?) LIMIT 1");
 			$stmt->bind_param("s", $email);
 			$stmt->execute();
 			$result = $stmt->get_result();
@@ -1096,7 +1129,7 @@
 
 			if(!empty($name)) {
 				// save user_key for user in database
-				mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."user` SET `user_key` = '".$key_pw."' WHERE `user_name` = ".$name." LIMIT 1", "Error while generating key/password.", 0);
+				mgb_sql_connect($mysqli, "UPDATE `".mgb_sql_prefix($db['prefix'])."user` SET `user_key` = '".$key_pw."' WHERE `user_name` = '".$name."' LIMIT 1", "Error while generating key/password.", 0);
 			} else {
 				return $key_pw;
 			}
@@ -1107,7 +1140,7 @@
 	if(!function_exists("check_session")) {
 		function check_session($mysqli, $sessid, $sessionkey, $sessionip, $timeout) {
 			require("../includes/config.inc.php");
-			$result = mgb_sql_connect($mysqli, "SELECT user_key, logged_in FROM ".$db['prefix']."user WHERE ID=".$sessid." LIMIT 1", "Error while loading user information.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT user_key, logged_in FROM ".mgb_sql_prefix($db['prefix'])."user WHERE ID=".mgb_sql_int($sessid)." LIMIT 1", "Error while loading user information.", 1);
 			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			$count_ok = 0;
@@ -1121,7 +1154,7 @@
 			}
 
 			if(time() < ($user['logged_in'] + $timeout)) {
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `logged_in` = '".time()."' WHERE ID=".$sessid." LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `logged_in` = '".time()."' WHERE ID=".mgb_sql_int($sessid)." LIMIT 1", "Error while updating user information.", 0);
 				$count_ok++;
 			}
 
@@ -1138,7 +1171,7 @@
 		function check_rights($mysqli, $site, $sessid) {
 			require "../includes/config.inc.php";
 
-			$result = mgb_sql_connect($mysqli, "SELECT user_level, r_settings, r_settings_database, r_activate, r_deactivate, r_delete, r_edit, r_spam, r_edit_smilies, r_banlists FROM ".$db['prefix']."user WHERE ID=".$sessid, "Error while checking user rights.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT user_level, r_settings, r_settings_database, r_activate, r_deactivate, r_delete, r_edit, r_spam, r_edit_smilies, r_banlists FROM ".mgb_sql_prefix($db['prefix'])."user WHERE ID=".mgb_sql_int($sessid), "Error while checking user rights.", 1);
 			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			switch ($user['user_level']) {
@@ -1196,9 +1229,9 @@
 
 	// clean string
 	if(!function_exists("cleanstr")) {
-		function cleanstr($string) {
+		function cleanstr(string $string): string {
 			if(empty($string)) { $string = ""; }
-			$string = htmlspecialchars(stripslashes(strip_tags($string)), ENT_QUOTES, "UTF-8");
+			$string = htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
 			return $string;
 		}
 	}
@@ -1295,7 +1328,7 @@
 					echo "<b>User email:</b> ".$user_email."</span><br>";
 				}
 				// load banned ips out of the database
-				$banned_ip = mgb_sql_connect($mysqli, "SELECT banned_ip, matches, timestamp FROM ".$db['prefix']."banlist_ips WHERE banned_ip = ".secure_value($user_ip), "Error while loading banned ips from ".$db['prefix']."banlist_ips.", 1);
+				$banned_ip = mgb_sql_connect($mysqli, "SELECT banned_ip, matches, timestamp FROM ".mgb_sql_prefix($db['prefix'])."banlist_ips WHERE banned_ip = ".secure_value($user_ip), "Error while loading banned ips from ".mgb_sql_prefix($db['prefix'])."banlist_ips.", 1);
 				$ip = mysqli_fetch_array($banned_ip, MYSQLI_ASSOC);
 				if($user_ip == $ip['banned_ip']) {
 					if($debug_mode === 1 OR $debug_mode === 2) {
@@ -1316,7 +1349,7 @@
 					if($blocked = 1) {
 						// update counter for banned ip
 						$matches = $ip['matches'] + 1;
-						mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."banlist_ips SET
+						mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_ips SET
 							`matches` = '".$matches."'
 							WHERE banned_ip=".secure_value($user_ip)." LIMIT 1", "Error while updating 'matches' in banlist ips.", 0);
 					}
@@ -1328,7 +1361,7 @@
 			}
 
 			if($banlist_emails_active == 1 AND $blocked == 0) {
-				$banned_email = mgb_sql_connect($mysqli, "SELECT banned_email, matches, timestamp FROM ".$db['prefix']."banlist_emails WHERE banned_email = '".cleanstr($user_email)."'", "Error while loading banned emails from ".$db['prefix']."banlist_emails.", 1);
+				$banned_email = mgb_sql_connect($mysqli, "SELECT banned_email, matches, timestamp FROM ".mgb_sql_prefix($db['prefix'])."banlist_emails WHERE banned_email = '".cleanstr($user_email)."'", "Error while loading banned emails from ".mgb_sql_prefix($db['prefix'])."banlist_emails.", 1);
 				$email = mysqli_fetch_array($banned_email, MYSQLI_ASSOC);
 				if($user_email == $email['banned_email']) {
 					if($debug_mode == 1 OR $debug_mode == 2) {
@@ -1349,7 +1382,7 @@
 					if($blocked = 2) {
 						// update counter for banned email
 						$matches = $email['matches'] + 1;
-						mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."banlist_emails SET
+						mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_emails SET
 							`matches` = '".$matches."'
 							WHERE banned_email = ".secure_value($user_email)." LIMIT 1", "Error while updating 'matches' in banlist emails.", 0);
 					}
@@ -1362,7 +1395,7 @@
 
 			if($banlist_domains_active == 1 AND $blocked == 0) {
 				$user_domain = explode("@", $user_email);
-				$banned_domain = mgb_sql_connect($mysqli, "SELECT banned_domain, matches, timestamp FROM ".$db['prefix']."banlist_domains WHERE banned_domain = '".cleanstr($user_domain[1])."'", "Error while loading banned domains from database.", 1);
+				$banned_domain = mgb_sql_connect($mysqli, "SELECT banned_domain, matches, timestamp FROM ".mgb_sql_prefix($db['prefix'])."banlist_domains WHERE banned_domain = '".cleanstr($user_domain[1])."'", "Error while loading banned domains from database.", 1);
 				$domain = mysqli_fetch_array($banned_domain, MYSQLI_ASSOC);
 				if($user_domain[1] == $domain['banned_domain']) {
 					if($debug_mode == 1 OR $debug_mode == 2) {
@@ -1383,7 +1416,7 @@
 					if($blocked = 3) {
 						// update counter for banned domain
 						$matches = $domain['matches'] + 1;
-						mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."banlist_domains SET
+						mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_domains SET
 							`matches` = '".$matches."'
 							WHERE banned_domain = ".secure_value($user_domain[1])." LIMIT 1", "Error while updating 'matches' in banlist domains.", 0);
 					}
