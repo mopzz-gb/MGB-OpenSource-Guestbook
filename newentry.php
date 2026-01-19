@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -75,13 +75,14 @@
 
 	// check if this is a direct or not allowed access to the script
 	if($settings['direct_access'] == 1) {
+		if(empty($_SERVER['HTTP_REFERER'])) { $_SERVER['HTTP_REFERER'] = ""; }
 		if(mgb_http_referer($mysqli, $settings['direct_access_text'], $settings['search_engines_excluded'], $settings['search_engines'], $settings['banlist_log'], $_SERVER['HTTP_REFERER'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['REMOTE_ADDR'], $db['prefix'], $site_name, $settings['debug_mode']) == FALSE) {
 			// destroy active session
 			session_unset();
 			session_destroy();
 			$_SESSION = array();
-			mgb_echo($lang['errormessage'][19]."<br><br><a href='http://".$_SERVER['REMOTE_ADDR']."'>".$_SERVER['REMOTE_ADDR']."</a>");
-			mgb_trigger_sys_log($mysqli, '3003', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+			mgb_echo($lang['errormessage'][19]);
+			mgb_trigger_sys_log($mysqli, 3003, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 			die();
 		}
 	}
@@ -171,10 +172,10 @@
 				if($settings['sfs_mark_as_spam'] == 1) {
 					$mark_as_spam = 1; // accept the entry, but mark it as spam
 					$noemail = 1;
-					mgb_trigger_sys_log('3007', cleanstr($_POST['name']), cleanstr($_POST['email']), '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry accepted but marked as spam)
+					mgb_trigger_sys_log($mysqli, 3007, $_POST['name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry accepted but marked as spam)
 				} else {
 					$errorcode = 19; // user was blocked by www.stopforumspam.com
-					mgb_trigger_sys_log('3008', cleanstr($_POST['name']), cleanstr($_POST['email']), '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry by stopforumspam denied)
+					mgb_trigger_sys_log($mysqli, 3008, $_POST['name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry by stopforumspam denied)
 				}
 			}
 		}
@@ -262,7 +263,7 @@
 				if(!mgb_get_keystrokes($settings['keystroke_max_cps'], $settings['keystroke_ban_time'], $settings['dynamic_fieldnames'], $settings['debug_mode'])) {
 					$errorcode = 17; // too fast typing, possible spam robot?
 					$type = 11;
-					mgb_trigger_sys_log($mysqli, '3004', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 3004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
 			} else {
 				$keystroke_ban_time_rest = $_SESSION['keystroke_ban_time'] - time();
@@ -272,7 +273,7 @@
 					if(!mgb_get_keystrokes($settings['keystroke_max_cps'], $settings['keystroke_ban_time'], $settings['dynamic_fieldnames'], $settings['debug_mode'])) {
 						$errorcode = 17; // too fast typing, possible spam robot?
 						$type = 11; // blocked by keystroke
-						mgb_trigger_sys_log($mysqli, '3004', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 3004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 				}
 			}
@@ -283,19 +284,19 @@
 			if($settings['captcha_method'] == 0) { // security code
 				if($_SESSION['CAPTCHA_CODE'] != $_POST['captcha']) {
 					$errorcode = 7;  // captcha wrong or not set
-					mgb_trigger_sys_log($mysqli, '3005', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
 			} elseif($settings['captcha_method'] == 1) { // mathematical captcha
 				if($_SESSION['CAPTCHA_SUM'] != $_POST['captcha']) {
 					$errorcode = 7; // captcha wrong or not set
-					mgb_trigger_sys_log($mysqli, '3005', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
 			} elseif($settings['captcha_method'] == 2) { // reCaptchav2
 				$response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$settings['recaptcha_private_key']."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']);
         			$responseKeys = json_decode($response, true);
         			if(intval($responseKeys["success"]) !== 1) {
 					$errorcode = 7; // captcha wrong or not set
-					mgb_trigger_sys_log($mysqli, '3005', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
         			}
 			} elseif($settings['captcha_method'] == 3) { // ayah (are you a human?)
 				if(file_exists("plugins/ayah/ayah.php")) {
@@ -304,7 +305,7 @@
 						if(!$score) {
 							// user didn't pass the game
 							$errorcode = 7;
-							mgb_trigger_sys_log($mysqli, '3005', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+							mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						}
 					}
 				}
@@ -313,28 +314,23 @@
 			if((!empty($settings['banlist_log']) AND $errorcode == 7) AND (!empty($_POST['captcha']) OR !empty($_POST['recaptcha_response_field']))) {
 				$type = 9; // captcha wrong
 				$sql = "INSERT INTO ".$db['prefix']."spam_log (
-					ID ,
-					ip ,
-					name ,
-					email ,
-					user_agent ,
-					hp ,
-					message ,
-					type ,
-					site ,
-					timestamp
-					) values (
-					NULL ,
-					'".$_SERVER['REMOTE_ADDR']."' ,
-					'".cleanstr($_POST['name'])."' ,
-					'".cleanstr($_POST['email'])."' ,
-					'".$_SERVER['HTTP_USER_AGENT']."' ,
-					'".cleanstr($_POST['hp'])."' ,
-					'".cleanstr($_POST['message'])."' ,
-					'".$type."' ,
-					'".$site_name."' ,
-					'".time()."')";
-				mgb_sql_connect($mysqli, $sql, "ERROR while saving data into spam_log.", 0);
+					ip,	name, email, user_agent, hp, message, type,	site, timestamp
+				) VALUES (
+					?, ?, ?, ?, ?, ?, ?, ?, ?
+				)";
+				$params = [
+					$_SERVER['REMOTE_ADDR'],
+					$_POST['name'] ?? '',
+					$_POST['email'] ?? '',
+					$_SERVER['HTTP_USER_AGENT'],
+					$_POST['hp'] ?? '',
+					$_POST['message'] ?? '',
+					$type,
+					$site_name,
+					time()
+				];
+				$types = "ssssssisi";
+				mgb_sql_connect($mysqli, $sql, "Error while saving data into spam_log.", 0, $params, $types);
 			}
 		}
 
@@ -374,28 +370,24 @@
 
 			if(!empty($settings['banlist_log']) AND ($errorcode == 12 OR $errorcode == 13 OR $errorcode == 14 OR $errorcode == 17)) {
 				$sql = "INSERT INTO ".$db['prefix']."spam_log (
-					ID ,
-					ip ,
-					name ,
-					email ,
-					user_agent ,
-					hp ,
-					message ,
-					type ,
-					site ,
-					timestamp
-					) values (
-					NULL ,
-					'".$_SERVER['REMOTE_ADDR']."' ,
-					'".cleanstr($_POST['name'])."' ,
-					'".cleanstr($_POST['email'])."' ,
-					'".$_SERVER['HTTP_USER_AGENT']."' ,
-					'".cleanstr($_POST['hp'])."' ,
-					'".cleanstr($_POST['message'])."' ,
-					'".$type."' ,
-					'".$site_name."' ,
-					'".time()."')";
-				mgb_sql_connect($mysqli, $sql, "ERROR while saving data into spam_log.", 0);
+					ip,	name, email, user_agent, hp, message, type,	site, timestamp
+				) VALUES (
+					?, ?, ?, ?, ?, ?, ?, ?, ?
+				)";
+
+				$params = [
+					$_SERVER['REMOTE_ADDR'],
+					$_POST['name'] ?? '',
+					$_POST['email'] ?? '',
+					$_SERVER['HTTP_USER_AGENT'],
+					$_POST['hp'] ?? '',
+					$_POST['message'] ?? '',
+					$type,
+					$site_name,
+					time()
+				];
+				$types = "ssssssisi";
+				mgb_sql_connect($mysqli, $sql, "Error while saving data into spam_log.", 0, $params, $types);
 			}
 
 			// send mail to admin if an email is set
@@ -406,7 +398,7 @@
 					$_SERVER['REMOTE_ADDR'],
 					$_POST['name'],
 					$_POST['email'],
-					$_POST['hp'],
+					$_POST['hp'] ?? '',
 					$_SERVER['HTTP_USER_AGENT'],
 					'',
 					'',
@@ -432,22 +424,6 @@
 		if($settings['akismet_plugin'] == 1 AND empty($_POST['user_accept_akismet_service'])) { $errorcode = 11; } // akismet agreement has not been accepted
 
 		if(empty($errorcode)) { // everything's ok, let's format and save the entry
-			$_POST['email_name'] = $_POST['name'];
-			$_POST['name'] = cleanstr($_POST['name']);
-			$_POST['city'] = cleanstr($_POST['city']);
-			$_POST['email_message'] = $_POST['message'];
-			$_POST['message'] = cleanstr($_POST['message']);
-			$_POST['email'] = cleanstr($_POST['email']);
-			$_POST['icq'] = cleanstr($_POST['icq']);
-			$_POST['aim'] = cleanstr($_POST['aim']);
-			$_POST['msn'] = cleanstr($_POST['msn']);
-			$_POST['fb'] = cleanstr($_POST['fb']);
-			$_POST['twitter'] = cleanstr($_POST['twitter']);
-			$_POST['hp'] = cleanstr($_POST['hp']);
-			$_POST['user_notification'] = cleanstr($_POST['user_notification']);
-			$_POST['user_show_email'] = cleanstr($_POST['user_show_email']);
-			$_POST['user_accept_akismet_service'] = cleanstr($_POST['user_accept_akismet_service']);
-
 			// delete bbcode except from message
 			$_POST['name'] = bbcode_delete($_POST['name']);
 			$_POST['city'] = bbcode_delete($_POST['city']);
@@ -471,84 +447,40 @@
 			if($settings['user_show_email'] == 0 OR empty($_POST['email'])) { $_POST['user_show_email'] = 0; }
 
 			if(empty($mark_as_spam)) {
-			// Write data into database
-			$sql = "INSERT INTO ".$db['prefix']."entries (
-				name,
-				city,
-				email,
-				icq,
-				aim,
-				msn,
-				fb,
-				twitter,
-				hp,
-				message,
-				ip,
-				user_agent,
-				timestamp,
-				user_notification,
-				user_show_email,
-				checked,
-				isspam
-			   ) values (
-				'".$_POST['name']."',
-				'".$_POST['city']."',
-				'".$_POST['email']."',
-				'".$_POST['icq']."',
-				'".$_POST['aim']."',
-				'".$_POST['msn']."',
-				'".$_POST['fb']."',
-				'".$_POST['twitter']."',
-				'".$_POST['hp']."',
-				'".$_POST['message']."',
-				'".$_SERVER['REMOTE_ADDR']."',
-				'".$_SERVER['HTTP_USER_AGENT']."',
-				'".time()."',
-				'".$_POST['user_notification']."',
-				'".$_POST['user_show_email']."',
-				'".$checked."',
-				'".$mark_as_spam."'
-			   )";
+				$dbname = $db['prefix']."entries";
 			} else {
-			$sql = "INSERT INTO ".$db['prefix']."spam (
-				name,
-				ip,
-				email,
-				city,
-				icq,
-				aim,
-				msn,
-				fb,
-				twitter,
-				hp,
-				message,
-				user_notification,
-				user_show_email,
-				user_agent,
-				sneaked,
-				timestamp
-			   ) values (
-				'".$_POST['name']."',
-				'".$_SERVER['REMOTE_ADDR']."',
-				'".$_POST['email']."',
-				'".$_POST['city']."',
-				'".$_POST['icq']."',
-				'".$_POST['aim']."',
-				'".$_POST['msn']."',
-				'".$_POST['fb']."',
-				'".$_POST['twitter']."',
-				'".$_POST['hp']."',
-				'".$_POST['message']."',
-				'".$_POST['user_notification']."',
-				'".$_POST['user_show_email']."',
-				'".$_SERVER['HTTP_USER_AGENT']."',
-				'0',
-				'".time()."'
-			   )";
+				$dbname = $db['prefix']."spam";
 			}
 
+			// Write data into database
+			$sql = "INSERT INTO ".$dbname." (
+				name, city,	email, icq,	aim, msn, fb, twitter, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, checked,	isspam
+			) VALUES (
+			   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+			)";
+			$params = [
+				$_POST['name'],
+				$_POST['city'] ?? '',
+				$_POST['email'] ?? '',
+				$_POST['icq'] ?? '',
+				$_POST['aim'] ?? '',
+				$_POST['msn'] ?? '',
+				$_POST['fb'] ?? '',
+				$_POST['twitter'] ?? '',
+				$_POST['hp'] ?? '',
+				$_POST['message'],
+				$_SERVER['REMOTE_ADDR'],
+				$_SERVER['HTTP_USER_AGENT'],
+				time(),
+				$_POST['user_notification'],
+				$_POST['user_show_email'],
+				$checked,
+				$mark_as_spam
+			];
+			$types = "ssssssssssssiiiii";
+			
 			// saving entry
-			if(mgb_sql_connect($mysqli, $sql, "Error while saving a new guestbook entry.", 0)); {
+			if(mgb_sql_connect($mysqli, $sql, "Error while saving a new guestbook entry.", 0, $params, $types)) {
 				if($checked == 1) {
 					mgb_erase_cache(MGB_ROOT."cache/");
 				}
@@ -613,7 +545,7 @@
 					$mail_send = @mail($_POST['email'], $lang['sendmail_user_title'], $settings['sendmail_user_text'], $mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '3006', $_POST['email_name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 3006, $_POST['email_name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					} else {
 						$sendemail_successfull = 0;
 					}
@@ -624,7 +556,7 @@
 						// $errormessage = $mail_send[1];
 					} else {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '3006', $_POST['email_name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 3006, $_POST['email_name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 				}
 			}
@@ -695,7 +627,7 @@
 
 			// set bbcode
 			if($settings['bbcode'] == 1) {
-				$preview_message = bbcode_format($preview_message, "");
+				$preview_message = bbcode_format($mysqli, $preview_message, "");
 			} else {
 				$preview_message = bbcode_delete($preview_message);
 			}
@@ -721,21 +653,27 @@
 				$img_gravatar = "";
 			}
 
-			$gravatar = template("IMG_GRAVATAR", $img_gravatar, $content_newentry_preview_gravatar);
+			$gravatar = mgb_template_replace(['IMG_GRAVATAR' => $img_gravatar], $content_newentry_preview_gravatar);
 
 			if($settings['gravatar_position'] == 0) {
-				$content_newentry_preview = template("ENTRY_GRAVATAR_LEFT", $gravatar, $content_newentry_preview);
-				$content_newentry_preview = template("ENTRY_GRAVATAR_RIGHT", "", $content_newentry_preview);
-				$content_newentry_preview = template("GRAVATAR_CSS", "entry_message_gravatar_left", $content_newentry_preview);
+				$content_newentry_preview = mgb_template_replace([
+					'ENTRY_GRAVATAR_LEFT' 	=> $gravatar,
+					'ENTRY_GRAVATAR_RIGHT'	=> "",
+					'GRAVATAR_CSS'			=> "entry_message_gravatar_left"
+				], $content_newentry_preview);
 			} else {
-				$content_newentry_preview = template("ENTRY_GRAVATAR_LEFT", "", $content_newentry_preview);
-				$content_newentry_preview = template("ENTRY_GRAVATAR_RIGHT", $gravatar, $content_newentry_preview);
-				$content_newentry_preview = template("GRAVATAR_CSS", "entry_message_gravatar_right", $content_newentry_preview);
+				$content_newentry_preview = mgb_template_replace([
+					'ENTRY_GRAVATAR_LEFT' 	=> "",
+					'ENTRY_GRAVATAR_RIGHT' 	=> $gravatar,
+					'GRAVATAR_CSS' 			=> "entry_message_gravatar_right"
+				], $content_newentry_preview);
 			}
 
-			$content_newentry_preview = template("TEMPLATE_ENTRY_MESSAGE", $preview_message, $content_newentry_preview);
-			$content_newentry_preview = template("GRAVATAR_SIZE", $settings['gravatar_size'], $content_newentry_preview);
-			$content_newentry_preview = template("ENTRY_NAME", $_POST['name'], $content_newentry_preview);
+			$content_newentry_preview = mgb_template_replace([
+				'TEMPLATE_ENTRY_MESSAGE' 	=> $preview_message,
+				'GRAVATAR_SIZE'				=> $settings['gravatar_size'],
+				'ENTRY_NAME'				=> $_POST['name']
+			], $content_newentry_preview);
 		} else {
 			$content_newentry_preview = "";
 		}
@@ -929,7 +867,7 @@
 		$page_newentry_body = $content_newentry_body;
 
 		// fill template with other templates if set
-		$page_newentry_body = template("HEADER", $page_header, $page_newentry_body);
+		$page_newentry_body = mgb_template_replace(['HEADER' => $page_header], $page_newentry_body);
 		if($settings['captcha_method'] == 2) {
 			$page_newentry_body = mgb_template_replace(["SCRIPT_RECAPTCHAV2" => "<script type='text/javascript'> var onloadCallback = function() { grecaptcha.render('html_element', {'sitekey' : '".$settings['recaptcha_pub_key']."' }); }; </script>"], $page_newentry_body);
 		} else {
@@ -1026,25 +964,25 @@
 		if(empty($_POST['message'])) { $_POST['message'] = ""; }
 
 		$page_newentry_body = mgb_template_replace([
-			'POST_NAME' 	=> cleanstr($_POST[$_SESSION['FORM_ELEMENT_NAME']]),
-			'POST_CITY' 	=> cleanstr($_POST[$_SESSION['FORM_ELEMENT_CITY']]),
-			'POST_EMAIL' 	=> cleanstr($_POST[$_SESSION['FORM_ELEMENT_EMAIL']]),
-			'POST_ICQ' 		=> cleanstr($_POST[$_SESSION['FORM_ELEMENT_ICQ']]),
-			'POST_FB' 		=> cleanstr($_POST[$_SESSION['FORM_ELEMENT_FB']]),
-			'POST_TWITTER' 	=> cleanstr($_POST[$_SESSION['FORM_ELEMENT_TWITTER']]),
-			'POST_HP' 		=> cleanstr($_POST[$_SESSION['FORM_ELEMENT_HP']]),
-			'POST_MESSAGE' 	=> cleanstr($_POST['message']),
+			'POST_NAME' 	=> $_POST[$_SESSION['FORM_ELEMENT_NAME']],
+			'POST_CITY' 	=> $_POST[$_SESSION['FORM_ELEMENT_CITY']],
+			'POST_EMAIL' 	=> $_POST[$_SESSION['FORM_ELEMENT_EMAIL']],
+			'POST_ICQ' 		=> $_POST[$_SESSION['FORM_ELEMENT_ICQ']],
+			'POST_FB' 		=> $_POST[$_SESSION['FORM_ELEMENT_FB']],
+			'POST_TWITTER' 	=> $_POST[$_SESSION['FORM_ELEMENT_TWITTER']],
+			'POST_HP' 		=> $_POST[$_SESSION['FORM_ELEMENT_HP']],
+			'POST_MESSAGE' 	=> $_POST['message'],
 
-			'FORM_ELEMENT_NAME' 	=> cleanstr($_SESSION['FORM_ELEMENT_NAME']),
-			'FORM_ELEMENT_CITY' 	=> cleanstr($_SESSION['FORM_ELEMENT_CITY']),
-			'FORM_ELEMENT_EMAIL' 	=> cleanstr($_SESSION['FORM_ELEMENT_EMAIL']),
-			'FORM_ELEMENT_ICQ' 		=> cleanstr($_SESSION['FORM_ELEMENT_ICQ']),
-			'FORM_ELEMENT_AIM'		=> cleanstr($_SESSION['FORM_ELEMENT_AIM']),
-			'FORM_ELEMENT_FB' 		=> cleanstr($_SESSION['FORM_ELEMENT_FB']),
-			'FORM_ELEMENT_TWITTER' 	=> cleanstr($_SESSION['FORM_ELEMENT_TWITTER']),
-			'FORM_ELEMENT_HP' 		=> cleanstr($_SESSION['FORM_ELEMENT_HP']),
-			// 'FORM_ELEMENT_MESSAGE' 	=> cleanstr($_SESSION['FORM_ELEMENT_MESSAGE']),
-			'FORM_ELEMENT_CAPTCHA' 	=> cleanstr($_SESSION['FORM_ELEMENT_CAPTCHA'])
+			'FORM_ELEMENT_NAME' 	=> $_SESSION['FORM_ELEMENT_NAME'],
+			'FORM_ELEMENT_CITY' 	=> $_SESSION['FORM_ELEMENT_CITY'],
+			'FORM_ELEMENT_EMAIL' 	=> $_SESSION['FORM_ELEMENT_EMAIL'],
+			'FORM_ELEMENT_ICQ' 		=> $_SESSION['FORM_ELEMENT_ICQ'],
+			'FORM_ELEMENT_AIM'		=> $_SESSION['FORM_ELEMENT_AIM'],
+			'FORM_ELEMENT_FB' 		=> $_SESSION['FORM_ELEMENT_FB'],
+			'FORM_ELEMENT_TWITTER' 	=> $_SESSION['FORM_ELEMENT_TWITTER'],
+			'FORM_ELEMENT_HP' 		=> $_SESSION['FORM_ELEMENT_HP'],
+			// 'FORM_ELEMENT_MESSAGE' 	=> $_SESSION['FORM_ELEMENT_MESSAGE'],
+			'FORM_ELEMENT_CAPTCHA' 	=> $_SESSION['FORM_ELEMENT_CAPTCHA']
 		], $page_newentry_body);
 
 		// fill template with general data
@@ -1063,8 +1001,8 @@
 		}
 
 		$page_newentry_body = mgb_template_replace([
-			'PARAMLANG_A' => "?lang=".cleanstr($_GET['lang']),
-			'PARAMLANG_B' => "&amp;lang=".cleanstr($_GET['lang'])
+			'PARAMLANG_A' => "?lang=".$_GET['lang'],
+			'PARAMLANG_B' => "&amp;lang=".$_GET['lang']
 		], $page_newentry_body);
 
 		$page_newentry_body = mgb_template_language($page_newentry_body, MGB_ROOT."language/".$settings['language_path']."/lang_main.php", $settings['debug_mode']); // last number defines debug mode

@@ -34,7 +34,7 @@
 		// logout
 		if(isset($_SESSION['user_ID'])) {
 			mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `logged_out` = '1' WHERE ID=".mgb_sql_int($_SESSION['user_ID'])." LIMIT 1", "Error while logging out.", 0);
-			mgb_trigger_sys_log($mysqli, '1002', '', '', '', mgb_sql_str($mysqli, $_SESSION['user_name']), '', '', mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR']), mgb_sql_prefix($db['prefix'])); // write the syslog
+			mgb_trigger_sys_log($mysqli, 1002, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], mgb_sql_prefix($db['prefix'])); // write the syslog
 			session_unset();
 			session_destroy();
 			$_SESSION = array();
@@ -49,9 +49,9 @@
 			if(!empty($_POST['username']) AND !empty($_POST['password'])) {
 				if(login_ok($mysqli, $_POST['username'], "", $_POST['password'])) {
 					if(!isset($_SESSION['user_key'])) {
-						generate_key_and_pw(MGB_ROOT, $mysqli, mgb_sql_str($mysqli, $_POST['username']), 16, "adminpanel");
+						generate_key_and_pw(MGB_ROOT, $mysqli, $_POST['username'], 16, "adminpanel");
 
-						$result = mgb_sql_connect($mysqli, "SELECT ID, user_name, user_key, user_ip, user_is_active, logged_out FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_name='".mgb_sql_str($mysqli, $_POST['username'])."'", "Error while logging in.", 1);
+						$result = mgb_sql_connect($mysqli, "SELECT ID, user_name, user_key, user_ip, user_is_active, logged_out FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_name='".$_POST['username']."'", "Error while logging in.", 1);
 						$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 						$_SESSION['user_ID'] = $user['ID'];
@@ -64,7 +64,7 @@
 							$login_status_text = $lang['login_ok'];
 							$login_status_img = NULL;
 							$login_is_ok = 1;
-							mgb_trigger_sys_log($mysqli, '1001', '', '', '', mgb_sql_str($mysqli, $_SESSION['user_name']), '', '', mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR']), mgb_sql_prefix($db['prefix'])); // write the syslog
+							mgb_trigger_sys_log($mysqli, 1001, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], mgb_sql_prefix($db['prefix'])); // write the syslog
 
 							if(SID != NULL) { $sid = "?".SID; } else {$sid = NULL; }
 
@@ -99,7 +99,7 @@
 					$login_is_ok = 0;
 					$errorcode = 2;
 					$_SESSION['login_fail'] = mgb_login_fail($_SESSION['login_fail']);
-					mgb_trigger_sys_log($mysqli, '1025', '', '', '', mgb_sql_str($mysqli, $_POST['username']), '', '', mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR']), mgb_sql_prefix($db['prefix'])); // write the syslog
+					mgb_trigger_sys_log($mysqli, 1025, '', '', '', $_POST['username'], '', '', $_SERVER['REMOTE_ADDR'], mgb_sql_prefix($db['prefix'])); // write the syslog
 				}
 			} else {
 				$login_status_text = $lang['logged_out'];

@@ -96,6 +96,8 @@
 			session_unset();
 			session_destroy();
 			$_SESSION = array();
+			mgb_echo($lang['errormessage'][19]);
+			mgb_trigger_sys_log($mysqli, 4005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 			die();
 		}
 	}
@@ -143,31 +145,30 @@
 		} else {
 			if(time() - $_SESSION['file_call'] <= $settings['autoblock_config']) {
 				// check if user's ip is on banlist
-				$result = mgb_sql_connect($mysqli, "SELECT banned_ip FROM ".$db['prefix']."banlist_ips WHERE banned_ip='".$_SERVER['REMOTE_ADDR']."'", "Error while checking remote IP.", 1);
-				$ip_check = mysqli_fetch_array($result, MYSQLI_ASSOC);
-				if($ip_check['banned_ip'] != $_SERVER['REMOTE_ADDR']) {
-					// put user's ip on banlist
-					$result_parts = explode(".", $_SERVER['REMOTE_ADDR']);
-					mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."banlist_ips (
-								ID,
-								banned_ip,
-								banned_ip_first,
-								banned_ip_second,
-								banned_ip_third,
-								banned_ip_fourth,
-								matches,
-								timestamp )
-							values (
-								NULL,
-								'".$_SERVER['REMOTE_ADDR']."',
-								'".$result_parts[0]."',
-								'".$result_parts[1]."',
-								'".$result_parts[2]."',
-								'".$result_parts[3]."',
-								'0',
-								'".time()."' )", "Error while saving data into ".$db['prefix']."banlist_ips", 0);
-				}
+				$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_ips WHERE banned_ip = ?";
+				$params = [$_SERVER['REMOTE_ADDR']];
+				$types = "s";
+				$result = mgb_sql_connect($mysqli, $sql, "Error while checking remote IP.", 1, $params, $types); 
+				if ($result && $result->num_rows > 0) {
+					$ip = $result->fetch_assoc();				
+					if($_SERVER['REMOTE_ADDR'] !== $ip['banned_ip']) {
+					$sql = "INSERT INTO ".$db['prefix']."banlist_ips (
+						ID,
+						banned_ip,
+						matches,
+						timestamp
+					) VALUES (
+						?, ?, ?, ?
+					)";
 
+					$params = [NULL, $_SERVER['REMOTE_ADDR'], 1, time()];
+					
+					$types = "isis";
+					
+					mgb_sql_connect($mysqli, $sql, "Error while updating banlist_ips", 0, $params, $types);
+					}
+				}
+				
 				// now destroy actual session
 				session_unset();
 				session_destroy();
@@ -195,29 +196,28 @@
 			} else {
 				if(time() - $_SESSION['file_call'] <= $settings['autoblock_config']) {
 					// check if user's ip is on banlist
-					$result = mgb_sql_connect($mysqli, "SELECT banned_ip FROM ".$db['prefix']."banlist_ips WHERE banned_ip='".$_SERVER['REMOTE_ADDR']."'", "Error while checking remote IP.", 1);
-					$ip_check = mysqli_fetch_array($result, MYSQLI_ASSOC);
-					if($ip_check['banned_ip'] != $_SERVER['REMOTE_ADDR']) {
-						// put user's ip on banlist
-						$result_parts = explode(".", $_SERVER['REMOTE_ADDR']);
-						mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."banlist_ips (
-									ID,
-									banned_ip,
-									banned_ip_first,
-									banned_ip_second,
-									banned_ip_third,
-									banned_ip_fourth,
-									matches,
-									timestamp )
-								values (
-									NULL,
-									'".$_SERVER['REMOTE_ADDR']."',
-									'".$result_parts[0]."',
-									'".$result_parts[1]."',
-									'".$result_parts[2]."',
-									'".$result_parts[3]."',
-									'0',
-									'".time()."' )", "Error while saving data into ".$db['prefix']."banlist_ips", 0);
+					$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_ips WHERE banned_ip = ?";
+					$params = [$_SERVER['REMOTE_ADDR']];
+					$types = "s";
+					$result = mgb_sql_connect($mysqli, $sql, "Error while checking remote IP.", 1, $params, $types); 
+					if ($result && $result->num_rows > 0) {
+						$ip = $result->fetch_assoc();		
+						if($_SERVER['REMOTE_ADDR'] !== $ip['banned_ip']) {
+						$sql = "INSERT INTO ".$db['prefix']."banlist_ips (
+							ID,
+							banned_ip,
+							matches,
+							timestamp
+						) VALUES (
+							?, ?, ?, ?
+						)";
+
+						$params = [NULL, $_SERVER['REMOTE_ADDR'], 1, time()];
+						
+						$types = "isis";
+						
+						mgb_sql_connect($mysqli, $sql, "Error while updating banlist_ips", 0, $params, $types);
+						}
 					}
 
 					// now destroy actual session
@@ -269,8 +269,8 @@
 			}
 		}
 
-		$_POST['email'] = cleanstr($_POST['email']);
-		$_POST['user_sendcopytome'] = cleanstr($_POST['user_sendcopytome']);
+		$_POST['email'] = mgb_sql_int($_POST['email']);
+		$_POST['user_sendcopytome'] = mgb_sql_int($_POST['user_sendcopytome']);
 
 		// include akismet if it exists
 		if(file_exists("plugins/akismet/akismet.class.php") AND (!empty($settings['akismet_api'])) AND ($settings['akismet_api'] != "") AND (!empty($_POST['user_accept_akismet_service']) AND $_POST['user_accept_akismet_service'] == 1) AND ($_POST['name'] != "") AND ($_POST['email'] != "") AND ($_POST['message'] != "")) {
@@ -341,19 +341,19 @@
 				if($settings['captcha_method'] == 0) { // security code
 					if($_SESSION['CAPTCHA_CODE'] != $_POST['captcha']) {
 						$errorcode = 7;  // captcha wrong or not set
-						mgb_trigger_sys_log($mysqli, '4004', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
+						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
 					}
 				} elseif($settings['captcha_method'] == 1) { // mathematical captcha
 					if($_SESSION['CAPTCHA_SUM'] != $_POST['captcha']) {
 						$errorcode = 7; // captcha wrong or not set
-						mgb_trigger_sys_log($mysqli, '4004', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
+						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
 					}
 				} elseif($settings['captcha_method'] == 2) { // reCaptchav2
 					$response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$settings['recaptcha_private_key']."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']);
         			$responseKeys = json_decode($response, true);
         			if(intval($responseKeys["success"]) !== 1) {
 						$errorcode = 7; // captcha wrong or not set
-						mgb_trigger_sys_log($mysqli, '4004', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
+						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
         			}
 				} elseif($settings['captcha_method'] == 3) { // ayah (are you a human?)
 							if(file_exists("plugins/ayah/ayah.php")) {
@@ -362,7 +362,7 @@
 									if(!$score) {
 										// user didn't pass the game
 										$errorcode = 7;
-										mgb_trigger_sys_log($mysqli, '4004', '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+										mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 									}
 								}
 							} else {
@@ -372,29 +372,26 @@
 				}
 
 				if((!empty($settings['banlist_log']) AND $errorcode == 7) AND (!empty($_POST['captcha']) OR !empty($_POST['recaptcha_response_field']))) {
-					$type = 9; // captcha wrong
-					mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."spam_log (
-						ID ,
-						ip ,
-						name ,
-						email ,
-						user_agent ,
-						hp ,
-						message ,
-						type ,
-						site ,
-						timestamp
-						) values (
-						NULL ,
-						'".$_SERVER['REMOTE_ADDR']."' ,
-						'".cleanstr($_POST['name'])."' ,
-						'".cleanstr($_POST['email'])."' ,
-						'".$_SERVER['HTTP_USER_AGENT']."' ,
-						'".cleanstr($_POST['hp'])."' ,
-						'".cleanstr($_POST['message'])."' ,
-						'".$type."' ,
-						'".$site_name."' ,
-						'".time()."')", "ERROR while saving data into spam_log.", 0);
+					$sql = "INSERT INTO ".$db['prefix']."spam_log (
+						ID,	ip,	name, email, user_agent, hp, message, type,	site, timestamp
+					) VALUES (
+						?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+					)";
+
+					$params = [
+						NULL,
+						$_SERVER['REMOTE_ADDR'],
+						$_POST['name'],
+						$_POST['email'],
+						$_SERVER['HTTP_USER_AGENT'],
+						$_POST['hp'],
+						$_POST['message'],
+						$type,
+						$site_name,
+						time()
+					];
+					$types = "issssssiss";
+					mgb_sql_connect($mysqli, $sql, "Error while saving data into spam_log.", 0, $params, $types);
 				}
 			}
 
@@ -416,28 +413,25 @@
 				}
 
 				if(!empty($settings['banlist_log']) AND ($errorcode == 12 OR $errorcode == 13 OR $errorcode == 14 OR $errorcode == 17)) {
-					mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."spam_log (
-						ID ,
-						ip ,
-						name ,
-						email ,
-						user_agent ,
-						hp ,
-						message ,
-						type ,
-						site ,
-						timestamp
-						) values (
-						NULL ,
-						'".$_SERVER['REMOTE_ADDR']."' ,
-						'".cleanstr($_POST['name'])."' ,
-						'".cleanstr($_POST['email'])."' ,
-						'".$_SERVER['HTTP_USER_AGENT']."' ,
-						'".cleanstr($_POST['hp'])."' ,
-						'".cleanstr($_POST['message'])."' ,
-						'".$type."' ,
-						'".$site_name."' ,
-						'".time()."')", "ERROR while saving data into spam_log.", 0);
+					$sql = "INSERT INTO ".$db['prefix']."spam_log (
+						ID,	ip,	name, email, user_agent, message, type,	site, timestamp
+					) VALUES (
+						?, ?, ?, ?, ?, ?, ?, ?, ?
+					)";
+
+					$params = [
+						NULL,
+						$_SERVER['REMOTE_ADDR'],
+						$_POST['name'],
+						$_POST['email'],
+						$_SERVER['HTTP_USER_AGENT'],
+						$_POST['message'],
+						$type,
+						$site_name,
+						time()
+					];
+					$types = "isssssiss";
+					mgb_sql_connect($mysqli, $sql, "Error while saving data into spam_log.", 0, $params, $types);
 				}
 
 				// send mail to admin if an email is set
@@ -497,7 +491,7 @@
 					$mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '4001', $_POST['name'], $_POST['email'], $_POST['message'], '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 4001, $_POST['name'], $_POST['email'], $_POST['message'], '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 				} elseif($settings['mailer_method'] == 1) { // use phpmailer to send e-mails
 					/* use PHPMailer\PHPMailer\PHPMailer;
@@ -517,7 +511,7 @@
 						$errormessage_mail = $mail_send[1];
 					} else {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '4001', $_POST['name'], $_POST['email'], $_POST['message'], '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 4001, $_POST['name'], $_POST['email'], $_POST['message'], '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 				}
 
@@ -628,7 +622,7 @@
 		'H_DESCRIPTION' 	=> $settings['h_description'],
 		'H_CHARSET' 		=> $charset,
 		'REFRESH' 			=> $refresh,
-		'REFRESH_TIME'		=> $settings['refresh_time']
+		'REFRESH_TIME'		=> $settings['refresh_time'] ?? ''
 	], $page_header);
 
 	if(empty($errorcode)) {
@@ -743,14 +737,14 @@
 			'POST_NAME' 			=> $_POST[$_SESSION['FORM_ELEMENT_NAME']],
 			'POST_EMAIL' 			=> $_POST[$_SESSION['FORM_ELEMENT_EMAIL']],
 			'POST_MESSAGE' 			=> $_POST[$_SESSION['FORM_ELEMENT_MESSAGE']],
-			'FORM_ELEMENT_NAME' 	=> cleanstr($_SESSION['FORM_ELEMENT_NAME']),
-			'FORM_ELEMENT_EMAIL' 	=> cleanstr($_SESSION['FORM_ELEMENT_EMAIL']),
-			'FORM_ELEMENT_MESSAGE' 	=> cleanstr($_SESSION['FORM_ELEMENT_MESSAGE']),
-			'FORM_ELEMENT_CAPTCHA' 	=> cleanstr($_SESSION['FORM_ELEMENT_CAPTCHA']),
+			'FORM_ELEMENT_NAME' 	=> $_SESSION['FORM_ELEMENT_NAME'],
+			'FORM_ELEMENT_EMAIL' 	=> $_SESSION['FORM_ELEMENT_EMAIL'],
+			'FORM_ELEMENT_MESSAGE' 	=> $_SESSION['FORM_ELEMENT_MESSAGE'],
+			'FORM_ELEMENT_CAPTCHA' 	=> $_SESSION['FORM_ELEMENT_CAPTCHA'],
 			// fill template with general data
-			'FORM_ACTION' 			=> "email.php?id=".cleanstr($_GET['id'])."{PARAMLANG_B}",
-			'PARAMLANG_A' 			=> "?lang=".cleanstr($_GET['lang']),
-			'PARAMLANG_B' 			=> "&amp;lang=".cleanstr($_GET['lang'])
+			'FORM_ACTION' 			=> "email.php?id=".mgb_sql_int($_GET['id'])."{PARAMLANG_B}",
+			'PARAMLANG_A' 			=> "?lang=".mgb_sql_int($_GET['lang']),
+			'PARAMLANG_B' 			=> "&amp;lang=".mgb_sql_int($_GET['lang'])
 		], $page_email_body);
 
 		$page_email_body = mgb_template_language($page_email_body, MGB_ROOT."language/".$settings['language_path']."/lang_main.php", $settings['debug_mode']); // last number defines debug mode
@@ -759,7 +753,7 @@
 		$page_email_body = $content_email_body_success;
 
 		// fill template with other templates and load them first
-		$page_email_body = template([
+		$page_email_body = mgb_template_replace([
 			'HEADER' 				=> $page_header,
 			'SCRIPT_RECAPTCHAV2' 	=> "",
 			'TEMPLATE_PATH' 		=> "templates/".$settings['template_path'],
@@ -771,8 +765,8 @@
 			'MGB_VERSION' 		=> $settings['version'],
 			'COPYRIGHT_DATE' 	=> date("Y"),
 			'ICONSET_PATH' 		=> $settings['iconset_path'],
-			'PARAMLANG_A' 		=> "?lang=".cleanstr($_GET['lang']),
-			'PARAMLANG_B' 		=> "&amp;lang=".cleanstr($_GET['lang'])
+			'PARAMLANG_A' 		=> "?lang=".$_GET['lang'],
+			'PARAMLANG_B' 		=> "&amp;lang=".$_GET['lang']
 		], $page_email_body);
 
 		$page_email_body = mgb_template_language($page_email_body, MGB_ROOT."language/".$settings['language_path']."/lang_main.php", $settings['debug_mode']); // last number defines debug mode

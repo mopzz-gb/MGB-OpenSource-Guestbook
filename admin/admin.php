@@ -127,21 +127,6 @@
 		case 1: $new_version_available = "&nbsp;";
 			break;
 		}
-
-		// get mysql client info
-		$str = mysqli_get_client_info();
-		if (preg_match_all("([0-9.]+)", $str, $matches)) $zahlen = $matches[0];
-		
-		if(empty($version)) { $version = ""; }
-
-		for($i = 0; $i < count($zahlen); $i++) {
-			$version.= $zahlen[$i];
-		}
-
-		$mysql_client = substr($version, 0, 6);
-
-		// mysql server info ($server_version from db.php)
-		$mysql_server = substr($server_version, 0, 7);
 		
 		// send the ping
 		mgb_send_telemetry($settings['aus_allow'], $settings['aus_last_ping'], $settings['version'], $mysql_client, $db['prefix'], $settings['aus_install_id'], $settings['aus_ping_address'], $mysqli, 86400); // 1 day = 86400 seconds

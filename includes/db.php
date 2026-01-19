@@ -17,9 +17,9 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-	=====================
-	load_settings.inc.php
-	=====================
+	======
+	db.php
+	======
 	*/
 
 	// connect with database
@@ -35,7 +35,8 @@
 		die("<span style='font-family: verdana, arial, helvetica, sans-serif; font-size:12px;color:darkblue;'>Unable to connect to database
 			<br><b>SQL:</b> ".$sql."<br><b>ERROR:</b> ".$mysqli->errno." : ".$mysqli->error."</span>");
 	} else {
-		$server_version = $mysqli->server_info;
+		$mysql_server = $mysqli->server_info;
+		$mysql_client = $mysqli->client_info;
 	}
 
 	$mysqli->set_charset('utf8mb4');

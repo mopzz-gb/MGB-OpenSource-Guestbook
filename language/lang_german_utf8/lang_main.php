@@ -120,7 +120,7 @@
 	$lang['errormessage'][16] = "ist kein g&uuml;ltiger Twitter Name. Bitte beachten: Es d&uuml;rfen keine Sonderzeichen und/oder Umlaute enthalten sein! '&auml;' wird z.B. zu 'a'.";
 	$lang['errormessage'][17] = "Die wiederholte, sehr schnelle Tippgeschwindigkeit weist daraufhin, dass Du ein Spamroboter bist. Du wurdest f&uuml;r {KEYSTROKE_BAN_TIME} Sekunden geblockt. Sollte dies ein Missverst&auml;ndnis sein, kannst Du Dich beim Administrator melden.";
 	$lang['errormessage'][18] = "Du wurdest f&uuml;r zu schnelles Tippen geblockt. Der Verdacht liegt nahe, dass Du ein Spamroboter bist. Bitte warte noch {KEYSTROKE_BAN_TIME_REST} Sekunden.";
-	$lang['errormessage'][19] = "Du befindest Dich auf der Liste der Seite www.stopforumspam.com. Dein Eintrag wurde deshalb verweigert. Sollte dies ein Missverst&auml;ndnis sein, dann nimm bitte Kontakt mit dem Administrator der Seite auf.";
+	$lang['errormessage'][19] = "Direkte Aufrufe sind nicht gestattet.";
 
 	// BBCODES
 	$lang['bbcodes'] = "BBCodes:";

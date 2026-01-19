@@ -195,12 +195,13 @@
 	$lang['sys_log_type'][3004] = "<b>newentry.php</b>: Die IP <b>{ENTRY_IP}</b> wurde f&uuml;r zu schnelles Tippen abgewiesen.";
 	$lang['sys_log_type'][3005] = "<b>newentry.php</b>: Das Captcha wurde von der IP <b>{ENTRY_IP}</b> falsch eingegeben.";
 	$lang['sys_log_type'][3006] = "<b>newentry.php</b>: Es wurde eine Info-Mail an <b>{ENTRY_NAME} ({ENTRY_EMAIL})</b> in Folge eines validen G&auml;stebucheintrages geschickt.";
-	$lang['sys_log_type'][3007] = "<b>newentry.php</b>: <b>stopforumspam</b> hat einen Eintrag akzeptiert, aber als Spam markiert.";
-	$lang['sys_log_type'][3008] = "<b>newentry.php</b>: <b>stopforumspam</b> hat einen Eintrag abgelehnt.";
+	$lang['sys_log_type'][3007] = "<b>newentry.php</b>: <b>stopforumspam</b> hat einen Eintrag akzeptiert, aber als Spam markiert => {ENTRY_NAME}, {ENTRY_EMAIL}";
+	$lang['sys_log_type'][3008] = "<b>newentry.php</b>: <b>stopforumspam</b> hat einen Eintrag abgelehnt => {ENTRY_NAME}, {ENTRY_EMAIL}";
 	$lang['sys_log_type'][4001] = "<b>email.php</b> Eine E-Mail wurde verschickt.<br><br>Name: <b>{ENTRY_NAME}</b><br>E-Mail: <b>{ENTRY_EMAIL}</b><br>Text: <b>{ENTRY_TEXT}</b><br>IP: <b>{ENTRY_IP}</b>";
 	$lang['sys_log_type'][4002] = "<b>email.php</b>: Die IP <b>{ENTRY_IP}</b> wurde automatisch auf die Bannliste gesetzt.";
 	$lang['sys_log_type'][4003] = "<b>email.php</b>: Die IP <b>{ENTRY_IP}</b> wurde automatisch von der Bannliste gel&ouml;scht.";
 	$lang['sys_log_type'][4004] = "<b>email.php</b>: Das Captcha wurde von der IP <b>{ENTRY_IP}</b> falsch eingegeben.";
+	$lang['sys_log_type'][4005] = "<b>email.php</b>: Ein direkter Zugriff ohne Referer von der IP <b>{ENTRY_IP}</b> wurde geblockt.";
 
 	// SPAM.INC.PHP
 	$lang['spam_add_to_ip_banlist'] = "Zur IP-Blockliste hinzuf&uuml;gen";

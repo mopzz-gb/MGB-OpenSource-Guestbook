@@ -24,16 +24,6 @@
 	//
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
-	// MGB_SQL_STR
-	// CREATED: 18.01.2026
-	// INFO: SECURE STRING FOR SQL INSERT
-	
-	if(!function_exists('mgb_sql_str')) {
-		function mgb_sql_str(mysqli $mysqli, string $value): string {
-			return $mysqli->real_escape_string($value);
-		}
-	}
-	
 	// MGB_SQL_INT
 	// CREATED: 18.01.2026
 	// INFO: SECURE INTEGER FOR SQL INSERT
@@ -129,18 +119,56 @@
 
 	// MGB_SQL_CONNECT
 	// CREATED: 04.01.2012
-	// UPDATED: 02.01.2026
+	// UPDATED: 19.01.2026
 	// DESCR: GETS DATA FROM SQL DATABASE
+	
 	if (!function_exists('mgb_sql_connect')) {
-		/**
-		 * Führt eine SQL-Abfrage aus
-		 *
-		 * @param mysqli $mysqli   		mysqli-Objekt
-		 * @param string $sql      		SQL-Query
-		 * @param string $errormessage 	Meldung bei Fehler
-		 * @param int    $return   		0 = true/false, 1 = mysqli_result
-		 * @return mixed
-		 */
+    /**
+     * Führt eine SQL-Abfrage aus (Prepared Statement)
+     *
+     * @param mysqli $mysqli          mysqli-Objekt
+     * @param string $sql             SQL-Query mit Platzhaltern (?)
+     * @param string $errormessage    Meldung bei Fehler
+     * @param int    $return          0 = true/false, 1 = mysqli_result
+     * @param array  $params          Optional: Array von Parametern für die Prepared Statement
+     * @param string $types           Optional: Typen der Parameter, z.B. "ssi"
+     * @return mixed
+     */
+		function mgb_sql_connect(mysqli $mysqli, string $sql, string $errormessage, int $return, array $params = [], string $types = "") {
+			$stmt = $mysqli->prepare($sql);
+			if (!$stmt) {
+            die("<span style='font-family: verdana, arial, helvetica, sans-serif; font-size:12px;color:darkblue;'>
+                 ".$errormessage."<br><b>SQL:</b> ".$sql."<br><b>ERROR:</b> ".$mysqli->errno." : ".$mysqli->error."</span>");
+			}
+
+			// Wenn Parameter übergeben wurden, binden
+			if (!empty($params)) {
+				// bind_param erwartet Variablen per Referenz
+				$bindNames[] = $types;
+				for ($i = 0; $i < count($params); $i++) {
+					$bindNames[] = &$params[$i];
+				}
+				call_user_func_array([$stmt, 'bind_param'], $bindNames);
+			}
+
+			// Statement ausführen
+			if (!$stmt->execute()) {
+				die("<span style='font-family: verdana, arial, helvetica, sans-serif; font-size:12px;color:darkblue;'>
+					".$errormessage."<br><b>SQL:</b> ".$sql."<br><b>ERROR:</b> ".$stmt->errno." : ".$stmt->error."</span>");
+			}
+
+			if ($return === 0) {
+            // true/false zurückgeben
+            return true;
+			} else {
+				$result = $stmt->get_result(); // mysqli_result
+				return $result;
+			}
+		}
+	}
+
+	/* 
+	if (!function_exists('mgb_sql_connect')) {
 		function mgb_sql_connect(mysqli $mysqli, string $sql, string $errormessage, int $return) {
 			if ($return === 0) {
 				$result = $mysqli->query($sql);
@@ -159,6 +187,7 @@
 			}
 		}
 	}
+	*/
 
 	// MGB_IOU_CHECK
 	// CREATED: 20.08.2012
@@ -887,11 +916,9 @@
 			require ('../includes/config.inc.php');
 
 			if(!empty($ID)) {
-				$ID = $mysqli->real_escape_string($ID);
-				$sql = "SELECT user_password FROM ".mgb_sql_prefix($db['prefix'])."user WHERE ID='".mgb_sql_int($ID)."'";
+				$sql = "SELECT user_password FROM ".mgb_sql_prefix($db['prefix'])."user WHERE ID='".$ID."'";
 			} else {
-				$name = $mysqli->real_escape_string($name);
-				$sql = "SELECT user_password FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_name='".mgb_sql_str($mysqli, $name)."'";
+				$sql = "SELECT user_password FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_name='".$name."'";
 			}
 
 			$result = mgb_sql_connect($mysqli, $sql, "Error while checking login information!", 1);
@@ -902,7 +929,7 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_ip` = '".mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR'])."' WHERE user_name='".mgb_sql_str($mysqli, $name)."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
 				return TRUE;
 			} elseif($user['user_password'] === $old_password) {
 				$newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -910,9 +937,9 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_ip` = '".mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR'])."' WHERE user_name='".mgb_sql_str($mysqli, $name)."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
 				// update user_password in database
-				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_password` = '".$newHash."' WHERE user_name='".mgb_sql_str($mysqli, $name)."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_password` = '".$newHash."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
 				return TRUE;
 			} else {
 				unset($ID);
@@ -1065,9 +1092,9 @@
 	if(!function_exists("generate_captcha")) {
 		function generate_captcha($captcha_method, $min_length, $max_length, $salt, $hash_method, $double) {
 			require (MGB_ROOT.'includes/config.inc.php');
-			if($captcha_method == 0) {
+			if($captcha_method === 0) {
 				$_SESSION['CAPTCHA_CODE'] = strtoupper(mgb_secure_rand($min_length, $max_length, $salt, $hash_method, $double));
-			} elseif ($captcha_method == 1) {
+			} elseif ($captcha_method === 1) {
 				$captcha_rnd_1 = mt_rand(1, 10);
 				$captcha_rnd_2 = mt_rand(1, 20);
 				$captcha_rnd_3 = mt_rand(1, 30);
@@ -1328,102 +1355,127 @@
 					echo "<b>User email:</b> ".$user_email."</span><br>";
 				}
 				// load banned ips out of the database
-				$banned_ip = mgb_sql_connect($mysqli, "SELECT banned_ip, matches, timestamp FROM ".mgb_sql_prefix($db['prefix'])."banlist_ips WHERE banned_ip = ".secure_value($user_ip), "Error while loading banned ips from ".mgb_sql_prefix($db['prefix'])."banlist_ips.", 1);
-				$ip = mysqli_fetch_array($banned_ip, MYSQLI_ASSOC);
-				if($user_ip == $ip['banned_ip']) {
-					if($debug_mode === 1 OR $debug_mode === 2) {
-						echo "&nbsp;<span style='color: #FF0000'>IP: ".$user_ip."&nbsp;:&nbsp;".$ip['banned_ip']."</span>&nbsp;<span style='color: #00FF00'>Match!</span><br>";
-					}
+				$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_ips WHERE banned_ip = ?";
+				$params = [$user_ip];
+				$types = "s";
+				$result = mgb_sql_connect($mysqli, $sql, "Error while getting information about banned ips", 1, $params, $types); 
+				if ($result && $result->num_rows > 0) {
+					$ip = $result->fetch_assoc();				
+					if($user_ip === $ip['banned_ip']) {
+						if($debug_mode === 1 OR $debug_mode === 2) {
+							echo "&nbsp;<span style='color: #FF0000'>IP: ".$user_ip."&nbsp;:&nbsp;".$ip['banned_ip']."</span>&nbsp;<span style='color: #00FF00'>Match!</span><br>";
+						}
 
-					if($blocktime != 99999999) { // 99999999 means banned forever
-						$f_blocktime = time() - $ip['timestamp'];
-						if($f_blocktime >= $blocktime) {
-							$blocked = 0;
-						} else {
+						if($blocktime != 99999999) { // 99999999 means banned forever
+							$f_blocktime = time() - $ip['timestamp'];
+							if($f_blocktime >= $blocktime) {
+								$blocked = 0;
+							} else {
+								$blocked = 1;
+							}
+						} elseif($blocktime == 99999999) {
 							$blocked = 1;
 						}
-					} elseif($blocktime == 99999999) {
-						$blocked = 1;
-					}
 
-					if($blocked = 1) {
-						// update counter for banned ip
-						$matches = $ip['matches'] + 1;
-						mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_ips SET
-							`matches` = '".$matches."'
-							WHERE banned_ip=".secure_value($user_ip)." LIMIT 1", "Error while updating 'matches' in banlist ips.", 0);
+						if($blocked = 1) {
+							// update counter for banned ip
+							$matches = $ip['matches'] + 1;
+							$sql = "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_ips SET `matches` = '?' LIMIT 1";
+							$params = [$matches];
+							$types = "i";
+							mgb_sql_connect($mysqli, $sql, "Error while updating 'matches' in ip banlist.", 0, $params, $types);
+						}
 					}
 				} else {
 					if($debug_mode == 1 OR $debug_mode == 2) {
-						echo "&nbsp;<span>IP:</span>&nbsp;<span style='color: #228b22'>No Match!</span><br>";
+						echo "&nbsp;<span>IP:&nbsp</span><span style='color: #228b22'>No Match!</span><br>";
 					}
+					$blocked = 0;
+					$ip = "";
 				}
 			}
 
-			if($banlist_emails_active == 1 AND $blocked == 0) {
-				$banned_email = mgb_sql_connect($mysqli, "SELECT banned_email, matches, timestamp FROM ".mgb_sql_prefix($db['prefix'])."banlist_emails WHERE banned_email = '".cleanstr($user_email)."'", "Error while loading banned emails from ".mgb_sql_prefix($db['prefix'])."banlist_emails.", 1);
-				$email = mysqli_fetch_array($banned_email, MYSQLI_ASSOC);
-				if($user_email == $email['banned_email']) {
-					if($debug_mode == 1 OR $debug_mode == 2) {
-						echo "&nbsp;<span style='color: #FF0000'>eMail: ".$user_email."&nbsp;:&nbsp;".$email['banned_email']."</span>&nbsp;<span style='color: #00FF00'>Match!</span><br>";
-					}
+			if($banlist_emails_active === 1 AND $blocked === 0) {
+				// load banned emails out of the database
+				$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_emails WHERE banned_email = ?";
+				$params = [$user_email];
+				$types = "s";
+				$result = mgb_sql_connect($mysqli, $sql, "Error while getting information about banned emails", 1, $params, $types); 
+				if ($result && $result->num_rows > 0) {
+					$email = $result->fetch_assoc(); 
+					if($user_email === $email['banned_email']) {
+						if($debug_mode == 1 OR $debug_mode == 2) {
+							echo "&nbsp;<span style='color: #FF0000'>eMail: ".$user_email."&nbsp;:&nbsp;".$email['banned_email']."</span>&nbsp;<span style='color: #00FF00'>Match!</span><br>";
+						}
 
-					if($blocktime != 99999999) { // 99999999 means banned forever
-						$f_blocktime = time() - $email['timestamp'];
-						if($f_blocktime >= $blocktime) {
-							$blocked = 0;
+						if($blocktime != 99999999) { // 99999999 means banned forever
+							$f_blocktime = time() - $email['timestamp'];
+							if($f_blocktime >= $blocktime) {
+								$blocked = 0;
+							} else {
+								$blocked = 2;
+							}
 						} else {
 							$blocked = 2;
 						}
-					} else {
-						$blocked = 2;
-					}
 
-					if($blocked = 2) {
-						// update counter for banned email
-						$matches = $email['matches'] + 1;
-						mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_emails SET
-							`matches` = '".$matches."'
-							WHERE banned_email = ".secure_value($user_email)." LIMIT 1", "Error while updating 'matches' in banlist emails.", 0);
+						if($blocked = 2) {
+							// update counter for banned email
+							$matches = $email['matches'] + 1;
+							$sql = "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_emails SET `matches` = ? WHERE banned_email = ?";
+							$params = [$matches, $user_email];
+							$types = "is";
+							mgb_sql_connect($mysqli, $sql, "Error while updating 'matches' in email banlist.", 0, $params, $types);						
+						}
 					}
 				} else {
 					if($debug_mode == 1 OR $debug_mode == 2) {
 						echo "&nbsp;<span>eMail:</span>&nbsp;<span style='color: #228b22'>No Match!</span><br>";
 					}
+					$blocked = 0;
+					$email = "";
 				}
 			}
 
-			if($banlist_domains_active == 1 AND $blocked == 0) {
+			if($banlist_domains_active === 1 AND $blocked === 0) {
 				$user_domain = explode("@", $user_email);
-				$banned_domain = mgb_sql_connect($mysqli, "SELECT banned_domain, matches, timestamp FROM ".mgb_sql_prefix($db['prefix'])."banlist_domains WHERE banned_domain = '".cleanstr($user_domain[1])."'", "Error while loading banned domains from database.", 1);
-				$domain = mysqli_fetch_array($banned_domain, MYSQLI_ASSOC);
-				if($user_domain[1] == $domain['banned_domain']) {
-					if($debug_mode == 1 OR $debug_mode == 2) {
-						echo "&nbsp;<span style='color: #FF0000'>Domain: ".$user_domain[1]."&nbsp;:&nbsp;".$domain['banned_domain']."</span>&nbsp;<span style='color: #00FF00'>Match!</span><br>";
-					}
+				$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_domains WHERE banned_domain = ?";
+				$params = [$user_domain[1]];
+				$types = "s";
+				$result = mgb_sql_connect($mysqli, $sql, "Error while getting information about banned emails", 1, $params, $types); 
+				if ($result && $result->num_rows > 0) {
+					$domain = $result->fetch_assoc();
+					if($user_domain[1] === $domain['banned_domain']) {
+						if($debug_mode === 1 OR $debug_mode === 2) {
+							echo "&nbsp;<span style='color: #FF0000'>Domain: ".$user_domain[1]."&nbsp;:&nbsp;".$domain['banned_domain']."</span>&nbsp;<span style='color: #00FF00'>Match!</span><br>";
+						}
 
-					if($blocktime != 99999999) { // 99999999 means banned forever
-						$f_blocktime = time() - $domain['timestamp'];
-						if($f_blocktime >= $blocktime) {
-							$blocked = 0;
+						if($blocktime != 99999999) { // 99999999 means banned forever
+							$f_blocktime = time() - $domain['timestamp'];
+							if($f_blocktime >= $blocktime) {
+								$blocked = 0;
+							} else {
+								$blocked = 3;
+							}
 						} else {
 							$blocked = 3;
 						}
-					} else {
-						$blocked = 3;
-					}
 
-					if($blocked = 3) {
-						// update counter for banned domain
-						$matches = $domain['matches'] + 1;
-						mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_domains SET
-							`matches` = '".$matches."'
-							WHERE banned_domain = ".secure_value($user_domain[1])." LIMIT 1", "Error while updating 'matches' in banlist domains.", 0);
+						if($blocked = 3) {
+							// update counter for banned domains
+							$matches = $domain['matches'] + 1;
+							$sql = "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_domains SET `matches` = '?' WHERE banned_domain = ?";
+							$params = [$matches, $user_domain[1]];
+							$types = "is";
+							mgb_sql_connect($mysqli, $sql, "Error while updating 'matches' in domain banlist.", 0, $params, $types);
+						}
 					}
 				} else {
 					if($debug_mode == 1 OR $debug_mode == 2) {
 						echo "&nbsp;<span>Domain:</span>&nbsp;<span style='color: #228b22'>No Match!</span><br>";
 					}
+					$blocked = 0;
+					$domain = "";
 				}
 			}
 
@@ -1903,32 +1955,27 @@
 						);
 					}
 
-					if($blocked == "TRUE") { // a not valid domain links directly to newentry.php or email.php
-						if(!empty($banlist_log)) {
-							mgb_sql_connect($mysqli, "INSERT INTO ".$db_prefix."spam_log (
-								ID ,
-								ip ,
-								name ,
-								email ,
-								user_agent ,
-								http_referer ,
-								hp ,
-								message ,
-								type ,
-								site ,
-								timestamp
-								) values (
-								NULL ,
-								'".$REMOTE_ADDR."' ,
-								'' ,
-								'' ,
-								'".$HTTP_USER_AGENT."' ,
-								'".$HTTP_REFERER."' ,
-								'' ,
-								'' ,
-								'12' ,
-								'".$site_name."' ,
-								'".time()."')", "ERROR while saving data into spam_log.", 0);
+					if($blocked === "TRUE") { // a not valid domain links directly to newentry.php or email.php
+						if(!empty($banlist_log)) {							
+							$sql = "INSERT INTO ".$db_prefix."spam_log (
+								ID,	ip,	user_agent, hp, type, site, timestamp
+							) VALUES (
+								?, ?, ?, ?, ?, ?, ?
+							)";
+							
+							$params = [
+								NULL,
+								$REMOTE_ADDR,
+								$HTTP_USER_AGENT,
+								$HTTP_REFERER,
+								12,
+								$site_name,
+								time()
+							];
+							
+							$types = "isssiss";
+							
+							mgb_sql_connect($mysqli, $sql, "Error while saving data into spam_log.", 0, $params, $types);					
 						}
 						return FALSE;
 					} else {
@@ -1955,30 +2002,25 @@
 					}
 
 					if($isSearchEngine == 0 AND !empty($banlist_log)) {
-						mgb_sql_connect($mysqli, "INSERT INTO ".$db_prefix."spam_log (
-							ID ,
-							ip ,
-							name ,
-							email ,
-							user_agent ,
-							http_referer ,
-							hp ,
-							message ,
-							type ,
-							site ,
-							timestamp
-							) values (
-							NULL ,
-							'".$REMOTE_ADDR."' ,
-							'' ,
-							'' ,
-							'".$HTTP_USER_AGENT."' ,
-							'".$HTTP_REFERER."' ,
-							'' ,
-							'' ,
-							'13' ,
-							'".$site_name."' ,
-							'".time()."')", "ERROR while saving data into spam_log.", 0);
+						$sql = "INSERT INTO ".$db_prefix."spam_log (
+							ID,	ip,	user_agent, hp, type, site, timestamp
+						) VALUES (
+							?, ?, ?, ?, ?, ?, ?
+						)";
+						
+						$params = [
+							NULL,
+							$REMOTE_ADDR,
+							$HTTP_USER_AGENT,
+							$HTTP_REFERER,
+							13,
+							$site_name,
+							time()
+						];
+						
+						$types = "isssiss";
+						
+						mgb_sql_connect($mysqli, $sql, "Error while saving data into spam_log.", 0, $params, $types);	
 					}
 
 					if($isSearchEngine == 0 OR $search_engines_excluded == 0) {
@@ -2136,28 +2178,26 @@
 	// CREATED: 30.09.2015
 
 	if(!function_exists("mgb_trigger_sys_log")) {
-		function mgb_trigger_sys_log($mysqli, $type, $name, $email, $text, $user, $user_new, $user_edit, $ip, $db_prefix) {
-			$sql = "INSERT INTO ".$db_prefix."sys_log (
-				type,
-				name,
-				email,
-				text,
-				user,
-				user_new,
-				user_edit,
-				ip,
-				timestamp )
-				values (
-				'".$type."',
-				'".$name."',
-				'".$email."',
-				'".$text."',
-				'".$user."',
-				'".$user_new."',
-				'".$user_edit."',
-				'".$ip."',
-				'".time()."' )";
-			mgb_sql_connect($mysqli, $sql, "Error while saving data into ".$db_prefix."sys_log.", 0);
+		function mgb_trigger_sys_log(
+			mysqli $mysqli,
+			int $type = 0,
+			string $name = '',
+			string $email = '', 
+			string $text = '',
+			string $user = '',
+			string $user_new = '',
+			string $user_edit = '', 
+			string $ip = '',
+			string $db_prefix = ''
+		) {
+			$sql = "INSERT INTO ".$db_prefix."sys_log
+				( type, name, email, text, user, user_new, user_edit, ip, timestamp )
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+			";
+			
+			$stmt = $mysqli->prepare($sql);
+			$stmt->bind_param("issssssss", $type, $name, $email, $text, $user, $user_new, $user_edit, $ip, time());
+			$stmt->execute();
 		}
 	}
 	
@@ -2255,7 +2295,10 @@
 			@file_get_contents($ping_address, false, $context);
 
 			// Timestamp speichern
-			mgb_sql_connect($mysqli, "UPDATE ".$db_prefix."settings SET aus_last_ping=".time(), "Error updating telemetry ping", 0);
+			$sql = "UPDATE ".$db_prefix."settings SET aus_last_ping = ?";
+			$params = [time()];
+			$types = "i";
+			mgb_sql_connect($mysqli, $sql, "Error updating telemetry ping", 0, $params, $types);
 		}
 	}
 ?>

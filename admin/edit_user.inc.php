@@ -61,7 +61,7 @@
 
 							if(empty($errorcode)) {
 								mgb_sql_connect($mysqli, "DELETE FROM ".mgb_sql_prefix($db['prefix'])."user WHERE ID=".mgb_sql_int($_GET['id'])." LIMIT 1", "Error while deleting user.", 0);
-								mgb_trigger_sys_log($mysqli, '1020', '', '', '', mgb_sql_str($mysqli, $_SESSION['user_name']), '', mgb_sql_str($mysqli, $_POST['name']), mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR']), mgb_sql_prefix($db['prefix'])); // write the syslog
+								mgb_trigger_sys_log($mysqli, 1020, '', '', '', $_SESSION['user_name'], '', $_POST['name'], $_SERVER['REMOTE_ADDR'], mgb_sql_prefix($db['prefix'])); // write the syslog
 							}
 						} else {
 							// check if a new password is set
@@ -73,7 +73,7 @@
 												$errorcode = 16; // new password is too short
 											} else {
 												$pass = "`user_password` = '".password_hash($_POST['new_password_1'], PASSWORD_DEFAULT)."',";
-												mgb_trigger_sys_log($mysqli, '1019', '', '', '', mgb_sql_str($mysqli, $_SESSION['user_name']), '', mgb_sql_str($mysqli, $_POST['name']), mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR']), mgb_sql_prefix($db['prefix'])); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1019, '', '', '', $_SESSION['user_name'], '', $_POST['name'], $_SERVER['REMOTE_ADDR'], mgb_sql_prefix($db['prefix'])); // write the syslog
 											}
 										} else {
 											$errorcode = 6; // new passwords are not identical
@@ -116,12 +116,11 @@
 							// check password
 							if(login_ok($mysqli, $_SESSION['user_name'], $_SESSION['user_ID'], $_POST['old_password'])) {
 								if(empty($errorcode)) {
-									$id = (int) $_GET['id'];
 									// save data to database
 									$sql = "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET
-										`user_name` = '".mgb_sql_str($mysqli, $_POST['name'])."',
+										`user_name` = '".$_POST['name']."',
 										".$pass."
-										`user_email` = '".mgb_sql_str($mysqli, $_POST['email'])."',
+										`user_email` = '".$_POST['email']."',
 										`user_is_active` = '".mgb_sql_int($_POST['user_is_active'])."',
 										`user_level` = '".mgb_sql_int($_POST['user_level'])."',
 										`r_settings` = '".mgb_sql_int($_POST['r_settings'])."',
@@ -137,7 +136,7 @@
 
 									if (mgb_sql_connect($mysqli, $sql, "Error while editing user.", 0)) {
 										$saved_settings_successfull = 1;
-										mgb_trigger_sys_log($mysqli, '1019', '', '', '', mgb_sql_str($mysqli, $_SESSION['user_name']), '', mgb_sql_str($mysqli, $_POST['name']), mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR']), mgb_sql_prefix($db['prefix'])); // write the syslog
+										mgb_trigger_sys_log($mysqli, 1019, '', '', '', $_SESSION['user_name'], '', $_POST['name'], $_SERVER['REMOTE_ADDR'], mgb_sql_prefix($db['prefix'])); // write the syslog
 									}
 									$ok = 1;
 								} else {
@@ -250,7 +249,7 @@
 			if(isset($_GET['mode']) AND $_GET['mode'] == "adduser") {
 				if(isset($_POST['sent_edit_user_adduser']) AND $_POST['sent_edit_user_adduser'] == 1) {
 					if(login_ok($mysqli, $_SESSION['user_name'], $_SESSION['user_ID'], $_POST['old_password'])) {
-						if(!check_if_user_exists($mysqli, mgb_sql_str($mysqli, $_POST['name']), mgb_sql_str($mysqli, $_POST['email']))) {
+						if(!check_if_user_exists($mysqli, $_POST['name'], $_POST['email'])) {
 							$errorcode = 11; // user already exists
 						}
 					} else {
@@ -311,7 +310,7 @@
 						);";
 
 						mgb_sql_connect($mysqli, $sql, "Error while registering a new user.", 0);
-						mgb_trigger_sys_log($mysqli, '1018', '', '', '', mgb_sql_str($mysqli, $_SESSION['user_name']), mgb_sql_str($mysqli, $_POST['name']), '', mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR']), mgb_sql_prefix($db['prefix'])); // write the syslog
+						mgb_trigger_sys_log($mysqli, 1018, '', '', '', $_SESSION['user_name'], $_POST['name'], '', $_SERVER['REMOTE_ADDR'], mgb_sql_prefix($db['prefix'])); // write the syslog
 
 						if(!empty($_POST['send_account_data'])) {
 							if (!empty($_SERVER['HTTPS'])) {
@@ -332,7 +331,7 @@
 								$mail_send = @mail($_POST['email'], $lang['sendmail_adduser_title'], $lang['sendmail_adduser_text'], $mail_header);
 								if($mail_send) {
 									$sendemail_successfull = 1;
-									mgb_trigger_sys_log($mysqli, '1026', mgb_sql_str($mysqli, $_POST['name']), '', '', mgb_sql_str($mysqli, $_SESSION['user_name']), '', '', mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR']), mgb_sql_int($db['prefix'])); // write the syslog
+									mgb_trigger_sys_log($mysqli, 1026, $_POST['name'], '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], mgb_sql_int($db['prefix'])); // write the syslog
 								} else {
 									$sendemail_successfull = 0;
 								}
@@ -343,7 +342,7 @@
 									$template_message = "<br><br>phpmailer: ".$mail_send[1];
 								} else {
 									$sendemail_successfull = 1;
-									mgb_trigger_sys_log($mysqli, '1026', mgb_sql_str($mysqli, $_POST['name']), '', '', mgb_sql_str($mysqli, $_SESSION['user_name']), '', '', mgb_sql_str($mysqli, $_SERVER['REMOTE_ADDR']), mgb_sql_int($db['prefix'])); // write the syslog
+									mgb_trigger_sys_log($mysqli, 1026, $_POST['name'], '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], mgb_sql_int($db['prefix'])); // write the syslog
 								}
 							}
 						}
