@@ -42,14 +42,17 @@
 			if(empty($_POST['dropbox'])) { $_POST['dropbox'] = ""; }
 
 			if(isset($_POST['dropbox']) AND $_POST['dropbox'] == 1) {
-				mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."entries` SET `checked` = '0' WHERE checked = 1", "Error while deactivating all entries at once.", 0);
-				mgb_trigger_sys_log($mysqli, '1014', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deactivated by user)
+				mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."entries` SET `checked` = '0' WHERE checked = 1", "Error while deactivating all entries at once.", 0, null, null);
+				mgb_trigger_sys_log($mysqli, 1014, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deactivated by user)
 				mgb_erase_cache("../cache/");
 			}
 
 			if(isset($_GET['id'])) {
-				mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."entries` SET `checked` = '0' WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deactivating entry.", 0);
-				mgb_trigger_sys_log($mysqli, '1014', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deactivated by user)
+				$sql = "UPDATE `".$db['prefix']."entries` SET `checked` = '0' WHERE ID = ? LIMIT 1";
+				$params = [$_GET['id']];
+				$types = "i";
+				mgb_sql_connect($mysqli, $sql, "Error while deactivating entry.", 0, $params, $types);
+				mgb_trigger_sys_log($mysqli, 1014, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deactivated by user)
 				mgb_erase_cache("../cache/");
 			}
 
@@ -115,16 +118,12 @@
 			}
 
 			// load guestbook entries
-			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."entries WHERE checked = 1 ORDER BY ID DESC LIMIT ".$load_start.",".$load_end, "Error while loading entries.", 1);
-
-			$counter = 0;
-			
-			if(!isset($entry)) {$entry = array(); }
-
-			for($i = 0; $i < mysqli_num_rows($result); $i++) {
-				$entry[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-				$counter++;
-			}
+			$sql = "SELECT * FROM ".$db['prefix']."entries WHERE checked = 1 ORDER BY ID DESC LIMIT ?, ?";
+			$params = [$load_start, $load_end];
+			$types = "ii";
+			$result = mgb_sql_connect($mysqli, $sql, "Error while loading active guestbook entries.", 1, $params, $types);
+			$entry = mysqli_fetch_all($result, MYSQLI_ASSOC);
+			$counter = count($entry);
 
 			if ($counter <= 1) {
 				if ($_GET['p'] == 1) {
@@ -156,8 +155,8 @@
 					$entry[$i]['comment'] = textWrap($entry[$i]['comment'], 45);
 
 					// convert bbcodes
-					$entry[$i]['message'] = bbcode_format($entry[$i]['message'], "adminpanel");
-					$entry[$i]['comment'] = bbcode_format($entry[$i]['comment'], "adminpanel");
+					$entry[$i]['message'] = bbcode_format($mysqli, $entry[$i]['message'], "adminpanel");
+					$entry[$i]['comment'] = bbcode_format($mysqli, $entry[$i]['comment'], "adminpanel");
 
 					// fill template with entry (strings)
 					$page_entry[$i] = mgb_template_replace([

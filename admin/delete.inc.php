@@ -42,13 +42,13 @@
 
 			if(isset($_POST['dropbox']) AND $_POST['dropbox'] == 1) {
 				mgb_sql_connect($mysqli, "TRUNCATE TABLE `".$db['prefix']."entries`", "Error while deleting all entries.", 0);
-				mgb_trigger_sys_log($mysqli, '1015', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deleted by user)
+				mgb_trigger_sys_log($mysqli, 1015, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deleted by user)
 				mgb_erase_cache("../cache/");
 			}
 
 			if(isset($_GET['id'])) {
 				mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."entries` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting a single entry.", 0);
-				mgb_trigger_sys_log($mysqli, '1015', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deleted by user)
+				mgb_trigger_sys_log($mysqli, 1015, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deleted by user)
 				mgb_erase_cache("../cache/");
 			}
 
@@ -155,8 +155,8 @@
 					$entry[$i]['comment'] = textWrap($entry[$i]['comment'], 45);
 
 					// convert bbcodes
-					$entry[$i]['message'] = bbcode_format($entry[$i]['message'], "adminpanel");
-					$entry[$i]['comment'] = bbcode_format($entry[$i]['comment'], "adminpanel");
+					$entry[$i]['message'] = bbcode_format($mysqli, $entry[$i]['message'], "adminpanel");
+					$entry[$i]['comment'] = bbcode_format($mysqli, $entry[$i]['comment'], "adminpanel");
 
 					if ($entry[$i]['checked'] === 0) { $status = "<img class=\"icon\" src=\"templates/default/images/inactive.png\" title=\"".$lang['inactive']."\" alt=\"".$lang['inactive']."\">"; } else { $status = "<img class=\"icon\" src=\"templates/default/images/active.png\" title=\"".$lang['active']."\" alt=\"".$lang['active']."\">"; }
 

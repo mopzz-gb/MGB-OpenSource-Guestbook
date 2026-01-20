@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -44,29 +44,11 @@
 
 			if(isset($_GET['id'])) {
 				if(isset($_POST['sent_edit']) AND $_POST['sent_edit'] == 1) {
-
 					// delete html code, php code and white spaces
 					if(!isset($_POST['user_notification'])) { $_POST['user_notification'] = 0; }
 					if(!isset($_POST['user_show_email'])) { $_POST['user_show_email'] = 0; }
 
-					require (MGB_ROOT."includes/functions.inc.php");
-
-					// stripslashes and so on
-					$_POST['date'] = cleanstr($_POST['date']);
-					$_POST['time'] = cleanstr($_POST['time']);
-					$_POST['name'] = cleanstr($_POST['name']);
-					$_POST['city'] = cleanstr($_POST['city']);
-					$_POST['email'] = cleanstr($_POST['email']);
-					$_POST['icq'] = cleanstr($_POST['icq']);
-					$_POST['aim'] = cleanstr($_POST['aim']);
-					$_POST['msn'] = cleanstr($_POST['msn']);
-					$_POST['fb'] = cleanstr($_POST['fb']);
-					$_POST['twitter'] = cleanstr($_POST['twitter']);
-					$_POST['hp'] = cleanstr($_POST['hp']);
-					$_POST['message'] = cleanstr($_POST['message']);
-					$_POST['comment'] = cleanstr($_POST['comment']);
-					$_POST['user_notification'] = cleanstr($_POST['user_notification']);
-					$_POST['user_show_email'] = cleanstr($_POST['user_show_email']);
+					require_once (MGB_ROOT."includes/functions.inc.php");
 
 					// delete bbcode except from message and comment
 					$_POST['date'] = bbcode_delete($_POST['date']);
@@ -134,25 +116,45 @@
 
 					// save data to database
 					$sql = "UPDATE ".$db['prefix']."entries SET
-						`name` 				= '".$_POST['name']."',
-						`city` 				= '".$_POST['city']."',
-						`email`				= '".$_POST['email']."',
-						`icq` 				= '".$_POST['icq']."',
-						`aim` 				= '".$_POST['aim']."',
-						`msn` 				= '".$_POST['msn']."',
-						`fb` 				= '".$_POST['fb']."',
-						`twitter` 			= '".$_POST['twitter']."',
-						`hp` 				= '".$_POST['hp']."',
-						`message` 			= '".$_POST['message']."',
-						`comment` 			= '".$_POST['comment']."',
-						`timestamp` 		= '".$timestamp."',
-						`user_notification` = '".$_POST['user_notification']."',
-						`user_show_email` 	= '".$_POST['user_show_email']."'
-						WHERE ID=".secure_value($_GET['id'])." LIMIT 1";
+						`name` = ?,
+						`city` = ?,
+						`email`	= ?,
+						`icq` = ?,
+						`aim` = ?,
+						`msn` = ?,
+						`fb` = ?,
+						`twitter` = ?,
+						`hp` = ?,
+						`message` = ?,
+						`comment` = ?,
+						`timestamp` = ?,
+						`user_notification` = ?,
+						`user_show_email` = ?'
+						WHERE ID = ? LIMIT 1";
+					
+					$params = [
+						$_POST['name'],
+						$_POST['city'],
+						$_POST['email'],
+						$_POST['icq'],
+						$_POST['aim'],
+						$_POST['msn'],
+						$_POST['fb'],
+						$_POST['twitter'],
+						$_POST['hp'],
+						$_POST['message'],
+						$_POST['comment'],
+						$timestamp,
+						$_POST['user_notification'],
+						$_POST['user_show_email'],
+						$_GET['id']
+					];
+					
+					$types = "sssssssssssiiii";
 
-					if(mgb_sql_connect($mysqli, $sql, "Error while updating entry.", 0)) {
+					if(mgb_sql_connect($mysqli, $sql, "Error while updating entry.", 0, $params, $types)) {
 						$saved_settings_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '1016', $_POST['name'], $_POST['email'], $_POST['message'], $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries where edited by user)
+						mgb_trigger_sys_log($mysqli, 1016, $_POST['name'], $_POST['email'], $_POST['message'], $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries where edited by user)
 						mgb_erase_cache("../cache/");
 					}
 
@@ -191,59 +193,45 @@
 					}
 					$ok = 1;
 				} else {
-					require (MGB_ROOT."includes/functions.inc.php");
+					require_once (MGB_ROOT."includes/functions.inc.php");
 
-					$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."entries WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while loading a single entry.", 1);
+					$sql = "SELECT * FROM ".$db['prefix']."entries WHERE ID = ? LIMIT 1";
+					$params = [$_GET['id']];
+					$types = "i";
+					$result = mgb_sql_connect($mysqli, $sql, "Error while loading a single entry.", 1, $params, $types);
 					$entry = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 					$page_entry_single = $content_edit_single;
 
-					$entryID = $entry['ID'];
-					$name = $entry['name'];
-					$city = $entry['city'];
-					$email = $entry['email'];
-					$icq = $entry['icq'];
-					$aim = $entry['aim'];
-					$msn = $entry['msn'];
-					$fb = $entry['fb'];
-					$twitter = $entry['twitter'];
-					$hp = $entry['hp'];
-					$message = $entry['message'];
-					$comment = $entry['comment'];
-					$ip = $entry['ip'];
-					$timestamp = $entry['timestamp'];
-					$user_notification = $entry['user_notification'];
-					$user_show_email = $entry['user_show_email'];
-
 					// Datum und Zeit trennen
-					$date = date("d.m.Y", $timestamp);
-					$time = date("H:i", $timestamp);
+					$date = date("d.m.Y", $entry['timestamp']);
+					$time = date("H:i", $entry['timestamp']);
 
-					$message = xhtmlbr2nl($message);
-					$comment = xhtmlbr2nl($comment);
+					$message = xhtmlbr2nl($entry['message']);
+					$comment = xhtmlbr2nl($entry['comment']);
 
-					if($user_notification == 1) { $checked_notify = " checked=\"checked\""; } else { $checked_notify = NULL; }
-					if($user_show_email == 1) { $checked_show_email = " checked=\"checked\""; } else { $checked_show_email = NULL; }
+					if($entry['user_notification'] == 1) { $checked_notify = " checked=\"checked\""; } else { $checked_notify = NULL; }
+					if($entry['user_show_email'] == 1) { $checked_show_email = " checked=\"checked\""; } else { $checked_show_email = NULL; }
 
 					$page_entry_single = mgb_template_replace([
-						'ENTRY_ID' 				=> $entryID,
+						'ENTRY_ID' 				=> $entry['ID'],
 						'ENTRY_DATE' 			=> $date,
 						'ENTRY_TIME' 			=> $time,
-						'ENTRY_NAME' 			=> $name,
-						'ENTRY_CITY'	 		=> $city,
-						'ENTRY_EMAIL' 			=> $email,
-						'ENTRY_ICQ' 			=> $icq,
-						'ENTRY_AIM' 			=> $aim,
-						'ENTRY_MSN' 			=> $msn,
-						'ENTRY_FB' 				=> $fb,
-						'ENTRY_TWITTER' 		=> $twitter,
-						'ENTRY_HP' 				=> $hp,
-						'ENTRY_MESSAGE' 		=> $message,
-						'ENTRY_COMMENT' 		=> $comment,
-						'ENTRY_IP' 				=> $ip,
+						'ENTRY_NAME' 			=> $entry['name'],
+						'ENTRY_CITY'	 		=> $entry['city'],
+						'ENTRY_EMAIL' 			=> $entry['email'],
+						'ENTRY_ICQ' 			=> $entry['icq'],
+						'ENTRY_AIM' 			=> $entry['aim'],
+						'ENTRY_MSN' 			=> $entry['msn'],
+						'ENTRY_FB' 				=> $entry['fb'],
+						'ENTRY_TWITTER' 		=> $entry['twitter'],
+						'ENTRY_HP' 				=> $entry['hp'],
+						'ENTRY_MESSAGE' 		=> $entry['message'],
+						'ENTRY_COMMENT' 		=> $entry['comment'],
+						'ENTRY_IP' 				=> $entry['ip'],
 						'CHECKED_NOTIFY' 		=> $checked_notify,
 						'CHECKED_SHOW_EMAIL' 	=> $checked_show_email,
-						'FORM_ACTION' => "admin.php?action=edit&amp;id=".$entryID."&p=".$_GET['p'].$sid
+						'FORM_ACTION' 			=> "admin.php?action=edit&amp;id=".$entry['ID']."&p=".$_GET['p'].$sid
 					], $page_entry_single);
 
 					$content_scrolling_function = "<br>";
@@ -321,14 +309,12 @@
 			}
 
 			// load guestbook entries
-			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."entries WHERE isspam=0 ORDER BY ID DESC LIMIT ".$load_start.",".$load_end, "Error while loading guestbook entries.", 1);
-
-			$counter = 0;
-
-			for($i = 0; $i < mysqli_num_rows($result); $i++) {
-				$entry[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-				$counter++;
-			}
+			$sql = "SELECT * FROM ".$db['prefix']."entries WHERE isspam = 0 ORDER BY ID DESC LIMIT ?, ?";
+			$params = [$load_start, $load_end];
+			$types = "ii";
+			$result = mgb_sql_connect($mysqli, $sql, "Error while loading guestbook entries.", 1, $params, $types);
+			$entry = mysqli_fetch_all($result, MYSQLI_ASSOC);
+			$counter = count($entry);
 
 			if($counter <= 1) {
 				if($_GET['p'] == 1) {
@@ -341,7 +327,7 @@
 			}
 
 			// fill entry template with content
-			require (MGB_ROOT."includes/functions.inc.php");
+			require_once (MGB_ROOT."includes/functions.inc.php");
 
 			if(!isset($entry)) { $entry = array(); }
 
@@ -360,8 +346,8 @@
 				$entry[$i]['comment'] = textWrap($entry[$i]['comment'], 45);
 
 				// convert bbcodes
-				$entry[$i]['message'] = bbcode_format($entry[$i]['message'], "adminpanel");
-				$entry[$i]['comment'] = bbcode_format($entry[$i]['comment'], "adminpanel");
+				$entry[$i]['message'] = bbcode_format($mysqli, $entry[$i]['message'], "adminpanel");
+				$entry[$i]['comment'] = bbcode_format($mysqli, $entry[$i]['comment'], "adminpanel");
 
 				// convert smilies
 				/* $entry[$i]['message'] = set_smilies($entry[$i]['message']);

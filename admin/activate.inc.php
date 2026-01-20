@@ -43,29 +43,38 @@
 			$_POST['dropbox'] = cleanstr($_POST['dropbox']);
 
 			if(isset($_POST['dropbox']) AND $_POST['dropbox'] == 1) { // Activate all entries at once
-				mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."entries` SET `checked` = '1' WHERE checked=0", "Error while activating all entries at once and updating sql table.", 0);
+				$sql = "UPDATE ".$db['prefix']."entries SET 'checked' = ? WHERE checked = ?";
+				$params = [1, 0];
+				$types = "ii";
+				mgb_sql_connect($mysqli, $sql, "Error while activating all entries at once and updating sql table.", 0, $params, $types);
 				mgb_erase_cache("../cache/");
 			} elseif(isset($_POST['dropbox']) AND $_POST['dropbox'] == 2) { // Put all entries on spam table
 				// check if user has too many counts in trying to make a guestbook entry
-				$spam_list_result = mysqli_fetch_assoc(mgb_sql_connect($mysqli, "SELECT COUNT(ID) FROM ".$db['prefix']."spam", "Error while counting entries in spam table.", 1));
-				$spam_list_total = $spam_list_result['COUNT(ID)'];
-				$spam_list_result = mgb_sql_connect($mysqli, "SELECT id, ip, email, counter FROM ".$db['prefix']."spam", "Error while loading entries from spam table.", 1);
-
-				for($i = 0; $i < mysqli_num_rows($spam_list_result); $i++) {
+				$sql = "SELECT COUNT(ID) AS total FROM ".$db['prefix']."spam";
+				$results = mgb_sql_connect($mysqli, $sql, "Error while counting entries in spam table.", 1);
+				$row = $results->fetch_assoc();
+				$spam_list_total = (int)$row['total'];
+				$spam_list_result = mgb_sql_connect($mysqli, "SELECT id, ip, email, counter FROM ".$db['prefix']."spam", "Error while loading entries from spam table.", 1, null, null);
+				$spam_list = mysqli_fetch_all($spam_list_result, MYSQLI_ASSOC);
+				
+				/* for($i = 0; $i < mysqli_num_rows($spam_list_result); $i++) {
 					$spam_list[$i] = mysqli_fetch_array($spam_list_result, MYSQLI_ASSOC); // put all entries from spam table into an array named $spam_list
-				}
+				} */
 
-				$unchecked_entries_result = mgb_sql_connect($mysqli, "SELECT id, ip, email FROM ".$db['prefix']."entries WHERE checked = 0 AND isspam = 0", "Error while loading entry from ".$db['prefix']."entries.", 1);
+				$sql = "SELECT id, ip, email FROM ".$db['prefix']."entries WHERE checked = ? AND isspam = ?";
+				$params = [0, 0];
+				$types = "ii";
+				$unchecked_entries_result = mgb_sql_connect($mysqli, $sql, "Error while loading entry from ".$db['prefix']."entries.", 1, $params, $types);
 
 				for($i = 0; $i < mysqli_num_rows($unchecked_entries_result); $i++) {
 					$store_spam = 1;
 					$new_spam[$i] = mysqli_fetch_array($unchecked_entries_result, MYSQLI_ASSOC);
 					for($j = 0; $j < $spam_list_total; $j++) {
-						if($spam_list[$j]['ip'] == $new_spam[$i]['ip'] OR $spam_list[$j]['email'] == $new_spam[$i]['email']) {
+						if($spam_list[$j]['ip'] === $new_spam[$i]['ip'] OR $spam_list[$j]['email'] === $new_spam[$i]['email']) {
 							$store_spam = 0;
 							if ($spam_list[$j]['counter'] < 5) {
 								$spam_list[$j]['counter']++;
-								mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."spam` SET `counter` = '".$spam_list[$j]['counter']."', `timestamp` = '".time()."' WHERE ID='".$spam_list[$j]['id']."' LIMIT 1", "Error while saving data into ".$db['prefix']."spam", 0);
+								mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."spam` SET `counter` = '".$spam_list[$j]['counter']."', `timestamp` = '".time()."' WHERE ID='".$spam_list[$j]['id']."' LIMIT 1", "Error while saving data into ".$db['prefix']."spam", 0, null, null);
 								// refresh spam list
 								$spam_list_result = mgb_sql_connect($mysqli, "SELECT id, ip, email, counter FROM ".$db['prefix']."spam", "Error while loading entries from spam table.", 1);
 								for($k = 0; $k < mysqli_num_rows($spam_list_result); $k++) {
@@ -77,121 +86,111 @@
 
 					if($store_spam == 1) {
 						// load whole entry
-						$whole_spam_entry = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."entries WHERE id = ".$new_spam[$i]['id']." AND checked = 0 AND isspam = 0", "Error while loading entry from ".$db['prefix']."entries.", 1);
+						$sql = "SELECT * FROM ".$db['prefix']."entries WHERE id = ? AND checked = ? AND isspam = ?";
+						$params = [$new_spam[$i]['id'], 0, 0];
+						$types = "iii";
+						$whole_spam_entry = mgb_sql_connect($mysqli, $sql, "Error while loading entry from ".$db['prefix']."entries.", 1, $params, $types);
 						for($l = 0; $l < mysqli_num_rows($whole_spam_entry); $l++) {
 							$whole_entry[$l] = mysqli_fetch_array($whole_spam_entry, MYSQLI_ASSOC);
 							// store entry in spam table
-							mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."spam (
-								name,
-								ip,
-								email,
-								city,
-								icq,
-								aim,
-								msn,
-								fb,
-								twitter,
-								hp,
-								message,
-								user_notification,
-								user_show_email,
-								captcha,
-								sent_captcha,
-								counter,
-								user_agent,
-								sneaked,
-								timestamp
-								) values (
-								'".$whole_entry[$l]['name']."',
-								'".$whole_entry[$l]['ip']."',
-								'".$whole_entry[$l]['email']."',
-								'".$whole_entry[$l]['city']."',
-								'".$whole_entry[$l]['icq']."',
-								'".$whole_entry[$l]['aim']."',
-								'".$whole_entry[$l]['msn']."',
-								'".$whole_entry[$l]['fb']."',
-								'".$whole_entry[$l]['twitter']."',
-								'".$whole_entry[$l]['hp']."',
-								'".$whole_entry[$l]['message']."',
-								'".$whole_entry[$l]['user_notification']."',
-								'".$whole_entry[$l]['user_show_email']."',
-								'0',
-								'0',
-								'1',
-								'".$whole_entry[$l]['user_agent']."',
-								'0',
-								'".$whole_entry[$l]['timestamp']."'
-								)", "Error while saving data into ".$db['prefix']."spam", 0);
+							
+							$sql = "INSERT INTO".$db['prefix']."spam (
+								name, ip, email, city, icq, aim, msn, fb, twitter, hp, message, user_notification, user_show_email, captcha, sent_captcha, counter, user_agent, sneaked, timestamp
+							) VALUES (
+								?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?
+							)";
+							
+							$params = [
+								$whole_entry[$l]['name'],
+								$whole_entry[$l]['ip'],
+								$whole_entry[$l]['email'],
+								$whole_entry[$l]['city'],
+								$whole_entry[$l]['icq'],
+								$whole_entry[$l]['aim'],
+								$whole_entry[$l]['msn'],
+								$whole_entry[$l]['fb'],
+								$whole_entry[$l]['twitter'],
+								$whole_entry[$l]['hp'],
+								$whole_entry[$l]['message'],
+								$whole_entry[$l]['user_notification'],
+								$whole_entry[$l]['user_show_email'],
+								0,
+								0,
+								1,
+								$whole_entry[$l]['user_agent'],
+								0,
+								$whole_entry[$l]['timestamp']
+							];
+							
+							$types = "sssssssssssiiiiisii";
+							
+							mgb_sql_connect($mysqli, $sql, "Error while saving data into ".$db['prefix']."spam", 0, $params, $types);
 						}
 					}
 				}
 				// delete entries from entries table
-				mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."entries` WHERE checked = 0 AND isspam = 0", "Error while deleting entry in ".$db['prefix']."entries", 0);
+				$sql = "DELETE FROM '".$db['prefix']."entries' WHERE checked = ? AND isspam = ?";
+				$params = [0, 0];
+				$types = "ii";
+				mgb_sql_connect($mysqli, $sql, "Error while deleting entry in ".$db['prefix']."entries", 0, $params, $types);
 			}
 
 			if(isset($_GET['id'])) {
 				if(isset($_GET['isspam']) AND secure_value($_GET['isspam'] == 1)) {
 					// get data of the entry from database
-					$id = secure_value($_GET['id']);
-					$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."entries WHERE ID=".$id, "Error while loading entry from ".$db['prefix']."entries.", 1);
-
-					for($i = 0; $i < mysqli_num_rows($result); $i++) {
-						$spam[$id] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-					}
+					$sql = "SELECT * FROM ".$db['prefix']."entries WHERE ID = ?";
+					$params = [$_GET['id']];
+					$types = "i";
+					$result = mgb_sql_connect($mysqli, $sql, "Error while loading entry from ".$db['prefix']."entries.", 1, $params, $types);
+					$spam = mysqli_fetch_all($result, MYSQLI_ASSOC);					
 
 					// store entry in spam table
-					mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."spam (
-						name,
-						ip,
-						email,
-						city,
-						icq,
-						aim,
-						msn,
-						fb,
-						twitter,
-						hp,
-						message,
-						user_notification,
-						user_show_email,
-						captcha,
-						sent_captcha,
-						counter,
-						user_agent,
-						sneaked,
-						timestamp
-						) values (
-						'".$spam[$id]['name']."',
-						'".$spam[$id]['ip']."',
-						'".$spam[$id]['email']."',
-						'".$spam[$id]['city']."',
-						'".$spam[$id]['icq']."',
-						'".$spam[$id]['aim']."',
-						'".$spam[$id]['msn']."',
-						'".$spam[$id]['fb']."',
-						'".$spam[$id]['twitter']."',
-						'".$spam[$id]['hp']."',
-						'".$spam[$id]['message']."',
-						'".$spam[$id]['user_notification']."',
-						'".$spam[$id]['user_show_email']."',
-						'0',
-						'0',
-						'1',
-						'".$spam[$id]['user_agent']."',
-						'0',
-						'".$spam[$id]['timestamp']."'
-						)", "Error while saving data into ".$db['prefix']."spam", 0);
+					$sql = "INSERT INTO".$db['prefix']."spam (
+						name, ip, email, city, icq, aim, msn, fb, twitter, hp, message, user_notification, user_show_email, captcha, sent_captcha, counter, user_agent, sneaked, timestamp
+					) VALUES (
+						?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+					)";
+					
+					$params = [
+						$spam[$_GET['id']]['name'],
+						$spam[$_GET['id']]['ip'],
+						$spam[$_GET['id']]['email'],
+						$spam[$_GET['id']]['city'],
+						$spam[$_GET['id']]['icq'],
+						$spam[$_GET['id']]['aim'],
+						$spam[$_GET['id']]['msn'],
+						$spam[$_GET['id']]['fb'],
+						$spam[$_GET['id']]['twitter'],
+						$spam[$_GET['id']]['hp'],
+						$spam[$_GET['id']]['message'],
+						$spam[$_GET['id']]['user_notification'],
+						$spam[$_GET['id']]['user_show_email'],
+						0,
+						0,
+						1,
+						$spam[$_GET['id']]['user_agent'],
+						0,
+						$spam[$_GET['id']]['timestamp']					
+					];
+					
+					mgb_sql_connect($mysqli, $sql, "Error while saving data into ".$db['prefix']."spam", 0, $params, $types);
 					// delete entry from entries table
-					mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."entries` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting entry in ".$db['prefix']."entries", 0);
+					$sql = "DELETE FROM `".$db['prefix']."entries` WHERE ID = ? LIMIT 1";
+					$params = [$_GET['id']];
+					$types = "i";
+					mgb_sql_connect($mysqli, $sql, "Error while deleting entry in ".$db['prefix']."entries", 0, $params, $types);
 					mgb_erase_cache("../cache/");
 				} else {
-					mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."entries` SET `checked` = '1' WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while activating entry and updating sql table.", 0);
-					mgb_trigger_sys_log($mysqli, '1013', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries activated by the user)
+					$sql = "UPDATE `".$db['prefix']."entries` SET `checked` = ? WHERE ID = ? LIMIT 1";
+					$params = [1, $_GET['id']];
+					$types = "ii";
+					mgb_sql_connect($mysqli, $sql, "Error while activating entry and updating sql table.", 0, $params, $types);
+					mgb_trigger_sys_log($mysqli, 1013, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries activated by the user)
 					mgb_erase_cache("../cache/");
 				}
 
 				// send an email to user
-				if(isset($_GET['notify']) && $_GET['notify'] == 1) {
+				if(isset($_GET['notify']) && $_GET['notify'] === 1) {
 					$result = mgb_sql_connect($mysqli, "SELECT name, email, message FROM ".$db['prefix']."entries WHERE id=".secure_value($_GET['id'])." LIMIT 1", "Error while loading information for sending an email to user.", 1);
 					$data = mysqli_fetch_array($result, MYSQLI_ASSOC);
 					$name = $data['name'];
@@ -212,11 +211,11 @@
 					$mail_header .= "X-Mailer: PHP/".phpversion();
 
 					if(isset($email) AND $email !== "") {
-						if($settings['mailer_method'] == 0) {
+						if($settings['mailer_method'] === 0) {
 							$mail_send = @mail($email, $lang['sendmail_user_notification_title'], $settings['sendmail_user_notification_text'], $mail_header);
 							if($mail_send) {
 								$sendemail_successfull = 1;
-								mgb_trigger_sys_log($mysqli, '1026', $name, $email, '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (info mail was sent)
+								mgb_trigger_sys_log($mysqli, 1026, $name, $email, '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (info mail was sent)
 							} else {
 								$sendemail_successfull = 0;
 							}
@@ -227,7 +226,7 @@
 								$template_message = "<br><br>phpmailer: ".$mail_send[1];
 							} else {
 								$sendemail_successfull = 1;
-								mgb_trigger_sys_log($mysqli, '1026', $name, $email, '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (info mail was sent)
+								mgb_trigger_sys_log($mysqli, 1026, $name, $email, '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (info mail was sent)
 							}
 						}
 					}
@@ -235,8 +234,10 @@
 			}
 
 			// get total number of entries
-			$sql = "SELECT COUNT(ID) AS total FROM ".$db['prefix']."entries WHERE checked=0 AND isspam=0";
-			$results = mgb_sql_connect($mysqli, $sql, "Error while counting entries.", 1);
+			$sql = "SELECT COUNT(ID) AS total FROM ".$db['prefix']."entries WHERE checked = ? AND isspam = ?";
+			$params = [0, 0];
+			$types = "ii";
+			$results = mgb_sql_connect($mysqli, $sql, "Error while counting entries.", 1, $params, $types);
 			$row = $results->fetch_assoc();
 			$total = (int)$row['total'];
 
@@ -296,16 +297,12 @@
 			}
 
 			// load guestbook entries
-			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."entries WHERE checked=0 AND isspam=0 ORDER BY ID DESC LIMIT $load_start, $load_end", "Error while loading inactive guestbook entries.", 1);
-
-			$counter = 0;
-			
-			if(!isset($entry)) {$entry = array(); }
-
-			for($i = 0; $i < mysqli_num_rows($result); $i++) {
-				$entry[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-				$counter++;
-			}
+			$sql = "SELECT * FROM ".$db['prefix']."entries WHERE checked = 0 AND isspam = 0 ORDER BY ID DESC LIMIT ?, ?";
+			$params = [$load_start, $load_end];
+			$types = "ii";
+			$result = mgb_sql_connect($mysqli, $sql, "Error while loading inactive guestbook entries.", 1, $params, $types);
+			$entry = mysqli_fetch_all($result, MYSQLI_ASSOC);
+			$counter = count($entry);
 
 			if ($counter <= 1) {
 				if ($_GET['p'] == 1) {
@@ -318,7 +315,7 @@
 			}
 
 			// fill entry template with content
-			require (MGB_ROOT."includes/functions.inc.php");
+			require_once (MGB_ROOT."includes/functions.inc.php");
 
 			if(!empty($entry)) {
 
@@ -337,8 +334,8 @@
 					$entry[$i]['comment'] = textWrap($entry[$i]['comment'], 45);
 
 					// convert bbcodes
-					$entry[$i]['message'] = bbcode_format($entry[$i]['message'], "adminpanel");
-					$entry[$i]['comment'] = bbcode_format($entry[$i]['comment'], "adminpanel");
+					$entry[$i]['message'] = bbcode_format($mysqli, $entry[$i]['message'], "adminpanel");
+					$entry[$i]['comment'] = bbcode_format($mysqli, $entry[$i]['comment'], "adminpanel");
 
 					// fill template with entry (strings)
 					$page_entry[$i] = mgb_template_replace([

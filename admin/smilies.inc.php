@@ -42,11 +42,19 @@
 				for($i = 0; $i < $_SESSION['SMILEY_COUNT']; $i++) {
 					if($_POST['path_'.$i.''] != "" AND $_POST['replacement_'.$i.''] != "") {
 						$sql = "UPDATE `".$db['prefix']."smilies` SET
-								`path` = '".cleanstr($_POST['path_'.$i.''])."',
-								`replacement` = '".cleanstr($_POST['replacement_'.$i.''])."',
-								`height` = '".cleanstr($_POST['height_'.$i.''])."',
-								`width` = '".cleanstr($_POST['width_'.$i.''])."'
-								WHERE ID=".secure_value($_POST['real_id_'.$i.''])." LIMIT 1";
+								`path` = ?,
+								`replacement` = ?,
+								`height` = ?,
+								`width` = ?
+								WHERE ID = ? LIMIT 1";
+						$params = [
+							$_POST['path_'.$i.''],
+							$_POST['replacement_'.$i.''],
+							$_POST['height_'.$i.''],
+							$_POST['width_'.$i.''],
+							$_POST['real_id_'.$i.'']
+						];
+						$types = "ssiii";
 					} elseif(
 						isset($_POST['path_'.$i.'']) AND
 						isset($_POST['replacement_'.$i.'']) AND
@@ -56,13 +64,15 @@
 						($_POST['replacement_'.$i.''] == "") AND
 						($_POST['width_'.$i.''] == "") AND
 						($_POST['height_'.$i.''] == "")) {
-						$sql = "DELETE FROM `".$db['dbname']."`.`".$db['prefix']."smilies` WHERE `".$db['prefix']."smilies`.`ID` = ".secure_value($_POST['real_id_'.$i.'']);
+						$sql = "DELETE FROM `".$db['prefix']."smilies` WHERE `ID` = ?";
+						$params = [$_POST['real_id_'.$i.'']];
+						$types = "i";
 					}
 
 					if(!empty($sql)) {
-						if(mgb_sql_connect($sql, "Error while updating smilies.", 0)) {
+						if(mgb_sql_connect($mysqli, $sql, "Error while updating smilies.", 0, $params, $types)) {
 							$saved_settings_successfull = 1;
-							mgb_trigger_sys_log('1017', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+							mgb_trigger_sys_log($mysqli, 1017, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 							mgb_erase_cache("../cache/");
 						}
 					}
@@ -74,9 +84,12 @@
 				if($_POST['dropbox'] == 1) { // delete checked smilies, keep unchecked
 					for($i = 0; $i < $_SESSION['SMILEY_COUNT']; $i++) {
 						if(isset($_POST['edit_smiley_'.$i.'']) AND (!empty($_POST['edit_smiley_'.$i.'']))) {
-							if(mgb_sql_connect("DELETE FROM `".$db['dbname']."`.`".$db['prefix']."smilies` WHERE `".$db['prefix']."smilies`.`ID` = ".secure_value($_POST['real_id_'.$i.'']), "Error while deleting more than one smiley at once.", 0)) {
+							$sql = "DELETE FROM `".$db['prefix']."smilies` WHERE `ID` = ?";
+							$params = [$_POST['real_id_'.$i.'']];
+							$types = "i";
+							if(mgb_sql_connect($mysqli, $sql, "Error while deleting more than one smiley at once.", 0, $params, $types)) {
 								$saved_settings_successfull = 1;
-								mgb_trigger_sys_log('1017', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+								mgb_trigger_sys_log($mysqli, 1017, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 								mgb_erase_cache("../cache/");
 							}
 						}
@@ -84,9 +97,12 @@
 				} elseif($_POST['dropbox'] == 2) { // delete unchecked smilies, keep checked
 					for($i = 0; $i < $_SESSION['SMILEY_COUNT']; $i++) {
 						if(empty($_POST['edit_smiley_'.$i.''])) {
-							if(mgb_sql_connect("DELETE FROM `".$db['dbname']."`.`".$db['prefix']."smilies` WHERE `".$db['prefix']."smilies`.`ID` = ".secure_value($_POST['real_id_'.$i.'']), "Error while deleting more than one smiley at once.", 0)) {
+							$sql = "DELETE FROM `".$db['prefix']."smilies` WHERE `ID` = ?";
+							$params = [$_POST['real_id_'.$i.'']];
+							$types = "i";
+							if(mgb_sql_connect($mysqli, $sql, "Error while deleting more than one smiley at once.", 0, $params, $types)) {
 								$saved_settings_successfull = 1;
-								mgb_trigger_sys_log('1017', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+								mgb_trigger_sys_log($mysqli, 1017, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 								mgb_erase_cache("../cache/");
 							}
 						}
@@ -96,33 +112,34 @@
 
 			// user wants to add a new smiley
 			if(!empty($_POST['new_path']) AND !empty($_POST['new_replacement'])) {
-				require ("../includes/functions.inc.php");
+				require_once ("../includes/functions.inc.php");
 				$sql = "INSERT INTO ".$db['prefix']."smilies (
 					path,
 					replacement,
 					height,
 					width
-				) values (
-					'".cleanstr($_POST['new_path'])."',
-					'".cleanstr($_POST['new_replacement'])."',
-					'".cleanstr($_POST['new_height'])."',
-					'".cleanstr($_POST['new_width'])."'
+				) VALUES (
+					?, ?, ?, ?
 				)";
+				$params = [
+					$_POST['new_path'],
+					$_POST['new_replacement'],
+					$_POST['new_height'],
+					$_POST['new_width']
+				];
+				$types = "ssii";
 
-				if (mgb_sql_connect($sql, "Error while adding a new smiley.", 0)) {
+				if (mgb_sql_connect($mysqli, $sql, "Error while adding a new smiley.", 0, $params, $types)) {
 					$saved_settings_successfull = 1;
-					mgb_trigger_sys_log('1017', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 1017, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					mgb_erase_cache("../cache/");
 				}
 			}
 
 			// load smilies
 			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."smilies ORDER BY ID ".$settings['smileys_order'], "Error while loading smilies.", 1);
-
-			for($i = 0; $i < mysqli_num_rows($result); $i++) {
-				$smiley[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-			}
-
+			$smiley = mysqli_fetch_all($result, MYSQLI_ASSOC);
+			
 			if(!isset($smiley)) {
 				$smiley = NULL;
 			}
@@ -136,12 +153,14 @@
 				$page_smilies[$i] = $content_smilies_single;
 
 				// fill template with smilies
-				$page_smilies[$i] = template("SMILEY_PATH", $smiley[$i]['path'], $page_smilies[$i]);
-				$page_smilies[$i] = template("SMILEY_REPLACEMENT", $smiley[$i]['replacement'], $page_smilies[$i]);
-				$page_smilies[$i] = template("SMILEY_HEIGHT", $smiley[$i]['height'], $page_smilies[$i]);
-				$page_smilies[$i] = template("SMILEY_WIDTH", $smiley[$i]['width'], $page_smilies[$i]);
-				$page_smilies[$i] = template("SMILEY_ID", $i, $page_smilies[$i]);
-				$page_smilies[$i] = template("SMILEY_REAL_ID", $smiley[$i]['ID'], $page_smilies[$i]);
+				$page_smilies[$i] = mgb_template_replace([
+					'SMILEY_PATH' 			=> $smiley[$i]['path'],
+					'SMILEY_REPLACEMENT' 	=> $smiley[$i]['replacement'],
+					'SMILEY_HEIGHT' 		=> $smiley[$i]['height'],
+					'SMILEY_WIDTH' 			=> $smiley[$i]['width'],
+					'SMILEY_ID' 			=> $i,
+					'SMILEY_REAL_ID' 		=> $smiley[$i]['ID']
+				], $page_smilies[$i]);
 
 				if(!isset($page_include)) { $page_include = NULL; }
 				$page_smilies_single .= $page_smilies[$i];
@@ -151,11 +170,13 @@
 			$page_smilies_single .= $content_smilies_single_new;
 
 			$page_smiley = $content_smilies;
-			$page_smiley = template("TEMPLATE_SMILIES_SINGLE", $page_smilies_single, $page_smiley);
-			$page_smiley = template("SMILEY_COUNT", $_SESSION['SMILEY_COUNT'], $page_smiley);
-			$page_smiley = template("URL_SMILIES", "admin.php?action=smilies".$sid, $page_smiley);
-			$page_smiley = template("OPTION_DELETE_CHECKED_SMILIES", "<option value='1'>{LANG_DELETE_CHECKED_SMILIES}</option>", $page_smiley);
-			$page_smiley = template("OPTION_KEEP_CHECKED_SMILIES", "<option value='2'>{LANG_KEEP_CHECKED_SMILIES}</option>", $page_smiley);
+			$page_smiley = mgb_template_replace([
+				'TEMPLATE_SMILIES_SINGLE' 		=> $page_smilies_single,
+				'SMILEY_COUNT' 					=> $_SESSION['SMILEY_COUNT'],
+				'URL_SMILIES' 					=> "admin.php?action=smilies".$sid,
+				'OPTION_DELETE_CHECKED_SMILIES' => "<option value='1'>{LANG_DELETE_CHECKED_SMILIES}</option>",
+				'OPTION_KEEP_CHECKED_SMILIES' 	=> "<option value='2'>{LANG_KEEP_CHECKED_SMILIES}</option>"
+		], $page_smiley);
 
 			// $page_smiley = mgb_template_language($page_smiley, "../language/".$settings['language_path']."/lang_admin.php", $settings['debug_mode']); // last number defines debug mode
 
