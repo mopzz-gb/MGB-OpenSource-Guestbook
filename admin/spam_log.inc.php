@@ -58,53 +58,53 @@
 			if(!isset($_GET['p'])) { $_GET['p'] = 1; }
 
 			if(empty($_POST['dropbox'])) { $_POST['dropbox'] = ""; }
-			$_POST['dropbox'] = cleanstr($_POST['dropbox']);
-
-			// PUT ALL ENTRIES ON IP BANLIST
-			if((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 2) OR (!empty($_POST['dropbox']) AND $_POST['dropbox'] == 4)) {
+			$delete_everything = 0;
+			
+			// PUT ALL ENTRIES ON IP BANLIST 2.0 - NOW WITH MOOOOOREEEE SPEEEEEEED!!!
+			if((!empty($_POST['dropbox']) AND $_POST['dropbox'] === 2) OR (!empty($_POST['dropbox']) AND $_POST['dropbox'] === 4)) {
 				$script_time_start = microtime(true);
 				$entry_counter = 0;
 				$ips = array();
-				$ip_counter = 0;
-				$result = mgb_sql_connect($mysqli, "SELECT ip FROM ".$db['prefix']."spam_log WHERE type=3 OR type=4 OR type=9 OR type=11 OR type=12 OR type=13", "Error while loading ips from ".$db['prefix']."spam.", 1);
-				for($i = 0; $i < mysqli_num_rows($result); $i++) {
-					$spam_entry[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-					$counter = 0;
-					$result_parts = explode(".", $spam_entry[$i]['ip']);
-					$banned_ips = mgb_sql_connect($mysqli, "SELECT banned_ip FROM ".$db['prefix']."banlist_ips WHERE banned_ip_first = '".$result_parts[0]."'", "Error while loading banned ips from ".$db['prefix']."banlist_ips.", 1);
-					// $count_banned_ip = $count_banned_ip + mysqli_num_rows($banned_ip);
-					for($j = 0; $j < mysqli_num_rows($banned_ips); $j++) {
-						if($j == 0) {
-							$ip_counter = $ip_counter + mysqli_num_rows($banned_ips);
-						}
-						$ips[$j] = mysqli_fetch_array($banned_ips, MYSQLI_ASSOC);
-						// put ip on ip banlist if it is not already in there
-						if($spam_entry[$i]['ip'] == $ips[$j]['banned_ip']) {
-							$counter++;
-						}
-					} if($counter == 0) {
-						mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."banlist_ips (
-							ID,
-							banned_ip,
-							banned_ip_first,
-							banned_ip_second,
-							banned_ip_third,
-							banned_ip_fourth,
-							matches,
-							timestamp )
-						values (
-							NULL,
-							'".$spam_entry[$i]['ip']."',
-							'".$result_parts[0]."',
-							'".$result_parts[1]."',
-							'".$result_parts[2]."',
-							'".$result_parts[3]."',
+				
+				// 1. Alle Spam-IPs auf einmal laden
+				$spam_ips = [];
+				$result = mgb_sql_connect($mysqli, "SELECT ip FROM ".$db['prefix']."spam_log WHERE type IN (3, 4, 9, 11, 12, 13)", "Error while loading IPs from spam log.", 1, null, null);
+				while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+					$spam_ips[] = $row['ip'];
+				}
+
+				// 2. Alle bereits gebannten IPs auf einmal laden
+				$banned_ips = [];
+				$result = mgb_sql_connect($mysqli, "SELECT banned_ip FROM ".$db['prefix']."banlist_ips", "Error while loading banned IPs.", 1, null, null);
+				while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+					$banned_ips[] = $row['banned_ip'];
+				}
+
+				// 3. IPs vergleichen und neue Bans einfügen
+				$new_bans = array_diff($spam_ips, $banned_ips);
+				$entry_counter = count($new_bans);
+				
+				if($settings['debug_mode'] === 1 OR $settings['debug_mode'] === 2) {
+					$spam_ips_count = count($spam_ips);
+					$banned_ips_count = count($banned_ips);
+					mgb_echo("IPs in der Liste: ".$spam_ips_count."<br>Bereits gebannte IPs: ".$banned_ips_count."<br>Neue IPs: ".$entry_counter."<br><br>"
+					);
+				}
+
+				if (!empty($new_bans)) {
+					$insert_values = [];
+					foreach ($new_bans as $ip) {
+						$insert_values[] = "(
+							'$ip',
 							'0',
-							'".time()."' )", "Error while saving data into ".$db['prefix']."banlist_ips", 0);
-						$entry_counter++;
+							'".time()."'
+						)";
 					}
-					// delete all entries from spam table
-					// mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."spam", "Error while deleting all spam entries.", 0);
+					// Alle neuen Bans in EINER Abfrage einfügen
+					$sql = "INSERT INTO ".$db['prefix']."banlist_ips (
+						banned_ip, matches, timestamp
+					) VALUES ".implode(", ", $insert_values);
+					mgb_sql_connect($mysqli, $sql, "Error while inserting new banned IPs.", 0, null, null);
 				}
 				
 				// stop time measuring
@@ -113,166 +113,169 @@
 				
 				if($entry_counter > 0) {
 					$template_message.= $lang['updated_ips'];
-					$template_message = mgb_template_replace(['COUNTER' 	=> $entry_counter], $template_message);
-					$template_message.= "<br>".$lang['compared_ips']."<br>";
 					$template_message = mgb_template_replace([
-						'COUNTER' 	=> $ip_counter,
+						'COUNTER' 	=> $entry_counter,
 						'TIME' 		=> round($script_time, 3)
 					], $template_message);
-				} else {
-					$template_message.= $lang['compared_ips'];
-					$template_message = mgb_template_replace([
-						'COUNTER' 	=> $ip_counter,
-						'TIME'		=> round($script_time, 3)
-					], $template_message);
-					$template_message = $lang['spam_all_ips_on_ip_list'].'<br>'.$template_message."<br>";
+				} else {					
+					$template_message = $lang['spam_all_ips_on_ip_list'];
 				}
 
-				if($_POST['dropbox'] == 4) {
+				if($_POST['dropbox'] === 4) {
 					$delete_everything++;
 				}
 			}
 
 			// PUT ALL ENTRIES ON E-MAIL BANLIST
-			if((isset($_POST['dropbox']) AND $_POST['dropbox'] == 3) OR (isset($_POST['dropbox']) AND $_POST['dropbox'] == 4)) {
+			if((!empty($_POST['dropbox']) AND $_POST['dropbox'] === 3) OR (!empty($_POST['dropbox']) AND $_POST['dropbox'] === 4)) {
 				$script_time_start = microtime(true);
 				$entry_counter = 0;
 				$emails = array();
-				$email_counter = 0;
-				$result = mgb_sql_connect($mysqli, "SELECT email FROM ".$db['prefix']."spam_log WHERE type=1 OR type=3 OR type=4 OR type=9 OR type=11", "Error while loading emails from ".$db['prefix']."spam.", 1);
-				for($j = 0; $j < mysqli_num_rows($result); $j++) {
-					$spam_entry[$j] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-					$counter = 0;
-					$result_parts = explode("@", $spam_entry[$j]['email']);
-					$banned_emails = mgb_sql_connect($mysqli, "SELECT banned_email FROM ".$db['prefix']."banlist_emails WHERE banned_email_first = '".$result_parts[0]."'", "Error while loading banned emails from ".$db['prefix']."banlist_emails.", 1);
-					for($i = 0; $i < mysqli_num_rows($banned_emails); $i++) {
-						if($i == 0) {
-							$email_counter = $email_counter + mysqli_num_rows($banned_emails);
-							echo $email_counter;
-						}
-						$emails[$i] = mysqli_fetch_array($banned_emails, MYSQLI_ASSOC);
-						// put email on email banlist if it is not already in there
-						if($spam_entry[$j]['email'] == $emails[$i]['banned_email']) {
-							$counter++;
-						}
-					} if($counter == 0) {
-						mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."banlist_emails (
-							ID,
-							banned_email,
-							banned_email_first,
-							banned_email_second,
-							matches,
-							timestamp )
-						values (
-							NULL,
-							'".$spam_entry[$j]['email']."',
-							'".$result_parts[0]."',
-							'".$result_parts[1]."',
-							'0',
-							'".time()."' )", "Error while saving data into ".$db['prefix']."banlist_emails", 0);
-						$entry_counter++;
-					}
-
-					// delete all entries from spam table
-					// mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."spam", "Error while deleting all spam entries.", 0);
+				
+				// 1. load all spam mails at once
+				$spam_emails = [];
+				$result = mgb_sql_connect($mysqli, "SELECT email FROM ".$db['prefix']."spam_log WHERE type IN (1, 3, 4, 9, 11)", "Error while loading emails from spam log.", 1, null, null);
+				while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+					$spam_emails[] = $row['email'];
 				}
 
+				// 2. load all banned mails at once
+				$banned_emails = [];
+				$result = mgb_sql_connect($mysqli, "SELECT banned_email FROM ".$db['prefix']."banlist_emails", "Error while loading banned emails.", 1, null, null);
+				while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+					$banned_emails[] = $row['banned_email'];
+				}
+
+				// 3. compare emails and save new mails to database
+				$new_bans = array_diff($spam_emails, $banned_emails);
+				$entry_counter = count($new_bans);
+				
+				if($settings['debug_mode'] === 1 OR $settings['debug_mode'] === 2) {
+					$spam_emails_count = count($spam_emails);
+					$banned_emails_count = count($banned_emails);
+					mgb_echo("E-Mails in der Liste: ".$spam_emails_count."<br>Bereits gebannte E-Mails: ".$banned_emails_count."<br>Neue E-Mails: ".$entry_counter."<br><br>"
+					);
+				}
+
+				if (!empty($new_bans)) {
+					$insert_values = [];
+					foreach ($new_bans as $email) {
+						$insert_values[] = "(
+							'$email',
+							'0',
+							'".time()."'
+						)";
+					}
+					// Alle neuen Bans in EINER Abfrage einfügen
+					$sql = "INSERT INTO ".$db['prefix']."banlist_emails (
+						banned_email, matches, timestamp
+					) VALUES ".implode(", ", $insert_values);
+					mgb_sql_connect($mysqli, $sql, "Error while inserting new banned emails.", 0, null, null);
+				}
+				
 				// stop time measuring
 				$script_time_end = microtime(true);
 				$script_time = $script_time_end - $script_time_start;
-
+				
 				if($entry_counter > 0) {
 					$template_message.= $lang['updated_emails'];
-					$template_message = mgb_template_replace(['COUNTER' => $entry_counter], $template_message);
-					$template_message.= "<br>".$lang['compared_emails']."<br>";
 					$template_message = mgb_template_replace([
-						'COUNTER' 	=> $email_counter,
+						'COUNTER' 	=> $entry_counter,
 						'TIME' 		=> round($script_time, 3)
 					], $template_message);
-				} else {
-					$template_message.= $lang['compared_emails'];
-					$template_message = mgb_template_replace([
-						'COUNTER' 	=> $email_counter,
-						'TIME' 		=> round($script_time, 3)
-					], $template_message);
-					$template_message = $lang['spam_all_emails_on_email_list'].'<br>'.$template_message."<br>";
+				} else {					
+					$template_message = $lang['spam_all_emails_on_email_list'];
 				}
-				
-				if($_POST['dropbox'] == 4) {
-					$template_message.= "<br><br>";
+
+				if($_POST['dropbox'] === 4) {
 					$delete_everything++;
 				}
 			}
 
 			// PUT ALL ENTRIES ON DOMAIN BANLIST
-			if((isset($_POST['dropbox']) AND $_POST['dropbox'] == 10) OR (isset($_POST['dropbox']) AND $_POST['dropbox'] == 4)) {
+			if((!empty($_POST['dropbox']) AND $_POST['dropbox'] === 10) OR (!empty($_POST['dropbox']) AND $_POST['dropbox'] === 4)) {
 				$script_time_start = microtime(true);
 				$entry_counter = 0;
-				$domains = array();
-				$domains_counter = 0;
-				$result = mgb_sql_connect($mysqli, "SELECT email FROM ".$db['prefix']."spam_log WHERE type=1 OR type=3 OR type=9 OR type=11", "Error while loading emails from ".$db['prefix']."spam.", 1);
-				for($j = 0; $j < mysqli_num_rows($result); $j++) {
-					$spam_entry[$j] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-					$counter = 0;
-					$user_domain = $spam_entry[$j]['email'];
-					$result_parts = explode("@", $user_domain);
-					$banned_domains = mgb_sql_connect($mysqli, "SELECT banned_domain FROM ".$db['prefix']."banlist_domains WHERE banned_domain = '".$result_parts[1]."'", "Error while loading banned domains from ".$db['prefix']."banlist_domains.", 1);
-					for($i = 0; $i < mysqli_num_rows($banned_domains); $i++) {
-						if($i == 0) {
-							$domain_counter = $domain_counter + mysqli_num_rows($banned_domains);
-						}
-						$domains[$i] = mysqli_fetch_array($banned_domains, MYSQLI_ASSOC);
-						// put domain on domain banlist if it is not already in there
-						if($result_parts[1] == $domains[$i]['banned_domain']) {
-							$counter++;
-						}
-					} if($counter == 0) {
-						mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."banlist_domains (
-							ID ,
-							banned_domain ,
-							matches,
-							timestamp
-						) VALUES (
-							NULL ,
-							'".$result_parts[1]."' ,
-							'0',
-							'".time()."'
-						);", "Error while saving data into ".$db['prefix']."banlist_domains", 0);
-						$entry_counter++;
+				$emails = array();
+				
+				// load all spam domains at once
+				$spam_emails = [];
+				$result = mgb_sql_connect($mysqli, "SELECT email FROM ".$db['prefix']."spam_log", "Error while loading emails from spam log.", 1, null, null); //  WHERE type IN (2, 3, 5, 9, 10, 11)
+				while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+					$email = $row['email'];
+					if(!empty($settings['debug_mode'])) { mgb_echo("email: ".$email."<br>"); }
+					$spam_emails[] = $email;
+				}
+				
+				// extract domains
+				$spam_domains = [];
+				foreach ($spam_emails as $email) {
+					$parts = explode("@", $email);
+					if (count($parts) === 2) { 
+						$domain = strtolower(trim($parts[1])); // without whitespaces and lowercase
+						if(!empty($settings['debug_mode'])) { mgb_echo("domain: ".$domain."<br>"); }
+						$spam_domains[] = $domain;
 					}
-					// delete all entries from spam table
-					// mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."spam", "Error while deleting all spam entries.", 0);
+				}
+				
+				// extract double domains
+				$unique_domains = array_unique($spam_domains);
+
+				// load all banned domains at once
+				$banned_domains = [];
+				$result = mgb_sql_connect($mysqli, "SELECT banned_domain FROM ".$db['prefix']."banlist_domains", "Error while loading banned domains.", 1, null, null);
+				while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+					$banned_domains[] = $row['banned_domain'];
 				}
 
+				// compare domains and save new domains to database
+				$new_bans = array_diff($unique_domains, $banned_domains);
+				$entry_counter = count($new_bans);
+				
+				if($settings['debug_mode'] === 1 OR $settings['debug_mode'] === 2) {
+					$spam_domains_count = count($spam_domains);
+					$banned_domains_count = count($banned_domains);
+					mgb_echo("Domains in der Liste: ".$spam_domains_count."<br>Bereits gebannte Domains: ".$banned_domains_count."<br>Neue Domains: ".$entry_counter."<br><br>"
+					);
+				}
+
+				if (!empty($new_bans)) {
+					$insert_values = [];
+					foreach ($new_bans as $domain) {
+						$insert_values[] = "(
+							'$domain',
+							'0',
+							'".time()."'
+						)";
+					}
+					// put all bans into database
+					$sql = "INSERT INTO ".$db['prefix']."banlist_domains (
+						banned_domain, matches, timestamp
+					) VALUES ".implode(", ", $insert_values);
+					mgb_sql_connect($mysqli, $sql, "Error while inserting new banned domains.", 0, null, null);
+				}
+				
 				// stop time measuring
 				$script_time_end = microtime(true);
 				$script_time = $script_time_end - $script_time_start;
-
+				
 				if($entry_counter > 0) {
 					$template_message.= $lang['updated_domains'];
-					$template_message = mgb_template_replace(['COUNTER' => $entry_counter], $template_message);
-					$template_message.= "<br>".$lang['compared_domains']."<br>";
 					$template_message = mgb_template_replace([
-						'COUNTER' 	=> $domain_counter,
-						'TIME'		=> round($script_time, 3)
+						'COUNTER' 	=> $entry_counter,
+						'TIME' 		=> round($script_time, 3)
 					], $template_message);
-				} else {
-					$template_message.= $lang['compared_domains'];
-					$template_message = mgb_template_replace([
-						'COUNTER' 	=> $domain_counter,
-						'TIME'		=> round($script_time, 3)
-					], $template_message);
-					$template_message = $lang['spam_all_domains_on_domain_list'].'<br>'.$template_message."<br>";
+				} else {					
+					$template_message = $lang['spam_all_domains_on_domain_list'];
 				}
-				
-				if($_POST['dropbox'] == 4) {
-					$template_message.= "<br><br>";
+
+				if($_POST['dropbox'] === 4) {
 					$delete_everything++;
 				}
 			}
 
- 			 // Sneak everything
-			if(isset($_POST['dropbox']) AND $_POST['dropbox'] == 11) {
+			// Sneak everything
+			if(isset($_POST['dropbox']) AND $_POST['dropbox'] === 11) {
 				if(!empty($settings['sfs_api_key'])) {
 					$script_time_start = microtime(true);
 					$entry_counter = 0;
@@ -322,42 +325,36 @@
 				}
 			}
 			
-			if(empty($delete_everything)) { $delete_everything = 0; }
-			if((isset($_POST['dropbox']) AND $_POST['dropbox'] == 1) OR ($delete_everything == 3)) { // Delete all spam_log entries
-				mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."spam_log", "Error while deleting all log entries.", 0);
+			if((isset($_POST['dropbox']) AND $_POST['dropbox'] === 1) OR ($delete_everything === 3)) { // Delete all spam_log entries
+				mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."spam_log", "Error while deleting all log entries.", 0, null, null);
 			}
 
 			if(isset($_GET['id'])) {
 				if(isset($_GET['spam_action'])) {
-					if($_GET['spam_action'] == 'delete') {
-						mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."spam_log` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting a single log entry.", 0);
-					} elseif($_GET['spam_action'] == 'add_to_permanent_ip_banlist') {
+					if($_GET['spam_action'] === 'delete') {
+						$sql = "DELETE FROM `".$db['prefix']."spam_log` WHERE ID = ? LIMIT 1";
+						$params = [$_GET['id']];
+						$types = "i";
+						mgb_sql_connect($mysqli, $sql, "Error while deleting a single log entry.", 0, $params, $types);
+					} elseif($_GET['spam_action'] === 'add_to_permanent_ip_banlist') {
 						$script_time_start = microtime(true);
-						$result = mgb_sql_connect($mysqli, "SELECT ip FROM ".$db['prefix']."spam_log WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while loading IP from spam table", 1);
+						$sql = "SELECT ip FROM ".$db['prefix']."spam_log WHERE ID = ? LIMIT 1";
+						$params = [$_GET['id']];
+						$types = "i";
+						$result = mgb_sql_connect($mysqli, $sql, "Error while loading IP from spam table", 1, $params, $types);
 						while($spam_entry = mysqli_fetch_array($result)) {
-							$result_parts = explode(".", $spam_entry['ip']);
 							$banned_ips = mgb_sql_connect($mysqli, "SELECT banned_ip FROM ".$db['prefix']."banlist_ips WHERE banned_ip = '".$spam_entry['ip']."'", "Error while loading banned ips from ".$db['prefix']."banlist_ips.", 1);
 							$ip = mysqli_fetch_array($banned_ips, MYSQLI_ASSOC);
 							// put ip on ip banlist if it is not already in there
-							if($spam_entry['ip'] != $ip['banned_ip']) {
+							if($spam_entry['ip'] !== $ip['banned_ip']) {
 								mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."banlist_ips (
-									ID,
 									banned_ip,
-									banned_ip_first,
-									banned_ip_second,
-									banned_ip_third,
-									banned_ip_fourth,
 									matches,
 									timestamp )
 								values (
-									NULL,
 									'".$spam_entry['ip']."',
-									'".$result_parts[0]."',
-									'".$result_parts[1]."',
-									'".$result_parts[2]."',
-									'".$result_parts[3]."',
 									'0',
-									'".time()."' )", "Error while saving data into ".$db['prefix']."banlist_ips", 0);
+									'".time()."' )", "Error while saving data into ".$db['prefix']."banlist_ips", 0, null, null);
 								$template_message = mgb_template_replace(['IP' => $spam_entry['ip']], $lang['spam_added_to_ip_list']);
 							} else {
 								$template_message = mgb_template_replace(['IP' => $spam_entry['ip']], $lang['spam_is_already_on_ip_list']);
@@ -365,29 +362,25 @@
 						}
 						$script_time_end = microtime(true);
 						$script_time = $script_time_end - $script_time_start;
-					} elseif($_GET['spam_action'] == 'add_to_permanent_email_banlist') {
+					} elseif($_GET['spam_action'] === 'add_to_permanent_email_banlist') {
 						$script_time_start = microtime(true);
-						$result = mgb_sql_connect($mysqli, "SELECT email FROM ".$db['prefix']."spam_log WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while loading email from spam table", 1);
+						$sql = "SELECT email FROM ".$db['prefix']."spam_log WHERE ID = ? LIMIT 1";
+						$params = [$_GET['id']];
+						$types = "i";
+						$result = mgb_sql_connect($mysqli, $sql, "Error while loading email from spam table", 1, $params, $types);
 						while($spam_entry = mysqli_fetch_array($result)) {
-							$result_parts = explode("@", $spam_entry['email']);
 							$banned_emails = mgb_sql_connect($mysqli, "SELECT banned_email FROM ".$db['prefix']."banlist_emails WHERE banned_email = '".$spam_entry['email']."'", "Error while loading banned emails from ".$db['prefix']."banlist_emails.", 1);
 							$email = mysqli_fetch_array($banned_emails, MYSQLI_ASSOC);
 							// put email on email banlist if it is not already in there
-							if($spam_entry['email'] != $email['banned_email']) {
+							if($spam_entry['email'] !== $email['banned_email']) {
 								mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."banlist_emails (
-									ID,
 									banned_email,
-									banned_email_first,
-									banned_email_second,
 									matches,
 									timestamp )
 								values (
-									NULL,
 									'".$spam_entry['email']."',
-									'".$result_parts[0]."',
-									'".$result_parts[1]."',
 									'0',
-									'".time()."' )", "Error while saving data into ".$db['prefix']."banlist_emails", 0);
+									'".time()."' )", "Error while saving data into ".$db['prefix']."banlist_emails", 0, null, null);
 								$template_message = mgb_template_replace(['EMAIL' => $spam_entry['email']], $lang['spam_added_to_email_list']);
 							} else {
 								$template_message = mgb_template_replace(['EMAIL' => $spam_entry['email']], $lang['spam_is_already_on_email_list']);
@@ -395,7 +388,7 @@
 						}
 						$script_time_end = microtime(true);
 						$script_time = $script_time_end - $script_time_start;
-					} elseif($_GET['spam_action'] == 'add_to_permanent_domain_banlist') {
+					} elseif($_GET['spam_action'] === 'add_to_permanent_domain_banlist') {
 						$script_time_start = microtime(true);
 						$result = mgb_sql_connect($mysqli, "SELECT email FROM ".$db['prefix']."spam_log WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while loading email from spam table", 1);
 						while($spam_entry = mysqli_fetch_array($result)) {
@@ -403,7 +396,7 @@
 							$banned_domains = mgb_sql_connect($mysqli, "SELECT banned_domain FROM ".$db['prefix']."banlist_domains WHERE banned_domain = '".$result_parts[1]."'", "Error while loading banned domains from ".$db['prefix']."banlist_domains.", 1);
 							$email = mysqli_fetch_array($banned_domains, MYSQLI_ASSOC);
 							// put domain on domain banlist if it is not already in there
-							if($result_parts[1] != $email['banned_domain']) {
+							if($result_parts[1] !== $email['banned_domain']) {
 								mgb_sql_connect($mysqli, "INSERT INTO ".$db['prefix']."banlist_domains (
 									ID,
 									banned_domain,
@@ -423,9 +416,9 @@
 						$script_time = $script_time_end - $script_time_start;
 						// delete the entry from spam table
 						// mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."spam_log` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting an entry from spam table.", 0);
-					} elseif($_GET['spam_action'] == 'report_to_stopforumspam') {
+					} elseif($_GET['spam_action'] === 'report_to_stopforumspam') {
 						if(!empty($settings['sfs_api_key'])) {
-							$result = mgb_sql_connect($mysqli, "SELECT ID, name, ip, email, hp, message, sneaked FROM ".$db['prefix']."spam_log WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while loading email from spam table", 1);
+							$result = mgb_sql_connect($mysqli, "SELECT ID, name, ip, email, hp, message, sneaked FROM ".$db['prefix']."spam_log WHERE ID=".$_GET['id']." LIMIT 1", "Error while loading email from spam table", 1);
 							$spam_entry = mysqli_fetch_array($result, MYSQLI_ASSOC);
 							if($spam_entry['sneaked'] != 1) {
 								$data = "username=".urlencode(iconv('GBK', 'UTF-8', $spam_entry['name']));
@@ -461,19 +454,19 @@
 			}
 
 			// get total number of entries
-			if((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 5) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 1)) {
+			if((!empty($_POST['dropbox']) AND $_POST['dropbox'] === 5) OR (!empty($_GET['show_type']) AND $_GET['show_type'] === 1)) {
 				$show_type = " WHERE type=1";
 				$show_url = "&amp;show_type=1";
-			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 6) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 3)) {
+			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] === 6) OR (!empty($_GET['show_type']) AND $_GET['show_type'] === 3)) {
 				$show_type = " WHERE type=3";
 				$show_url = "&amp;show_type=3";
-			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 7) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 4)) {
+			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] === 7) OR (!empty($_GET['show_type']) AND $_GET['show_type'] === 4)) {
 				$show_type = " WHERE type=4";
 				$show_url = "&amp;show_type=4";
-			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 8) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 11)) {
+			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] === 8) OR (!empty($_GET['show_type']) AND $_GET['show_type'] === 11)) {
 				$show_type = " WHERE type=11";
 				$show_url = "&amp;show_type=11";
-			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 9) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 9)) {
+			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] === 9) OR (!empty($_GET['show_type']) AND $_GET['show_type'] === 9)) {
 				$show_type = " WHERE type=9";
 				$show_url = "&amp;show_type=9";
 			}
@@ -483,7 +476,7 @@
 			
 			// get total number of entries
 			$sql = "SELECT COUNT(ID) AS total FROM ".$db['prefix']."spam_log";
-			$results = mgb_sql_connect($mysqli, $sql, "Error while counting guestbook entries.", 1);
+			$results = mgb_sql_connect($mysqli, $sql, "Error while counting guestbook entries.", 1, null, null);
 			$row = $results->fetch_assoc();
 			$total = (int)$row['total'];
 
@@ -557,7 +550,7 @@
 			}
 
 			if($counter <= 1) {
-				if ($_GET['p'] == 1) {
+				if ($_GET['p'] === 1) {
 					$add_page_nr = NULL;
 				} else {
 					$add_page_nr = "&amp;p=".($_GET['p'] - 1);

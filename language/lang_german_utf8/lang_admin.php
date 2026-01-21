@@ -216,18 +216,15 @@
 	$lang['spam_all_ips_on_ip_list'] = "Sämtliche IPs befinden sich bereits auf der IP-Blockliste.";
 	$lang['spam_all_emails_on_email_list'] = "Sämtliche E-Mails befinden sich bereits auf der E-Mail-Blockliste.";
 	$lang['spam_all_domains_on_domain_list'] = "Sämtliche Domains befinden sich bereits auf der Domain-Blockliste.";
-	$lang['updated_ips'] = "{COUNTER} IPs wurden aktualisiert.";
-	$lang['updated_emails'] = "{COUNTER} E-Mails wurden aktualisiert.";
-	$lang['updated_domains'] = "{COUNTER} Domains wurden aktualisiert.";
+	$lang['updated_ips'] = "{COUNTER} IPs wurden in {TIME} Sekunden aktualisiert.";
+	$lang['updated_emails'] = "{COUNTER} E-Mails wurden in {TIME} Sekunden aktualisiert.";
+	$lang['updated_domains'] = "{COUNTER} Domains wurden {TIME} Sekunden aktualisiert.";
 
 	// SPAM_LOG.INC.PHP
 	$lang['entries_uploaded'] = "{COUNTER} Eintr&auml;ge wurden in {TIME} Sekunden<br>an www.stopforumspam.com &uuml;bermittelt.";
 	$lang['entries_sneaked'] = "{COUNTER} Eintr&auml;ge wurden in {TIME} Sekunden<br>an www.stopforumspam.com &uuml;bermittelt.";
 	$lang['entries_already_sneaked'] = "Sämtliche Einträge wurden bereits an<br>www.stopforumspam.com übermittelt.";
-	$lang['shortened'] = "&nbsp;[...]";
-	$lang['compared_ips'] = "Daf&uuml;r wurden insgesamt {COUNTER} ähnliche IPs in {TIME} Sekunden zum Vergleich herangezogen.";
-	$lang['compared_emails'] = "Daf&uuml;r wurden insgesamt {COUNTER} ähnliche E-Mails in {TIME} Sekunden zum Vergleich herangezogen.";
-	$lang['compared_domains'] = "Daf&uuml;r wurden insgesamt {COUNTER} ähnliche Domains in {TIME} Sekunden zum Vergleich herangezogen.";
+	$lang['shortened'] = "&nbsp;[...]";	
 	$lang['last_contact'] = "Letzter Kontakt vor:";
 	$lang['in_list_since'] = "In der Liste seit:";
 

@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - https://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -28,14 +28,15 @@
 	@session_start();
 	@session_regenerate_id();
 
-	header("Content-type: image/png");
+	//header("Content-type: image/png");
 
 	// set root path
 	define('MGB_ROOT', dirname(dirname(__FILE__))."/");
 
-	require(MGB_ROOT."includes/config.inc.php");
-	require(MGB_ROOT."includes/functions.inc.php");
-	require(MGB_ROOT."includes/load_settings.inc.php");
+	require_once (MGB_ROOT."includes/config.inc.php");
+	require_once (MGB_ROOT."includes/db.php");
+	require_once (MGB_ROOT."includes/functions.inc.php");
+	require_once (MGB_ROOT."includes/load_settings.inc.php");
 
 	// randomly choose a background for the captcha
 	$captcha_dir = MGB_ROOT."images/captchas/";
@@ -59,6 +60,11 @@
 	}
 
 	// create the image
+	if(!empty($settings['debug_mode'])) {
+			mgb_echo(MGB_ROOT."images/captchas/captchabg".$captcha_randombg.".png");
+			mgb_echo("Sicherheitscode: ".$_SESSION['CAPTCHA_CODE']);
+	}
+	
 	$captcha_img = imagecreatefrompng(MGB_ROOT."images/captchas/captchabg".$captcha_randombg.".png");
 
 	if($settings['captcha_method'] == 0) {
@@ -104,5 +110,5 @@
 	// share it for free but you may NOT sell it!
 
 	imagepng($captcha_img);
-	imagedestroy($captcha_img);
+	// imagedestroy($captcha_img);
 ?>

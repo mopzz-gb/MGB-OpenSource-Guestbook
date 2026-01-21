@@ -729,8 +729,8 @@
 				$entry[$i]['comment'] = textWrap($entry[$i]['comment'], 45);
 
 				// convert bbcodes
-				$entry[$i]['message'] = bbcode_format($entry[$i]['message'], "adminpanel");
-				$entry[$i]['comment'] = bbcode_format($entry[$i]['comment'], "adminpanel");
+				$entry[$i]['message'] = bbcode_format($mysqli, $entry[$i]['message'], "adminpanel");
+				$entry[$i]['comment'] = bbcode_format($mysqli, $entry[$i]['comment'], "adminpanel");
 
 				// fill template with entry (strings)
 				$ID = $i + 1;

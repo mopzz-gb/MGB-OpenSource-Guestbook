@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -39,11 +39,10 @@
 			if(!isset($_GET['p'])) { $_GET['p'] = 1; }
 
 			if(empty($_POST['dropbox'])) { $_POST['dropbox'] = ""; }
-			$_POST['dropbox'] = cleanstr($_POST['dropbox']);
 
 			if(!empty($_POST['dropbox'])) {
 				if($_POST['dropbox'] == 1) { // Delete all spam entries
-					mgb_sql_connect("TRUNCATE ".$db['prefix']."banlist_emails", "Error while deleting all spam entries.", 0);
+					mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."banlist_emails", "Error while deleting all spam entries.", 0, null, null);
 				} elseif($_POST['dropbox'] == 8) { // export as sql dump
 					$script_time_start = microtime(true);
 					include("../includes/config.inc.php");
@@ -58,8 +57,8 @@
 					$sql_dump.= "-- ---------------------------------------;\n\n";
 
 					// get structure of sql table
-					$sql_dump.= mgb_get_sql_structure($db['prefix'], "banlist_emails", 1);
-					$sql_dump.= mgb_get_sql_structure($db['prefix'], "banlist_emails", 2);
+					$sql_dump.= mgb_get_sql_structure($mysqli, $db['prefix'], "banlist_emails", 1);
+					$sql_dump.= mgb_get_sql_structure($mysqli, $db['prefix'], "banlist_emails", 2);
 
 					$sql_dump.= "-- END OF FILE --";
 					$backup_filename = "-".$db['prefix']."banlist_emails.sql";
@@ -79,9 +78,12 @@
 						}
 					}
 				} elseif($_POST['dropbox'] == 9) { // export as csv
+					/*
+						This option is currently not supported
+					*/
 					$script_time_start = microtime(true);
 
-					$result = mgb_sql_connect("SELECT banned_email, banned_email_first, banned_email_second, timestamp FROM ".$db['prefix']."banlist_emails ORDER BY banned_email_first ASC", "Error while loading data from banlist_emails for csv export.", 1);
+					$result = mgb_sql_connect($mysqli, "SELECT banned_email, banned_email_first, banned_email_second, timestamp FROM ".$db['prefix']."banlist_emails ORDER BY banned_email_first ASC", "Error while loading data from banlist_emails for csv export.", 1);
 					for($i = 0; $i < mysqli_num_rows($result); $i++) {
 						$export[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
 						$ID = $i + 1;
@@ -106,14 +108,17 @@
 			if(isset($_GET['id'])) {
 				if(isset($_GET['spam_action'])) {
 					if($_GET['spam_action'] == 'delete') {
-						mgb_sql_connect("DELETE FROM `".$db['prefix']."banlist_emails` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting a single spam entry.", 0);
+						$sql = "DELETE FROM `".$db['prefix']."banlist_emails` WHERE ID = ? LIMIT 1";
+						$params = [$_GET['id']];
+						$types = "i";
+						mgb_sql_connect($mysqli, $sql, "Error while deleting a single spam entry.", 0, $params, $types);
 					}
 				}
 			}
 
 			// get total number of entries
 			$sql = "SELECT COUNT(banned_email) AS total FROM ".$db['prefix']."banlist_emails";
-			$results = mgb_sql_connect($mysqli, $sql, "Error while counting banned email entries.", 1);
+			$results = mgb_sql_connect($mysqli, $sql, "Error while counting banned email entries.", 1, null, null);
 			$row = $results->fetch_assoc();
 			$total = (int)$row['total'];
 
@@ -178,17 +183,30 @@
 			if ($pages_total <= 0) {
 				$content_scrolling_function = "<br><br>";
 			}
+			
+			// Erlaubte Spalten für ORDER BY
+			$allowed_columns = ['id', 'banned_email', 'matches', 'timestamp'];
+			// Erlaubte Sortierrichtungen
+			$allowed_sort = ['ASC', 'DESC'];
 
-			// load guestbook entries
-			$result = mgb_sql_connect($mysqli, "SELECT id, banned_email, matches, timestamp FROM ".$db['prefix']."banlist_emails ORDER BY ".$_GET['orderby']." ".$_GET['sort']." LIMIT $load_start, $load_end", "Error while loading banned email entries.", 1);
+			// Standardwerte
+			$orderby = 'id';
+			$sort = 'ASC';
 
-			$counter = 0;
-
-			for($i = 0; $i < mysqli_num_rows($result); $i++) {
-				$entry[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-				$counter++;
+			// Benutzereingaben validieren
+			if (isset($_GET['orderby']) && in_array($_GET['orderby'], $allowed_columns)) {
+				$orderby = $_GET['orderby'];
+			}
+			if (isset($_GET['sort']) && in_array(strtoupper($_GET['sort']), $allowed_sort)) {
+				$sort = strtoupper($_GET['sort']);
 			}
 
+			// load guestbook entries
+			$sql = "SELECT id, banned_email, matches, timestamp FROM ".$db['prefix']."banlist_emails ORDER BY $orderby $sort LIMIT $load_start, $load_end";			
+			$result = mgb_sql_connect($mysqli, $sql, "Error while loading banned email entries.", 1, null, null);
+			$entry = mysqli_fetch_all($result, MYSQLI_ASSOC);
+			$counter = count($entry);
+			
 			if ($counter <= 1) {
 				if ($_GET['p'] == 1) {
 					$add_page_nr = NULL;
@@ -200,7 +218,7 @@
 			}
 
 			// fill entry template with content
-			require ("../includes/functions.inc.php");
+			require_once ("../includes/functions.inc.php");
 
 			if(!empty($entry)) {
 				for($i = 0; $i < count($entry); $i++) {
@@ -213,13 +231,15 @@
 					}
 
 					// fill template with entry (strings)
-					$page_entry[$i] = template("ENTRY_ID", $entry[$i]['id'], $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_IP", "", $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_EMAIL", $entry[$i]['banned_email'], $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_DOMAIN", "", $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_MATCHES", $entry[$i]['matches'], $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_TIMESTAMP", $entry_timestamp, $page_entry[$i]);
-					$page_entry[$i] = template("DELETE", "<a href=\"admin.php?action=banlist_emails&amp;id=".$entry[$i]['id']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('".$entry[$i]['id'].", ".$entry[$i]['banned_email'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>", $page_entry[$i]);
+					$page_entry[$i] = mgb_template_replace([
+						'ENTRY_ID' 			=> $entry[$i]['id'],
+						'ENTRY_IP' 			=> "",
+						'ENTRY_EMAIL' 		=> $entry[$i]['banned_email'],
+						'ENTRY_DOMAIN' 		=> "",
+						'ENTRY_MATCHES' 	=> $entry[$i]['matches'],
+						'ENTRY_TIMESTAMP' 	=> $entry_timestamp,
+						'DELETE' 			=> "<a href=\"admin.php?action=banlist_emails&amp;id=".$entry[$i]['id']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('".$entry[$i]['id'].", ".$entry[$i]['banned_email'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
+					], $page_entry[$i]);
 
 					if(!isset($page_include)) { $page_include = NULL; }
 					$page_include .= $page_entry[$i];

@@ -102,13 +102,6 @@
       	$content_captcha.= "<br>";
     	$content_captcha.= "<script type='text/javascript' src='https://www.google.com/recaptcha/api.js?onload=onloadCallback&amp;render=explicit' async defer>";
     	$content_captcha.= "</script>";
-	} elseif($settings['captcha_method'] == 3) {
-      	if(file_exists("plugins/ayah/ayah.php")) {
-        	require_once("plugins/ayah/ayah.php");
-        	$ayah = new AYAH();
-        	// $content_captcha = mgb_load_template("user", $settings['template_path'], "general/captcha_ayah", $settings['debug_mode']);
-        	$content_captcha = $ayah->getPublisherHTML();
-      	}
 	} else {
 		$content_captcha = mgb_load_template("user", $settings['template_path'], "general/captcha", $settings['debug_mode']);
 	}
@@ -147,11 +140,6 @@
 		}
 	}
 
-	// if akismet is active, override $settings['require_email']
-	if(file_exists("plugins/akismet/akismet.class.php") AND (!empty($settings['akismet_api'])) AND !empty($settings['akismet_plugin'])) {
-		$settings['require_email'] = 1;
-	}
-
 	if(!empty($_POST['send']) AND $_POST['send'] == $lang['send']) {
 		// get information about formular elements
 		if(empty($_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']])) { $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']] = ""; } 
@@ -167,7 +155,7 @@
 		// ANTI-SPAM #1
 		// ============
 		// check www.stopforumspam.com if user is known for intense spamming
-		if($settings['check_against_anti_spam_sites'] == 1) {
+		if($settings['check_against_anti_spam_sites'] === 1 ) {
 			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) == 1) {
 				if($settings['sfs_mark_as_spam'] == 1) {
 					$mark_as_spam = 1; // accept the entry, but mark it as spam
@@ -193,61 +181,6 @@
 				$rest = $settings['time_lock_value'] - $difference;
 			} else {
 				$_SESSION['keystroke_start_time'] = time();
-			}
-		}
-
-		// include akismet if it exists
-		if(file_exists("plugins/akismet/akismet.class.php")
-			AND !empty($settings['akismet_api'])
-			AND !empty($settings['akismet_plugin'])
-			AND !empty($_POST['user_accept_akismet_service'])
-			AND $_POST['user_accept_akismet_service'] == 1
-			AND !empty($_POST['name'])
-			AND !empty($_POST['email'])
-			AND !empty($_POST['message'])) {
-			include ("plugins/akismet/akismet.class.php");
-
-			$akismet_author = bbcode_delete($_POST['name']);
-			$akismet_email = bbcode_delete($_POST['email']);
-			$akismet_website = bbcode_delete($_POST['hp']);
-			$akismet_body = bbcode_delete($_POST['message']);
-
-			// check for spam
-			// Load array with comment data.
-			$comment = array(
-				'author' => $akismet_author,
-				'email' => $akismet_email,
-				'website' => $akismet_website,
-				'body' => $akismet_body,
-				'permalink' => 'http://'.$settings['h_domain'].$settings['gb_path'],
-				'user_ip' => $_SERVER['REMOTE_ADDR'], // Optional, if not in array defaults to $_SERVER['REMOTE_ADDR'].
-				'user_agent' => $_SERVER['HTTP_USER_AGENT'], // Optional, if not in array defaults to $_SERVER['HTTP_USER_AGENT'].
-				);
-
-			// Instantiate an instance of the class.
-			$akismet = new Akismet('http://'.$settings['h_domain'].$settings['gb_path'], $settings['akismet_api'], $comment);
-
-			// Test for errors.
-			if($akismet->errorsExist()) { // Returns true if any errors exist.
-				if($akismet->isError('AKISMET_INVALID_KEY')) {
-					echo "AKISMET API KEY INVALID";
-				} elseif($akismet->isError('AKISMET_RESPONSE_FAILED')) {
-					echo "AKISMET RESPONSE FAILED";
-				} elseif($akismet->isError('AKISMET_SERVER_NOT_FOUND')) {
-					echo "AKISMET_SERVER_NOT_FOUND";
-				}
-			} else {
-				// No errors, check for spam.
-				if($akismet->isSpam()) {
-					// if is set in the admin panel, mark the entry as spam
-					if(!empty($settings['akismet_mark_as_spam'])) {
-						$mark_as_spam = 1;
-						$noemail = 1;
-					} else {
-						$mark_as_spam = 0;
-						$noemail = 0;
-					}
-				}
 			}
 		}
 
@@ -280,14 +213,14 @@
 		}
 
 		// check if captcha is correct
-		if($settings['captcha'] == 1 AND !empty($_POST['name']) AND !empty($_POST['message'])) {
-			if($settings['captcha_method'] == 0) { // security code
-				if($_SESSION['CAPTCHA_CODE'] != $_POST['captcha']) {
+		if($settings['captcha'] === 1 AND !empty($_POST['name']) AND !empty($_POST['message'])) {
+			if($settings['captcha_method'] === 0) { // security code
+				if($_SESSION['CAPTCHA_CODE'] !== $_POST['captcha']) {
 					$errorcode = 7;  // captcha wrong or not set
 					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
-			} elseif($settings['captcha_method'] == 1) { // mathematical captcha
-				if($_SESSION['CAPTCHA_SUM'] != $_POST['captcha']) {
+			} elseif($settings['captcha_method'] === 1) { // mathematical captcha
+				if($_SESSION['CAPTCHA_SUM'] !== $_POST['captcha']) {
 					$errorcode = 7; // captcha wrong or not set
 					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
@@ -298,17 +231,6 @@
 					$errorcode = 7; // captcha wrong or not set
 					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
         			}
-			} elseif($settings['captcha_method'] == 3) { // ayah (are you a human?)
-				if(file_exists("plugins/ayah/ayah.php")) {
-					if (array_key_exists('send', $_POST)) {
-						$score = $ayah->scoreResult();
-						if(!$score) {
-							// user didn't pass the game
-							$errorcode = 7;
-							mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
-						}
-					}
-				}
 			}
 
 			if((!empty($settings['banlist_log']) AND $errorcode == 7) AND (!empty($_POST['captcha']) OR !empty($_POST['recaptcha_response_field']))) {
@@ -421,9 +343,9 @@
 		}
 
 		if(empty($_POST['name'])) { $errorcode = 3; } // name is required
-		if($settings['akismet_plugin'] == 1 AND empty($_POST['user_accept_akismet_service'])) { $errorcode = 11; } // akismet agreement has not been accepted
 
 		if(empty($errorcode)) { // everything's ok, let's format and save the entry
+			$_POST['email_name'] = $_POST['name'];
 			// delete bbcode except from message
 			$_POST['name'] = bbcode_delete($_POST['name']);
 			$_POST['city'] = bbcode_delete($_POST['city']);
@@ -445,39 +367,61 @@
 			if($settings['moderated'] == 1 OR $mark_as_spam == 1) { $checked = 0; } else { $checked = 1; }
 			if($settings['user_notification'] == 0 OR empty($_POST['email'])) { $_POST['user_notification'] = 0; }
 			if($settings['user_show_email'] == 0 OR empty($_POST['email'])) { $_POST['user_show_email'] = 0; }
-
+			
 			if(empty($mark_as_spam)) {
-				$dbname = $db['prefix']."entries";
+				// Write data into database
+				$sql = "INSERT INTO ".$db['prefix']."entries (
+					name, city,	email, icq,	aim, msn, fb, twitter, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, checked, isspam
+				) VALUES (
+				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+				)";
+				$params = [
+					$_POST['name'],
+					$_POST['city'] ?? '',
+					$_POST['email'] ?? '',
+					$_POST['icq'] ?? '',
+					$_POST['aim'] ?? '',
+					$_POST['msn'] ?? '',
+					$_POST['fb'] ?? '',
+					$_POST['twitter'] ?? '',
+					$_POST['hp'] ?? '',
+					$_POST['message'],
+					$_SERVER['REMOTE_ADDR'],
+					$_SERVER['HTTP_USER_AGENT'],
+					time(),
+					$_POST['user_notification'],
+					$_POST['user_show_email'],
+					$checked,
+					$mark_as_spam
+				];
+				$types = "ssssssssssssiiiii";
 			} else {
-				$dbname = $db['prefix']."spam";
+				// Write data into database
+				$sql = "INSERT INTO ".$db['prefix']."spam (
+					name, city,	email, icq,	aim, msn, fb, twitter, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, sent_captcha
+				) VALUES (
+				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+				)";
+				$params = [
+					$_POST['name'],
+					$_POST['city'] ?? '',
+					$_POST['email'] ?? '',
+					$_POST['icq'] ?? '',
+					$_POST['aim'] ?? '',
+					$_POST['msn'] ?? '',
+					$_POST['fb'] ?? '',
+					$_POST['twitter'] ?? '',
+					$_POST['hp'] ?? '',
+					$_POST['message'],
+					$_SERVER['REMOTE_ADDR'],
+					$_SERVER['HTTP_USER_AGENT'],
+					time(),
+					$_POST['user_notification'],
+					$_POST['user_show_email'],
+					$_POST['captcha']
+				];
+				$types = "ssssssssssssiiis";
 			}
-
-			// Write data into database
-			$sql = "INSERT INTO ".$dbname." (
-				name, city,	email, icq,	aim, msn, fb, twitter, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, checked,	isspam
-			) VALUES (
-			   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-			)";
-			$params = [
-				$_POST['name'],
-				$_POST['city'] ?? '',
-				$_POST['email'] ?? '',
-				$_POST['icq'] ?? '',
-				$_POST['aim'] ?? '',
-				$_POST['msn'] ?? '',
-				$_POST['fb'] ?? '',
-				$_POST['twitter'] ?? '',
-				$_POST['hp'] ?? '',
-				$_POST['message'],
-				$_SERVER['REMOTE_ADDR'],
-				$_SERVER['HTTP_USER_AGENT'],
-				time(),
-				$_POST['user_notification'],
-				$_POST['user_show_email'],
-				$checked,
-				$mark_as_spam
-			];
-			$types = "ssssssssssssiiiii";
 			
 			// saving entry
 			if(mgb_sql_connect($mysqli, $sql, "Error while saving a new guestbook entry.", 0, $params, $types)) {

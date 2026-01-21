@@ -134,7 +134,7 @@
      * @param string $types           Optional: Typen der Parameter, z.B. "ssi"
      * @return mixed
      */
-		function mgb_sql_connect(mysqli $mysqli, string $sql, string $errormessage, int $return, array $params = [], string $types = "") {
+		function mgb_sql_connect(mysqli $mysqli, string $sql, string $errormessage, int $return, ?array $params = null, ?string $types = null) {
 			$stmt = $mysqli->prepare($sql);
 			if (!$stmt) {
             die("<span style='font-family: verdana, arial, helvetica, sans-serif; font-size:12px;color:darkblue;'>
@@ -157,8 +157,7 @@
 					".$errormessage."<br><b>SQL:</b> ".$sql."<br><b>ERROR:</b> ".$stmt->errno." : ".$stmt->error."</span>");
 			}
 
-			if ($return === 0) {
-            // true/false zurückgeben
+			if ($return === 0) { // true/false zurückgeben
             return true;
 			} else {
 				$result = $stmt->get_result(); // mysqli_result
@@ -348,7 +347,7 @@
 		function mgb_get_sql_structure($mysqli, $db_prefix, $tablename, $mode) {
 			if($mode == 1) {
 				// get structure of table and build output
-				$result = mgb_sql_connect($mysqli, "SHOW COLUMNS FROM ".$db_prefix.$tablename, "Error while getting structure of table ".$tablename, 1);
+				$result = mgb_sql_connect($mysqli, "SHOW COLUMNS FROM ".$db_prefix.$tablename, "Error while getting structure of table ".$tablename, 1, null, null);
 				if(mysqli_num_rows($result) > 0) {
 					while($row = mysqli_fetch_assoc($result)) {
 						$fieldnames[] = $row['Field'];
@@ -386,7 +385,7 @@
 				$sql_dump.= ") DEFAULT CHARSET=utf8 ;\n\n";
 			} elseif($mode == 2) {
 				// get content of table and build output
-				$result = mgb_sql_connect($mysqli, "SHOW COLUMNS FROM ".$db_prefix.$tablename, "Error while getting structure of table ".$tablename, 1);
+				$result = mgb_sql_connect($mysqli, "SHOW COLUMNS FROM ".$db_prefix.$tablename, "Error while getting structure of table ".$tablename, 1, null, null);
 				if(mysqli_num_rows($result) >= 1) {
 					while($row = mysqli_fetch_assoc($result)) {
 						$fieldnames[] = $row['Field'];
@@ -408,7 +407,7 @@
 
 					$sql .= " FROM ".$db_prefix.$tablename;
 
-					$data = mgb_sql_connect($mysqli, $sql, "Error while getting data of table ".$tablename, 1);
+					$data = mgb_sql_connect($mysqli, $sql, "Error while getting data of table ".$tablename, 1, null, null);
 					if(mysqli_num_rows($data) >= 1) {
 						for($i = 0; $i < mysqli_num_rows($data); $i++) {
 							$counteri = mysqli_num_rows($data) - 1;
@@ -460,7 +459,14 @@
 	// checks if email is valid
 	if(!function_exists("check_mail")) {
 		function check_mail($email) {
-			if(preg_match("/^[a-zA-Z0-9äöüÄÖÜ]+([-_\.]?[a-zA-Z0-9äöüÄÖÜ])+@[a-zA-Z0-9äöüÄÖÜ]+([-_\.]?[a-zA-Z0-9äöüÄÖÜ])+\.[a-zA-ZäöüÄÖÜ\.]{2,15}/", $email)) {
+			if(preg_match("/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/", $email)) {
+				if (strlen($email) > 254) {
+					return FALSE;
+				}
+				$localPart = strtok($email, '@');
+				if (strlen($localPart) > 64) {
+					return FALSE;
+				}
 				return TRUE;
 			} else {
 				return FALSE;
@@ -2068,6 +2074,8 @@
 	if(!function_exists("mgb_spam_request")) {
 		function mgb_spam_request($name, $email, $ip, $username_frequency, $email_frequency, $ip_frequency, $username_required, $email_required, $ip_required) {
 			if(function_exists("json_decode") AND function_exists("file_get_contents")) {
+				$name = urlencode(iconv('GBK', 'UTF-8', $name));
+				$email = urlencode(iconv('GBK', 'UTF-8', $email));
 				$spam_request = json_decode(file_get_contents('http://www.stopforumspam.com/api?username='.$name.'&email='.$email.'&ip='.$ip.'&f=json&unix'), true);
 				$blocked = 0;
 				if(empty($spam_request['username']['frequency'])) { $spam_request['username']['frequency'] = ""; } 

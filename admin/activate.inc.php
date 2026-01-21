@@ -94,10 +94,10 @@
 							$whole_entry[$l] = mysqli_fetch_array($whole_spam_entry, MYSQLI_ASSOC);
 							// store entry in spam table
 							
-							$sql = "INSERT INTO".$db['prefix']."spam (
+							$sql = "INSERT INTO ".$db['prefix']."spam (
 								name, ip, email, city, icq, aim, msn, fb, twitter, hp, message, user_notification, user_show_email, captcha, sent_captcha, counter, user_agent, sneaked, timestamp
 							) VALUES (
-								?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?
+								?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 							)";
 							
 							$params = [
@@ -129,10 +129,8 @@
 					}
 				}
 				// delete entries from entries table
-				$sql = "DELETE FROM '".$db['prefix']."entries' WHERE checked = ? AND isspam = ?";
-				$params = [0, 0];
-				$types = "ii";
-				mgb_sql_connect($mysqli, $sql, "Error while deleting entry in ".$db['prefix']."entries", 0, $params, $types);
+				$sql = "DELETE FROM ".$db['prefix']."entries WHERE checked = 0 AND isspam = 0";
+				mgb_sql_connect($mysqli, $sql, "Error while deleting entry in ".$db['prefix']."entries", 0, null, null);
 			}
 
 			if(isset($_GET['id'])) {
