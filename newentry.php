@@ -376,10 +376,10 @@
 			// check if "moderated gb" and "user email notification" is on
 			if($settings['moderated'] === 1 OR $mark_as_spam === 1) {
 				$checked = 0;
-				$anonymize_ip = 0;
+				$ip = $_SERVER['REMOTE_ADDR'];
 			} else {
 				$checked = 1;
-				$anonymize_ip = 1;
+				$ip = mgb_anonymize_ip($_SERVER['REMOTE_ADDR']);
 			}
 			if($settings['user_notification'] == 0 OR empty($_POST['email'])) { $_POST['user_notification'] = 0; }
 			if($settings['user_show_email'] == 0 OR empty($_POST['email'])) { $_POST['user_show_email'] = 0; }
@@ -402,7 +402,7 @@
 					$_POST['twitter'] ?? '',
 					$_POST['hp'] ?? '',
 					$_POST['message'],
-					mgb_anonymize_ip($_SERVER['REMOTE_ADDR']),
+					$ip,
 					$_SERVER['HTTP_USER_AGENT'],
 					time(),
 					$_POST['user_notification'],
