@@ -233,6 +233,7 @@
         			}
 			}
 
+			// captcha was wrong
 			if((!empty($settings['banlist_log']) AND $errorcode == 7) AND (!empty($_POST['captcha']) OR !empty($_POST['recaptcha_response_field']))) {
 				$type = 9; // captcha wrong
 				$sql = "INSERT INTO ".$db['prefix']."spam_log (
@@ -278,19 +279,28 @@
 
 		// check ip, email and domain with banlists
 		if((!empty($_POST['name']) AND !empty($_POST['email']) AND !empty($_POST['message'])) AND ($errorcode != 7) AND ($mark_as_spam != 1) AND (!$settings['banlist_ips'] == 1 OR $settings['banlist_emails'] == 1 OR $settings['banlist_domains'] == 1)) {
-			$check_banlists = mgb_check_banlists($mysqli, $_SERVER['REMOTE_ADDR'], $_POST['email'], $settings['blocktime'], $settings['banlist_ips'], $settings['banlist_emails'], $settings['banlist_domains'], $settings['debug_mode']);
-			if($check_banlists == 1) {
+			$check_banlists = mgb_check_banlists(
+				$mysqli,
+				$_SERVER['REMOTE_ADDR'],
+				$_POST['email'],
+				$settings['blocktime'],
+				$settings['banlist_ips'],
+				$settings['banlist_emails'],
+				$settings['banlist_domains'],
+				$settings['debug_mode']
+			);
+			if($check_banlists === 1) {
 				$errorcode = 14; // blocked by ip
 				$type = 1; // blocked by ip
-			} elseif($check_banlists == 2) {
+			} elseif($check_banlists === 2) {
 				$errorcode = 12; // blocked by email
 				$type = 3; // blocked by email
-			} elseif($check_banlists == 3) {
+			} elseif($check_banlists === 3) {
 				$errorcode = 13; // blocked by domain
 				$type = 4; // blocked by domain
 			}
 
-			if(!empty($settings['banlist_log']) AND ($errorcode == 12 OR $errorcode == 13 OR $errorcode == 14 OR $errorcode == 17)) {
+			if(!empty($settings['banlist_log']) AND ($errorcode === 12 OR $errorcode === 13 OR $errorcode === 14 OR $errorcode === 17)) {
 				$sql = "INSERT INTO ".$db['prefix']."spam_log (
 					ip,	name, email, user_agent, hp, message, type,	site, timestamp
 				) VALUES (
@@ -364,7 +374,13 @@
 			if($_POST['hp'] === "http://" || "https://"){ $_POST['hp'] = ""; }
 
 			// check if "moderated gb" and "user email notification" is on
-			if($settings['moderated'] == 1 OR $mark_as_spam == 1) { $checked = 0; } else { $checked = 1; }
+			if($settings['moderated'] === 1 OR $mark_as_spam === 1) {
+				$checked = 0;
+				$anonymize_ip = 0;
+			} else {
+				$checked = 1;
+				$anonymize_ip = 1;
+			}
 			if($settings['user_notification'] == 0 OR empty($_POST['email'])) { $_POST['user_notification'] = 0; }
 			if($settings['user_show_email'] == 0 OR empty($_POST['email'])) { $_POST['user_show_email'] = 0; }
 			
@@ -386,7 +402,7 @@
 					$_POST['twitter'] ?? '',
 					$_POST['hp'] ?? '',
 					$_POST['message'],
-					$_SERVER['REMOTE_ADDR'],
+					mgb_anonymize_ip($_SERVER['REMOTE_ADDR']),
 					$_SERVER['HTTP_USER_AGENT'],
 					time(),
 					$_POST['user_notification'],

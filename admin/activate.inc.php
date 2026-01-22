@@ -134,7 +134,7 @@
 			}
 
 			if(isset($_GET['id'])) {
-				if(isset($_GET['isspam']) AND secure_value($_GET['isspam'] == 1)) {
+				if(isset($_GET['isspam']) AND $_GET['isspam'] === 1) {
 					// get data of the entry from database
 					$sql = "SELECT * FROM ".$db['prefix']."entries WHERE ID = ?";
 					$params = [$_GET['id']];
@@ -179,9 +179,16 @@
 					mgb_sql_connect($mysqli, $sql, "Error while deleting entry in ".$db['prefix']."entries", 0, $params, $types);
 					mgb_erase_cache("../cache/");
 				} else {
-					$sql = "UPDATE `".$db['prefix']."entries` SET `checked` = ? WHERE ID = ? LIMIT 1";
-					$params = [1, $_GET['id']];
-					$types = "ii";
+					$sql = "SELECT ip FROM ".$db['prefix']."entries WHERE ID = ? LIMIT 1";
+					$params = [$_GET['id']];
+					$types = "i";
+					$result = mgb_sql_connect($mysqli, $sql, "Error while retrieving IP Address", 1, $params, $types);
+					$row = mysqli_fetch_assoc($result);
+					$ip = $row['ip'];
+					echo $ip;
+					$sql = "UPDATE `".$db['prefix']."entries` SET checked = ? , ip = ? WHERE ID = ? LIMIT 1";
+					$params = [1, mgb_anonymize_ip($ip), $_GET['id']];
+					$types = "isi";
 					mgb_sql_connect($mysqli, $sql, "Error while activating entry and updating sql table.", 0, $params, $types);
 					mgb_trigger_sys_log($mysqli, 1013, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries activated by the user)
 					mgb_erase_cache("../cache/");

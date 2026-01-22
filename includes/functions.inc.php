@@ -1351,7 +1351,16 @@
 	// CREATED: 12.06.2013
 	// DESCR: CHECKS IF A GIVEN IP, EMAIL ADDRESS OR DOMAIN IS ALREADY BANNED
 	if(!function_exists("mgb_check_banlists")) {
-		function mgb_check_banlists($mysqli, $user_ip, $user_email, $blocktime, $banlist_ips_active, $banlist_emails_active, $banlist_domains_active, $debug_mode) {
+		function mgb_check_banlists(
+			$mysqli,
+			$user_ip,
+			$user_email,
+			$blocktime,
+			$banlist_ips_active,
+			$banlist_emails_active,
+			$banlist_domains_active,
+			$debug_mode
+		) {
 			require "config.inc.php";
 			if($banlist_ips_active == 1) {
 				if($debug_mode == 1 OR $debug_mode == 2) {
@@ -1361,7 +1370,7 @@
 					echo "<b>User email:</b> ".$user_email."</span><br>";
 				}
 				// load banned ips out of the database
-				$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_ips WHERE banned_ip = ?";
+				$sql = "SELECT * FROM ".$db['prefix']."banlist_ips WHERE banned_ip = ?";
 				$params = [$user_ip];
 				$types = "s";
 				$result = mgb_sql_connect($mysqli, $sql, "Error while getting information about banned ips", 1, $params, $types); 
@@ -1386,7 +1395,7 @@
 						if($blocked = 1) {
 							// update counter for banned ip
 							$matches = $ip['matches'] + 1;
-							$sql = "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_ips SET `matches` = '?' LIMIT 1";
+							$sql = "UPDATE ".$db['prefix']."banlist_ips SET `matches` = ? LIMIT 1";
 							$params = [$matches];
 							$types = "i";
 							mgb_sql_connect($mysqli, $sql, "Error while updating 'matches' in ip banlist.", 0, $params, $types);
@@ -1403,7 +1412,7 @@
 
 			if($banlist_emails_active === 1 AND $blocked === 0) {
 				// load banned emails out of the database
-				$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_emails WHERE banned_email = ?";
+				$sql = "SELECT * FROM ".$db['prefix']."banlist_emails WHERE banned_email = ?";
 				$params = [$user_email];
 				$types = "s";
 				$result = mgb_sql_connect($mysqli, $sql, "Error while getting information about banned emails", 1, $params, $types); 
@@ -1428,7 +1437,7 @@
 						if($blocked = 2) {
 							// update counter for banned email
 							$matches = $email['matches'] + 1;
-							$sql = "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_emails SET `matches` = ? WHERE banned_email = ?";
+							$sql = "UPDATE ".$db['prefix']."banlist_emails SET `matches` = ? WHERE banned_email = ?";
 							$params = [$matches, $user_email];
 							$types = "is";
 							mgb_sql_connect($mysqli, $sql, "Error while updating 'matches' in email banlist.", 0, $params, $types);						
@@ -1445,7 +1454,7 @@
 
 			if($banlist_domains_active === 1 AND $blocked === 0) {
 				$user_domain = explode("@", $user_email);
-				$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_domains WHERE banned_domain = ?";
+				$sql = "SELECT * FROM ".$db['prefix']."banlist_domains WHERE banned_domain = ?";
 				$params = [$user_domain[1]];
 				$types = "s";
 				$result = mgb_sql_connect($mysqli, $sql, "Error while getting information about banned emails", 1, $params, $types); 
@@ -1470,14 +1479,12 @@
 						if($blocked = 3) {
 							// update counter for banned domains
 							$matches = $domain['matches'] + 1;
-							$sql = "UPDATE ".mgb_sql_prefix($db['prefix'])."banlist_domains SET `matches` = '?' WHERE banned_domain = ?";
-							$params = [$matches, $user_domain[1]];
-							$types = "is";
-							mgb_sql_connect($mysqli, $sql, "Error while updating 'matches' in domain banlist.", 0, $params, $types);
+							$sql = "UPDATE ".$db['prefix']."banlist_domains SET `matches` = '".$matches."' WHERE banned_domain = '".$user_domain[1]."'";
+							mgb_sql_connect($mysqli, $sql, "Error while updating 'matches' in domain banlist.", 0, null, null);
 						}
 					}
 				} else {
-					if($debug_mode == 1 OR $debug_mode == 2) {
+					if($debug_mode === 1 OR $debug_mode === 2) {
 						echo "&nbsp;<span>Domain:</span>&nbsp;<span style='color: #228b22'>No Match!</span><br>";
 					}
 					$blocked = 0;
@@ -2307,6 +2314,49 @@
 			$params = [time()];
 			$types = "i";
 			mgb_sql_connect($mysqli, $sql, "Error updating telemetry ping", 0, $params, $types);
+		}
+	}
+	
+	// MGB_ANONYMIZE_IPV6
+	// INFO: anonymizes ipv6 addresses
+	// CREATED: 22.01.2026
+	
+	if(!function_exists("mgb_anonymize_ipv6")) {
+		function mgb_anonymize_ipv6($ipv6) {
+			// IPv6-Adresse normalisieren (gekürzte Form auflösen)
+			$normalized = inet_pton($ipv6);
+			if ($normalized === false) {
+				return $ipv6; // Ungültige IP, zurückgeben wie sie ist
+			}
+			// Normalisierte IP in Hex-String umwandeln
+			$unpacked = unpack('H*', $normalized);
+			$hex = $unpacked[1];
+			// In 8 Blöcke à 4 Zeichen aufteilen
+			$parts = str_split($hex, 4);
+			// Erste 4 Blöcke beibehalten, Rest mit zufälligen Hex-Werten ersetzen
+			$anonymized_parts = array_slice($parts, 0, 4);
+			for ($i = 4; $i < 8; $i++) {
+				$anonymized_parts[] = 'xxxx'; // oder zufällige Hex-Werte wie '1234'
+			}
+			// Zurück in Hex-String umwandeln
+			$anonymized_hex = implode('', $anonymized_parts);
+			// Zurück in die lesbare IPv6-Notation umwandeln
+			$anonymized = inet_ntop(pack('H*', $anonymized_hex));
+			return $anonymized;
+		}
+	}
+	
+	// MGB_ANONYMIZE_IP
+	// INFO: anonymizes ip addresses
+	// CREATED: 22.01.2026
+	if(!function_exists("mgb_anonymize_ip")) {
+		function mgb_anonymize_ip($ip) {
+			if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+				return mgb_anonymize_ipv6($ip);
+			} elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+				return preg_replace('/(\.\d+)(\.\d+)$/', '.xxx.xxx', $ip); // IPv4-Anonymisierung
+			}
+			return $ip; // Fallback
 		}
 	}
 ?>
