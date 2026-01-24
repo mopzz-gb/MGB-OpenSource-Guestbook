@@ -345,12 +345,12 @@
 					// fill template with entry (strings)
 					$page_entry[$i] = mgb_template_replace([
 						'ENTRY_ID' 		=> $entry[$i]['ID'],
-						'ENTRY_NAME' 	=> substr($entry[$i]['name'], 0, 20),
-						'ENTRY_MESSAGE' => $entry[$i]['message'],
+						'ENTRY_NAME' 	=> mgb_format(substr($entry[$i]['name'], 0, 20)),
+						'ENTRY_MESSAGE' => mgb_format($entry[$i]['message']),
 						'ENTRY_IP' 		=> $entry[$i]['ip'],
 						'ENTRY_EMAIL' 	=> $entry[$i]['email'],
-						'ENTRY_HP' 		=> $entry[$i]['hp'],
-						'ENTRY_COMMENT' => $entry[$i]['comment'],
+						'ENTRY_HP' 		=> mgb_format($entry[$i]['hp']),
+						'ENTRY_COMMENT' => mgb_format($entry[$i]['comment']),
 						'LANG_QUOTE' 	=> $lang['quote'],
 						'ACTIVATE' 		=> "<a href=\"admin.php?action=activate&amp;id=".$entry[$i]['ID']."&amp;notify=".$entry[$i]['user_notification'].$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/activate.png\" title=\"".$lang['activate_entry']."\" alt=\"".$lang['activate_entry']."\"></a>",
 						'MARK_AS_SPAM' 	=> "<a href=\"admin.php?action=activate&amp;id=".$entry[$i]['ID']."&amp;isspam=1".$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/spam.png\" title=\"".$lang['mark_as_spam']."\" alt=\"".$lang['mark_as_spam']."\"></a>",

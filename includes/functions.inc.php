@@ -457,8 +457,8 @@
 
 
 	// checks if email is valid
-	if(!function_exists("check_mail")) {
-		function check_mail($email) {
+	if(!function_exists("mgb_check_mail")) {
+		function mgb_check_mail($email) {
 			if(preg_match("/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/", $email)) {
 				if (strlen($email) > 254) {
 					return FALSE;
@@ -1324,11 +1324,11 @@
 	// DESCR: DELIVERS AN ERRORMESSAGE
 	if(!function_exists("mgb_errormessage")) {
 		function mgb_errormessage($errorcode, $language_path, $area) {
-			if($area == "adminpanel") {
-				include (MGB_ROOT.str_replace(MGB_ROOT, '', $language_path).'/lang_admin.php');
+			if($area == "adminpanel") {				
+				include (MGB_ROOT.'language/'.$language_path.'/lang_admin.php');
 				$errormessage = $lang['errormessage'][$errorcode];
 			} elseif($area == "user") {
-				include (MGB_ROOT.str_replace(MGB_ROOT, '', $language_path).'/lang_main.php');
+				include (MGB_ROOT.'language/'.$language_path.'/lang_main.php');
 				if($errorcode != 4 AND $errorcode != 5 AND $errorcode != 15 AND $errorcode != 16) {
 					$errormessage = $lang['errormessage'][$errorcode];
 				} else {
@@ -2357,6 +2357,24 @@
 				return preg_replace('/(\.\d+)(\.\d+)$/', '.xxx.xxx', $ip); // IPv4-Anonymisierung
 			}
 			return $ip; // Fallback
+		}
+	}
+	
+	// MGB_FORMAT
+	// INFO: formats output
+	// CREATED: 23.01.2026
+	if(!function_exists("mgb_format")) {
+		function mgb_format($string) {
+			return nl2br(htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+		}
+	}
+	
+	// MGB_FORMATFORM
+	// INFO: formats output
+	// CREATED: 23.01.2026
+	if(!function_exists("mgb_formatForm")) {
+		function mgb_formatForm($string) {
+			return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 		}
 	}
 ?>

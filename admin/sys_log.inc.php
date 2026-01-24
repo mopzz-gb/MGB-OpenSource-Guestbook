@@ -162,16 +162,18 @@
 
 				$entry_domain = explode("@", $entry[$i]['email']);
 				// fill template with entry (strings)
-				$page_entry[$i] = template("ENTRY_TIMESTAMP", $entry_timestamp, $page_entry[$i]);
-				$page_entry[$i] = template("ENTRY_TYPE", $lang['sys_log_type'][$entry[$i]['type']], $page_entry[$i]);
-				$page_entry[$i] = template("ENTRY_NAME", $entry[$i]['name'], $page_entry[$i]);
-				$page_entry[$i] = template("ENTRY_EMAIL", "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_email_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_EMAIL_BANLIST}\">".$entry[$i]['email']."</a>", $page_entry[$i]);
-				$page_entry[$i] = template("ENTRY_TEXT", $entry[$i]['text'], $page_entry[$i]);
-				$page_entry[$i] = template("ENTRY_IP", "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_ip_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_IP_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_IP_BANLIST}\">".$entry[$i]['ip']."</a>", $page_entry[$i]);
-				$page_entry[$i] = template("ENTRY_USER", $entry[$i]['user'], $page_entry[$i]);
-				$page_entry[$i] = template("ENTRY_USER_NEW", $entry[$i]['user_new'], $page_entry[$i]);
-				$page_entry[$i] = template("ENTRY_USER_EDIT", $entry[$i]['user_edit'], $page_entry[$i]);
-				$page_entry[$i] = template("DELETE", "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('".$entry[$i]['ID'].", ".$entry[$i]['ip'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>", $page_entry[$i]);
+				$page_entry[$i] = mgb_template_replace([
+					'ENTRY_TIMESTAMP' 	=> $entry_timestamp,
+					'ENTRY_TYPE' 		=> $lang['sys_log_type'][$entry[$i]['type']],
+					'ENTRY_NAME' 		=> mgb_format($entry[$i]['name']),
+					'ENTRY_EMAIL' 		=> "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_email_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_EMAIL_BANLIST}\">".$entry[$i]['email']."</a>",
+					'ENTRY_TEXT' 		=> mgb_format($entry[$i]['text']),
+					'ENTRY_IP' 			=> "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_ip_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_IP_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_IP_BANLIST}\">".$entry[$i]['ip']."</a>",
+					'ENTRY_USER' 		=> mgb_format($entry[$i]['user']),
+					'ENTRY_USER_NEW' 	=> mgb_format($entry[$i]['user_new']),
+					'ENTRY_USER_EDIT' 	=> mgb_format($entry[$i]['user_edit']),
+					'DELETE' 			=> "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('".$entry[$i]['ID'].", ".$entry[$i]['ip'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
+				], $page_entry[$i]);
 
 				if(!isset($page_include)) { $page_include = NULL; }
 				$page_include .= $page_entry[$i];

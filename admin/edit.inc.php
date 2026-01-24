@@ -61,15 +61,6 @@
 					$_POST['twitter'] = bbcode_delete($_POST['twitter']);
 					$_POST['hp'] = bbcode_delete($_POST['hp']);
 
-					$_POST['message'] = nl2br($_POST['message']);
-					$_POST['comment'] = nl2br($_POST['comment']);
-					$t1 = chr(10);
-					$t2 = chr(13);
-					$_POST['message'] = str_ireplace($t1, '', $_POST['message']);
-					$_POST['message'] = str_ireplace($t2, '', $_POST['message']);
-					$_POST['comment'] = str_ireplace($t1, '', $_POST['comment']);
-					$_POST['comment'] = str_ireplace($t2, '', $_POST['comment']);
-
 					// set date and time back to unix timestamp format
 					$date = explode(".", $_POST['date']);
 
@@ -206,9 +197,6 @@
 					// Datum und Zeit trennen
 					$date = date("d.m.Y", $entry['timestamp']);
 					$time = date("H:i", $entry['timestamp']);
-
-					$message = xhtmlbr2nl($entry['message']);
-					$comment = xhtmlbr2nl($entry['comment']);
 
 					if($entry['user_notification'] == 1) { $checked_notify = " checked=\"checked\""; } else { $checked_notify = NULL; }
 					if($entry['user_show_email'] == 1) { $checked_show_email = " checked=\"checked\""; } else { $checked_show_email = NULL; }
@@ -358,12 +346,12 @@
 				// fill template with entry (strings)
 				$page_entry[$i] = mgb_template_replace([
 					'ENTRY_ID' 		=> $entry[$i]['ID'],
-					'ENTRY_NAME' 	=> substr($entry[$i]['name'], 0, 20),
-					'ENTRY_MESSAGE' => $entry[$i]['message'],
+					'ENTRY_NAME' 	=> mgb_format(substr($entry[$i]['name'], 0, 20)),
+					'ENTRY_MESSAGE' => mgb_format($entry[$i]['message']),
 					'ENTRY_IP' 		=> $entry[$i]['ip'],
 					'ENTRY_EMAIL' 	=> $entry[$i]['email'],
-					'ENTRY_HP' 		=> $entry[$i]['hp'],
-					'ENTRY_COMMENT' => $entry[$i]['comment'],
+					'ENTRY_HP' 		=> mgb_format($entry[$i]['hp']),
+					'ENTRY_COMMENT' => mgb_format($entry[$i]['comment']),
 					'LANG_QUOTE' 	=> $lang['quote'],
 					'EDIT' 			=> $status."<br><a href=\"admin.php?action=edit&amp;id=".$entry[$i]['ID'].$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/edit.png\" title=\"".$lang['edit_entry']."\" alt=\"".$lang['edit_entry']."\"></a>"
 			], $page_entry[$i]);

@@ -181,7 +181,7 @@
 						$timestamp = time();
 						if(mgb_write_export_file(MGB_ROOT."save/".$timestamp.$backup_filename, $sql_dump) == TRUE) {
 							$script_time_end = microtime(true);
-							mgb_trigger_sys_log($mysqli, '1011', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+							mgb_trigger_sys_log($mysqli, 1011, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 							$script_time = $script_time_end - $script_time_start;
 							$template_message = "<span class='newer_version'><a href='".MGB_ROOT."save/".$timestamp.$backup_filename."' target='_blank'>".str_replace('{TIME}', round($script_time, 3), $lang['sql_dump_successfull'])."</span>";
 						} else {
@@ -196,7 +196,7 @@
 				if(!empty($_POST['edit_delete_db_backup_full'])) {
 					if(!empty($_POST['database_backup_full'])) {
 						if(unlink(MGB_ROOT."save/".$_POST['database_backup_full']) == TRUE) {
-							mgb_trigger_sys_log($mysqli, '1012', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+							mgb_trigger_sys_log($mysqli, 1012, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 							$template_message = "<span class='newer_version'>".$lang['edit_delete_backup_successfull']."</span>";
 						} else {
 							$template_message = "<span class='old_version'>".$lang['errormessage'][19]."</span>"; // error while deleting backup
@@ -207,7 +207,7 @@
 				} elseif(!empty($_POST['edit_delete_db_backup_entries'])) {
 					if(!empty($_POST['database_backup_entries'])) {
 						if(unlink(MGB_ROOT."save/".$_POST['database_backup_entries']) == TRUE) {
-							mgb_trigger_sys_log($mysqli, '1012', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+							mgb_trigger_sys_log($mysqli, 1012, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 							$template_message = "<span class='newer_version'>".$lang['edit_delete_backup_successfull']."</span>";
 						} else {
 							$template_message = "<span class='old_version'>".$lang['errormessage'][19]."</span>"; // error while deleting backup
@@ -218,7 +218,7 @@
 				} elseif(!empty($_POST['edit_delete_db_backup_banlist_ips'])) {
 					if(!empty($_POST['database_backup_banlist_ips'])) {
 						if(unlink(MGB_ROOT."save/".$_POST['database_backup_banlist_ips']) == TRUE) {
-							mgb_trigger_sys_log($mysqli, '1012', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+							mgb_trigger_sys_log($mysqli, 1012, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 							$template_message = "<span class='newer_version'>".$lang['edit_delete_backup_successfull']."</span>";
 						} else {
 							$template_message = "<span class='old_version'>".$lang['errormessage'][19]."</span>"; // error while deleting backup
@@ -229,7 +229,7 @@
 				} elseif(!empty($_POST['edit_delete_db_backup_banlist_emails'])) {
 					if(!empty($_POST['database_backup_banlist_emails'])) {
 						if(unlink(MGB_ROOT."save/".$_POST['database_backup_banlist_emails']) == TRUE) {
-							mgb_trigger_sys_log($mysqli, '1012', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+							mgb_trigger_sys_log($mysqli, 1012, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 							$template_message = "<span class='newer_version'>".$lang['edit_delete_backup_successfull']."</span>";
 						} else {
 							$template_message = "<span class='old_version'>".$lang['errormessage'][19]."</span>"; // error while deleting backup
@@ -240,7 +240,7 @@
 				} elseif(!empty($_POST['edit_delete_db_backup_banlist_domains'])) {
 					if(!empty($_POST['database_backup_banlist_domains'])) {
 						if(unlink(MGB_ROOT."save/".$_POST['database_backup_banlist_domains']) == TRUE) {
-							mgb_trigger_sys_log($mysqli, '1012', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+							mgb_trigger_sys_log($mysqli, 1012, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 							$template_message = "<span class='newer_version'>".$lang['edit_delete_backup_successfull']."</span>";
 						} else {
 							$template_message = "<span class='old_version'>".$lang['errormessage'][19]."</span>"; // error while deleting backup
@@ -281,7 +281,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring all tables of MGB OpenSource Guestbook.", 0) === TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {
@@ -294,7 +294,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring all tables of MGB OpenSource Guestbook.", 0) === TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {
@@ -330,7 +330,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."entries.", 0) == TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {
@@ -343,7 +343,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."entries.", 0) == TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {
@@ -379,7 +379,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_ips.", 0) == TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {
@@ -392,7 +392,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_ips.", 0) == TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {
@@ -428,7 +428,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_emails.", 0) == TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {
@@ -441,7 +441,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_emails.", 0) == TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {
@@ -477,7 +477,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_domains.", 0) == TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {
@@ -490,7 +490,7 @@
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
 											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_domains.", 0) == TRUE) {
 												$script_time_end = microtime(true);
-												mgb_trigger_sys_log($mysqli, '1030', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
 												$template_message = "<span class='newer_version'>".$lang['edit_restore_backup_successfull']."<br>Daf&uuml;r wurden ".round($script_time, 3)." Sekunden ben&ouml;tigt.</span>";
 											} else {

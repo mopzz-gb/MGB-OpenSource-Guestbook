@@ -609,8 +609,8 @@
 					$page_entry[$i] = mgb_template_replace([
 						'ENTRY_USER_AGENT' 		=> $entry[$i]['user_agent'],
 						'ENTRY_HTTP_REFERER'	=> $entry[$i]['http_referer'],
-						'ENTRY_HP' 				=> $entry[$i]['hp'],
-						'ENTRY_MESSAGE' 		=> $entry[$i]['message'],
+						'ENTRY_HP' 				=> mgb_format($entry[$i]['hp']),
+						'ENTRY_MESSAGE' 		=> mgb_format($entry[$i]['message']),
 						'ENTRY_TYPE' 			=> $lang['spam_entry_type'][$entry[$i]['type']],
 						'ENTRY_SITE' 			=> $entry[$i]['site'],
 						'ENTRY_TIMESTAMP' 		=> $entry_timestamp,

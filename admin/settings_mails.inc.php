@@ -47,6 +47,7 @@
 				// smtp_server
 				// smtp_port
 				$empty_needed_value = 0;
+				$errorcode = 0;
 
 				if(empty($_POST['sendmail_admin_text'])) { $empty_needed_value = 27; }
 				if(empty($_POST['sendmail_user_text'])) { $empty_needed_value = 28; }
@@ -65,36 +66,13 @@
 						$settings['mailer_method'] = 0;
 					}
 				}
+				if(!empty($_POST['spam_mail'])) {
+					if(!mgb_check_mail($_POST['spam_mail'])) {
+						$errorcode = 7;
+					}
+				}
 
-				if($empty_needed_value == 0) { // no error, continue with saving settings
-					$t1 = chr(10); // new line
-					$t2 = chr(13); // carriage return
-
-					$_POST['sendmail_admin_text'] = nl2br(cleanstr($_POST['sendmail_admin_text']));
-					$_POST['sendmail_user_text'] = nl2br(cleanstr($_POST['sendmail_user_text']));
-					$_POST['sendmail_user_text_moderated'] = nl2br(cleanstr($_POST['sendmail_user_text_moderated']));
-					$_POST['sendmail_user_notification_text'] = nl2br(cleanstr($_POST['sendmail_user_notification_text']));
-					$_POST['sendmail_comment_text'] = nl2br(cleanstr($_POST['sendmail_comment_text']));
-					$_POST['sendmail_contactmail_text'] = nl2br(cleanstr($_POST['sendmail_contactmail_text']));
-					$_POST['sendmail_contactmail_text_copy'] = nl2br(cleanstr($_POST['sendmail_contactmail_text_copy']));
-
-					$_POST['sendmail_admin_text'] = str_ireplace($t1,'', $_POST['sendmail_admin_text']);
-					$_POST['sendmail_user_text'] = str_ireplace($t1,'', $_POST['sendmail_user_text']);
-					$_POST['sendmail_user_text_moderated'] = str_ireplace($t1,'', $_POST['sendmail_user_text_moderated']);
-					$_POST['sendmail_user_notification_text'] = str_ireplace($t1,'', $_POST['sendmail_user_notification_text']);
-					$_POST['sendmail_comment_text'] = str_ireplace($t1,'', $_POST['sendmail_comment_text']);
-					$_POST['sendmail_contactmail_text'] = str_ireplace($t1,'', $_POST['sendmail_contactmail_text']);
-					$_POST['sendmail_contactmail_text_copy'] = str_ireplace($t1,'', $_POST['sendmail_contactmail_text_copy']);
-
-					$_POST['sendmail_admin_text'] = str_ireplace($t2,'', $_POST['sendmail_admin_text']);
-					$_POST['sendmail_user_text'] = str_ireplace($t2,'', $_POST['sendmail_user_text']);
-					$_POST['sendmail_user_text_moderated'] = str_ireplace($t2,'', $_POST['sendmail_user_text_moderated']);
-					$_POST['sendmail_user_notification_text'] = str_ireplace($t2,'', $_POST['sendmail_user_notification_text']);
-					$_POST['sendmail_comment_text'] = str_ireplace($t2,'', $_POST['sendmail_comment_text']);
-					$_POST['sendmail_contactmail_text'] = str_ireplace($t2,'', $_POST['sendmail_contactmail_text']);
-					$_POST['sendmail_contactmail_text_copy'] = str_ireplace($t2,'', $_POST['sendmail_contactmail_text_copy']);
-
-					// everything's okay now, let's save the data
+				if($empty_needed_value === 0 AND $errorcode === 0) { // no error, continue with saving settings
 					$sql = "UPDATE `".$db['prefix']."settings` SET
 						`sendmail_admin` = '".$_POST['sendmail_admin']."',
 						`sendmail_admin_text` = '".$_POST['sendmail_admin_text']."',
@@ -105,17 +83,17 @@
 						`sendmail_comment_text` = '".$_POST['sendmail_comment_text']."',
 						`sendmail_contactmail_text` = '".$_POST['sendmail_contactmail_text']."',
 						`sendmail_contactmail_text_copy` = '".$_POST['sendmail_contactmail_text_copy']."',
-						`spam_mail` = '".cleanstr($_POST['spam_mail'])."',
-						`mailer_method` = '".cleanstr($_POST['mailer_method'])."',
-						`smtp_server` = '".cleanstr($_POST['smtp_server'])."',
-						`smtp_port` = '".cleanstr($_POST['smtp_port'])."',
-						`smtp_user` = '".cleanstr($_POST['smtp_user'])."',
-						`smtp_password` = '".cleanstr($_POST['smtp_password'])."',
-						`smtp_auth` = '".cleanstr($_POST['smtp_auth'])."'";
+						`spam_mail` = '".$_POST['spam_mail']."',
+						`mailer_method` = '".$_POST['mailer_method']."',
+						`smtp_server` = '".$_POST['smtp_server']."',
+						`smtp_port` = '".$_POST['smtp_port']."',
+						`smtp_user` = '".$_POST['smtp_user']."',
+						`smtp_password` = '".$_POST['smtp_password']."',
+						`smtp_auth` = '".$_POST['smtp_auth']."'";
 
 					if (mgb_sql_connect($mysqli, $sql, "Error while saving mails settings.", 0)) {
 						$saved_settings_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '1010', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 1010, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 
 					require_once ("../includes/load_settings.inc.php");
@@ -149,26 +127,26 @@
 			if($settings['sendmail_admin'] == 0) { $selected_sendmail_admin_0 = " selected"; } else { $selected_sendmail_admin_1 = " selected"; }
 			if($settings['sendmail_user'] == 0) { $selected_sendmail_user_0 = " selected"; } else { $selected_sendmail_user_1 = " selected"; }
 			$page_include = mgb_template_replace([
-				'SELECTED_MAILER_METHOD_0' => $selected_mailer_method_0,
-				'SELECTED_MAILER_METHOD_1' => $selected_mailer_method_1,
-				'SELECTED_SMTP_AUTH_0' => $selected_smtp_auth_0,
-				'SELECTED_SMTP_AUTH_1' => $selected_smtp_auth_1,
-				'EDIT_SMTP_SERVER' => $settings['smtp_server'],
-				'EDIT_SMTP_PORT' => $settings['smtp_port'],
-				'EDIT_SMTP_USER' => $settings['smtp_user'],
-				'EDIT_SMTP_PASSWORD' => $settings['smtp_password'],
-				'SELECTED_SENDMAIL_ADMIN_0' => $selected_sendmail_admin_0,
-				'SELECTED_SENDMAIL_ADMIN_1' => $selected_sendmail_admin_1,
-				'EDIT_SENDMAIL_ADMIN_TEXT' => $settings['sendmail_admin_text'],
-				'SELECTED_SENDMAIL_USER_0' => $selected_sendmail_user_0,
-				'SELECTED_SENDMAIL_USER_1' => $selected_sendmail_user_1,
-				'EDIT_SENDMAIL_USER_TEXT' => $settings['sendmail_user_text'],
-				'EDIT_SENDMAIL_USER_TEXT_MODERATED' => $settings['sendmail_user_text_moderated'],
-				'EDIT_SENDMAIL_USER_NOTIFICATION_TEXT' => $settings['sendmail_user_notification_text'],
-				'EDIT_SENDMAIL_COMMENT_TEXT' => $settings['sendmail_comment_text'],
-				'EDIT_SENDMAIL_CONTACTMAIL_TEXT' => $settings['sendmail_contactmail_text'],
-				'EDIT_SENDMAIL_CONTACTMAIL_TEXT_COPY' => $settings['sendmail_contactmail_text_copy'],
-				'EDIT_SPAM_MAIL' => $settings['spam_mail']
+				'SELECTED_MAILER_METHOD_0' 				=> $selected_mailer_method_0,
+				'SELECTED_MAILER_METHOD_1' 				=> $selected_mailer_method_1,
+				'SELECTED_SMTP_AUTH_0' 					=> $selected_smtp_auth_0,
+				'SELECTED_SMTP_AUTH_1' 					=> $selected_smtp_auth_1,
+				'EDIT_SMTP_SERVER' 						=> $settings['smtp_server'],
+				'EDIT_SMTP_PORT' 						=> $settings['smtp_port'],
+				'EDIT_SMTP_USER' 						=> $settings['smtp_user'],
+				'EDIT_SMTP_PASSWORD' 					=> $settings['smtp_password'],
+				'SELECTED_SENDMAIL_ADMIN_0' 			=> $selected_sendmail_admin_0,
+				'SELECTED_SENDMAIL_ADMIN_1' 			=> $selected_sendmail_admin_1,
+				'EDIT_SENDMAIL_ADMIN_TEXT' 				=> mgb_formatForm($settings['sendmail_admin_text']),
+				'SELECTED_SENDMAIL_USER_0' 				=> $selected_sendmail_user_0,
+				'SELECTED_SENDMAIL_USER_1' 				=> $selected_sendmail_user_1,
+				'EDIT_SENDMAIL_USER_TEXT' 				=> mgb_formatForm($settings['sendmail_user_text']),
+				'EDIT_SENDMAIL_USER_TEXT_MODERATED' 	=> mgb_formatForm($settings['sendmail_user_text_moderated']),
+				'EDIT_SENDMAIL_USER_NOTIFICATION_TEXT' 	=> mgb_formatForm($settings['sendmail_user_notification_text']),
+				'EDIT_SENDMAIL_COMMENT_TEXT' 			=> mgb_formatForm($settings['sendmail_comment_text']),
+				'EDIT_SENDMAIL_CONTACTMAIL_TEXT' 		=> mgb_formatForm($settings['sendmail_contactmail_text']),
+				'EDIT_SENDMAIL_CONTACTMAIL_TEXT_COPY' 	=> mgb_formatForm($settings['sendmail_contactmail_text_copy']),
+				'EDIT_SPAM_MAIL' 						=> $settings['spam_mail']
 			], $page_include);
 
 			// is scrolling function needed?

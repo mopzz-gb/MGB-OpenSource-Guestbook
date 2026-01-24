@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -27,9 +27,10 @@
 	
 	define('MGB_ROOT', str_replace("/admin", "", dirname(__FILE__)."/"));
 	
-	require (MGB_ROOT."includes/functions.inc.php");
-	require (MGB_ROOT."includes/config.inc.php");
-	require (MGB_ROOT."includes/load_settings.inc.php");
+	require_once (MGB_ROOT."includes/config.inc.php");
+	require_once (MGB_ROOT."includes/db.php");
+	require_once (MGB_ROOT."includes/functions.inc.php");
+	require_once (MGB_ROOT."includes/load_settings.inc.php");
 	require (MGB_ROOT."language/".$settings['language_path']."/lang_admin.php");
 	require (MGB_ROOT."language/".$settings['language_path']."/settings.php");
 
@@ -45,50 +46,50 @@
 	$content_lostpassword_sent = mgb_load_template("admin", "default", "lostpassword_sent", $settings['debug_mode']);
 	$content_copyright = mgb_load_template("admin", "default/general_admin", "copyright", $settings['debug_mode']);
 	$content_footer = mgb_load_template("admin", "default/general_admin", "footer", $settings['debug_mode']);
+	
+	// define variables
+	$np_created = 0;
+	$errormessage = "";
+	$statusmessage = "";
 
+	// user has already asked for a new password and clicked on the link in the email he received from the guestbook
 	if(isset($_GET['id']) AND isset($_GET['key'])) {
-		$result = mgb_sql_connect("SELECT user_name, user_email, np_key, np_expiration FROM ".$db['prefix']."user WHERE ID=".secure_value($_GET['id']), "Error while checking key.", 1);
+		$sql = "SELECT user_name, user_email, np_key, np_expiration FROM ".$db['prefix']."user WHERE ID = ?";
+		$params = [$_GET['id']];
+		$types = "i";
+		$result = mgb_sql_connect($mysqli, $sql, "Error while checking key.", 1, $params, $types);
 		$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
-		if($_GET['key'] == $user['np_key'] AND $user['np_expiration'] > time()) {
-			$new_password = generate_key_and_pw("", $settings['password_min_length'], "adminpanel");
+		if($_GET['key'] === $user['np_key'] AND $user['np_expiration'] > time()) {
+			$new_password = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['password_min_length'], "adminpanel");
 
 			$user_name = $user['user_name'];
 			$email = $user['user_email'];
 
-			$lang['sendmail_new_password_created_title'] = format_mail(repl_uml($lang['sendmail_new_password_created_title'], $charset), $name, $date, $time, "", $settings['h_domain'], "", "", "", "", "", "", $new_password);
-			$lang['sendmail_new_password_created_text'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_new_password_created_text']), $charset), $name, $date, $time, "", $settings['h_domain'], "", "", "", "", "", "", $new_password);
+			$lang['sendmail_new_password_created_title'] = format_mail(repl_uml($lang['sendmail_new_password_created_title'], $charset), $user_name, "", time(), "", $settings['h_domain'], "", "", "", "", "", "", $new_password);
+			$lang['sendmail_new_password_created_text'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_new_password_created_text']), $charset), $user_name, "", time(), "", $settings['h_domain'], "", "", "", "", "", "", $new_password);
 
 			$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 			$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
 			$mail_header .= "Reply-To: ".$settings['admin_gbemail']."\r\n";
 			$mail_header .= "X-Mailer: PHP/".phpversion();
 
-			if($settings['mailer_method'] == 0) {
+			if($settings['mailer_method'] === 0) {
 				$mail_send = @mail($email, $lang['sendmail_new_password_created_title'], $lang['sendmail_new_password_created_text'], $mail_header);
 				if($mail_send) {
-					mgb_sql_connect("UPDATE ".$db['prefix']."user SET user_password = '".md5($new_password)."', np_key = '', np_expiration = '' WHERE ID='".secure_value($_GET['id'])."'", "Error while creating new password.", 0);
+					$newHash = password_hash($new_password, PASSWORD_DEFAULT);
+					$sql = "UPDATE ".$db['prefix']."user SET user_password = '".$newHash."', np_key = '', np_expiration = '' WHERE ID = ?";
+					$params = [$_GET['id']];
+					$types = "i";
+					mgb_sql_connect($mysqli, $sql, "Error while creating new password.", 0, $params, $types);
 					$statusmessage = $lang['lostpassword_success_created'];
 					$np_created = 1;
-					mgb_trigger_sys_log('1028', '', $email, '', $user_name, '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 1028, '', $email, '', $user_name, '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				} else {
 					// problem with mail server
 					$statusmessage = $lang['lostpassword_no_success_created'];
 					$errorcode = 14;
 					$np_created = 0;
-				}
-			} elseif($settings['mailer_method'] == 1) {
-				$mail_send = mgb_phpmailer($email, $settings['admin_email'], $name, $settings['h_domain'], $lang['sendmail_new_password_created_title'], $lang['sendmail_new_password_created_text'], $settings['debug_mode'], "adminpanel", $language_short, $charset);
-				if($mail_send[0] == 0) {
-					// problem with mail server
-					$statusmessage = $lang['lostpassword_no_success_created']."<br><br>phpmailer: ".$mail_send[1];
-					$errorcode = 14;
-					$np_created = 0;
-				} else {
-					mgb_sql_connect("UPDATE ".$db['prefix']."user SET user_password = '".md5($new_password)."', np_key = '', np_expiration = '' WHERE ID='".secure_value($_GET['id'])."'", "Error while creating new password.", 0);
-					$statusmessage = $lang['lostpassword_success_created'];
-					$np_created = 1;
-					mgb_trigger_sys_log('1028', '', $email, '', $user_name, '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
 			}
 		} else {
@@ -98,26 +99,29 @@
 		}
 	}
 
-	if($np_created == 1) {
+	if($np_created === 1) {
 		$page_lostpassword = $content_lostpassword_sent;
 	} else {
 		if(!isset($_POST['sent'])) {
 			$page_lostpassword = $content_lostpassword;
 		} else {
-			if(isset($_POST['email']) AND check_mail($_POST['email'])) {
-				$result = mgb_sql_connect("SELECT ID, user_name, np_expiration FROM ".$db['prefix']."user WHERE user_email=".secure_value($_POST['email']), "Error while getting data from database.", 1);
+			if(isset($_POST['email']) AND mgb_check_mail($_POST['email'])) {
+				$sql = "SELECT ID, user_name, np_expiration FROM ".$db['prefix']."user WHERE user_email = ?";
+				$params = [$_POST['email']];
+				$types = "s";
+				$result = mgb_sql_connect($mysqli, $sql, "Error while getting data from database.", 1, $params, $types);
 				$lostpassword = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 				if($lostpassword['np_expiration'] <= time()) {
 					$user_name = $lostpassword['user_name'];
-					$email = cleanstr($_POST['email']);
+					$email = $_POST['email'];
 					$user_id = $lostpassword['ID'];
 
-					$new_password_key = generate_key_and_pw("", 16, "adminpanel");
-					$url_to_gb = "http://".$settings['h_domain'].$settings['gb_path']."admin/lostpassword.php";
+					$new_password_key = generate_key_and_pw(MGB_ROOT, $mysqli, "", 16, "adminpanel");
+					$url_to_gb = "https://".$settings['h_domain'].$settings['gb_path']."admin/lostpassword.php";
 
-					$lang['sendmail_new_password_title'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_new_password_title']), $charset), $name, $date, $time, "", $settings['h_domain'], $url_to_gb, "", "", "", $new_password_key, $user_id, $new_password);
-					$lang['sendmail_new_password_text'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_new_password_text']), $charset), $name, $date, $time, "", $settings['h_domain'], $url_to_gb, "", "", "", $new_password_key, $user_id, $new_password);
+					$lang['sendmail_new_password_title'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_new_password_title']), $charset), $user_name, "", time(), "", $settings['h_domain'], $url_to_gb, "", "", "", $new_password_key, $user_id, "");
+					$lang['sendmail_new_password_text'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_new_password_text']), $charset), $user_name, "", time(), "", $settings['h_domain'], $url_to_gb, "", "", "", $new_password_key, $user_id, "");
 
   					$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
   					$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
@@ -127,12 +131,13 @@
 					// save key for new password
 					$np_expiration = time() + 86400; // 1 day
 
-					if($settings['mailer_method'] == 0) {
+					if($settings['mailer_method'] === 0) {
 						$mail_send = @mail($email, $lang['sendmail_new_password_title'], $lang['sendmail_new_password_text'], $mail_header);
 						if($mail_send) {
-							mgb_sql_connect("UPDATE ".$db['prefix']."user SET np_key = '".$new_password_key."', np_expiration = '".$np_expiration."' WHERE ID='".$user_id."'", "Error while updating password in the database.", 0);
+							$sql = "UPDATE ".$db['prefix']."user SET np_key = '".$new_password_key."', np_expiration = '".$np_expiration."' WHERE ID='".$user_id."'";
+							mgb_sql_connect($mysqli, $sql, "Error while updating password in the database.", 0, null, null);
 							$statusmessage = $lang['lostpassword_success'];
-							mgb_trigger_sys_log('1027', '', $email, '', $user_name, '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+							mgb_trigger_sys_log($mysqli, 1027, '', $email, '', $user_name, '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 							$page_lostpassword = $content_lostpassword_sent;
 						} else {
 							// problem with mail server
@@ -140,21 +145,6 @@
 							$page_lostpassword = $content_lostpassword_sent;
 							$errorcode = 14;
 						}
-					} elseif($settings['mailer_method'] == 1 AND file_exists("../plugins/phpmailer/class.phpmailer.php")) {
-						$mail_send = mgb_phpmailer($email, $settings['admin_email'], $name, $settings['h_domain'], $lang['sendmail_new_password_title'], $lang['sendmail_new_password_text'], $settings['debug_mode'], "adminpanel", $language_short, $charset);
-						if($mail_send[0] == 0) {
-							// problem with mail server
-							$statusmessage = $lang['lostpassword_no_success']."<br><br>phpmailer: ".$mail_send[1];
-							$page_lostpassword = $content_lostpassword_sent;
-							$errorcode = 14;
-						} else {
-							mgb_sql_connect("UPDATE ".$db['prefix']."user SET np_key = '".$new_password_key."', np_expiration = '".$np_expiration."' WHERE ID='".$user_id."'", "Error while updating password in the database.", 0);
-							$statusmessage = $lang['lostpassword_success'];
-							mgb_trigger_sys_log('1027', '', $email, '', $user_name, '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
-							$page_lostpassword = $content_lostpassword_sent;
-						}
-					} else {
-						mgb_echo("phpmailer not found!");
 					}
 				} else {
 					// new password was already requested
@@ -163,9 +153,8 @@
 				}
 			} else {
 				// invalid email
-				$errorcode = 7;
 				$page_lostpassword = $content_lostpassword;
-				mgb_trigger_sys_log('1029', '', $email, '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+				mgb_trigger_sys_log($mysqli, 1029, '', $email, '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 			}
 		}
 	}

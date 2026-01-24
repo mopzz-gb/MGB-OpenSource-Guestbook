@@ -350,7 +350,7 @@
 	
 	if(empty($saved_settings_successfull)) { $saved_settings_successfull = ""; }
 
-	if($saved_settings_successfull == 1) {
+	if($saved_settings_successfull === 1) {
 		if(($_GET['action'] == "settings") OR
 			($_GET['action'] == "settings_general") OR
 			($_GET['action'] == "settings_look") OR

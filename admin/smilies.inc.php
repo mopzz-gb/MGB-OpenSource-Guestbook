@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 
 			if(isset($_POST['sent_smilies']) AND $_POST['sent_smilies'] == 1) {
 				for($i = 0; $i < $_SESSION['SMILEY_COUNT']; $i++) {
-					if($_POST['path_'.$i.''] != "" AND $_POST['replacement_'.$i.''] != "") {
+					if($_POST['path_'.$i.''] != "" AND $_POST['replacement_'.$i.''] !== "") {
 						$sql = "UPDATE `".$db['prefix']."smilies` SET
 								`path` = ?,
 								`replacement` = ?,
@@ -154,10 +154,10 @@
 
 				// fill template with smilies
 				$page_smilies[$i] = mgb_template_replace([
-					'SMILEY_PATH' 			=> $smiley[$i]['path'],
-					'SMILEY_REPLACEMENT' 	=> $smiley[$i]['replacement'],
-					'SMILEY_HEIGHT' 		=> $smiley[$i]['height'],
-					'SMILEY_WIDTH' 			=> $smiley[$i]['width'],
+					'SMILEY_PATH' 			=> mgb_formatForm($smiley[$i]['path']),
+					'SMILEY_REPLACEMENT' 	=> mgb_formatForm($smiley[$i]['replacement']),
+					'SMILEY_HEIGHT' 		=> mgb_formatForm($smiley[$i]['height']),
+					'SMILEY_WIDTH' 			=> mgb_formatForm($smiley[$i]['width']),
 					'SMILEY_ID' 			=> $i,
 					'SMILEY_REAL_ID' 		=> $smiley[$i]['ID']
 				], $page_smilies[$i]);

@@ -44,13 +44,13 @@
 				if($empty_needed_value == 0) { // no error, continue with saving settings
 					// everything's okay now, let's save the data
 					$sql = "UPDATE `".$db['prefix']."settings` SET
-						`smileys` = '".cleanstr($_POST['smileys'])."',
-						`smileys_break` = '".cleanstr($_POST['smileys_break'])."',
-						`smileys_order` = '".cleanstr($_POST['smileys_order'])."'";
+						`smileys` = '".$_POST['smileys']."',
+						`smileys_break` = '".$_POST['smileys_break']."',
+						`smileys_order` = '".$_POST['smileys_order']."'";
 
 					if (mgb_sql_connect($mysqli, $sql, "Error while saving general settings.", 0)) {
 						$saved_settings_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '1008', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 1008, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						mgb_erase_cache("../cache/");
 					}
 
@@ -67,7 +67,7 @@
 			// start replacement for template
 
 			// replacement that has nothing to do with front end
-			$page_include = template("URL_SETTINGS", "admin.php?action=settings_emoticons".$sid, $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_emoticons".$sid], $page_include);
 			
 			// initiate variables
 			$selected_smileys_0 = "";
@@ -78,11 +78,13 @@
 			// value replacement
 			if ($settings['smileys'] == 0) { $selected_smileys_0 = " selected"; } else { $selected_smileys_1 = " selected"; }
 			if ($settings['smileys_order'] == "ASC") { $selected_smileys_order_0 = " selected"; } else { $selected_smileys_order_1 = " selected"; }
-			$page_include = template("SELECTED_SMILEYS_0", $selected_smileys_0, $page_include);
-			$page_include = template("SELECTED_SMILEYS_1", $selected_smileys_1, $page_include);
-			$page_include = template("EDIT_SMILEYS_BREAK", $settings['smileys_break'], $page_include);
-			$page_include = template("SELECTED_SMILEYS_ORDER_0", $selected_smileys_order_0, $page_include);
-			$page_include = template("SELECTED_SMILEYS_ORDER_1", $selected_smileys_order_1, $page_include);
+			$page_include = mgb_template_replace([
+				'SELECTED_SMILEYS_0' 		=> $selected_smileys_0,
+				'SELECTED_SMILEYS_1' 		=> $selected_smileys_1,
+				'EDIT_SMILEYS_BREAK' 		=> $settings['smileys_break'],
+				'SELECTED_SMILEYS_ORDER_0' 	=> $selected_smileys_order_0,
+				'SELECTED_SMILEYS_ORDER_1' 	=> $selected_smileys_order_1
+			], $page_include);
 
 			// is scrolling function needed?
 			$content_scrolling_function = "";

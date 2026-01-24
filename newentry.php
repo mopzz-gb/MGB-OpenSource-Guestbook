@@ -74,9 +74,9 @@
 	}
 
 	// check if this is a direct or not allowed access to the script
-	if($settings['direct_access'] == 1) {
+	if($settings['direct_access'] === 1) {
 		if(empty($_SERVER['HTTP_REFERER'])) { $_SERVER['HTTP_REFERER'] = ""; }
-		if(mgb_http_referer($mysqli, $settings['direct_access_text'], $settings['search_engines_excluded'], $settings['search_engines'], $settings['banlist_log'], $_SERVER['HTTP_REFERER'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['REMOTE_ADDR'], $db['prefix'], $site_name, $settings['debug_mode']) == FALSE) {
+		if(mgb_http_referer($mysqli, $settings['direct_access_text'], $settings['search_engines_excluded'], $settings['search_engines'], $settings['banlist_log'], $_SERVER['HTTP_REFERER'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['REMOTE_ADDR'], $db['prefix'], $site_name, $settings['debug_mode']) === FALSE) {
 			// destroy active session
 			session_unset();
 			session_destroy();
@@ -95,7 +95,7 @@
 	$content_errormessage = mgb_load_template("user", $settings['template_path'], "general/errormessage", $settings['debug_mode']);
 
 	// load captcha
-	if($settings['captcha_method'] == 2) {
+	if($settings['captcha_method'] === 2) {
 		if(empty($content_captcha)) { $content_captcha = ""; }
       	$content_captcha.= "<br>";
       	$content_captcha.= "<div id='html_element'></div>";
@@ -140,7 +140,7 @@
 		}
 	}
 
-	if(!empty($_POST['send']) AND $_POST['send'] == $lang['send']) {
+	if(!empty($_POST['send']) AND $_POST['send'] === $lang['send']) {
 		// get information about formular elements
 		if(empty($_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']])) { $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']] = ""; } 
 		$_POST['name'] = $_POST[$_SESSION['FORM_ELEMENT_NAME']];
@@ -156,8 +156,8 @@
 		// ============
 		// check www.stopforumspam.com if user is known for intense spamming
 		if($settings['check_against_anti_spam_sites'] === 1 ) {
-			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) == 1) {
-				if($settings['sfs_mark_as_spam'] == 1) {
+			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) === 1) {
+				if($settings['sfs_mark_as_spam'] === 1) {
 					$mark_as_spam = 1; // accept the entry, but mark it as spam
 					$noemail = 1;
 					mgb_trigger_sys_log($mysqli, 3007, $_POST['name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry accepted but marked as spam)
@@ -191,7 +191,7 @@
 		// check if user typed too fast and detect possible spam robots
 		if(empty($errorcode)) { $errorcode = 0; }
 		if(empty($mark_as_spam)) { $mark_as_spam = 0; }
-		if($settings['keystroke'] == 1 AND $errorcode != 10 AND $errorcode != 19 AND $mark_as_spam != 1) {
+		if($settings['keystroke'] === 1 AND $errorcode != 10 AND $errorcode != 19 AND $mark_as_spam != 1) {
 			if(empty($_SESSION['keystroke_ban_time'])) {
 				if(!mgb_get_keystrokes($settings['keystroke_max_cps'], $settings['keystroke_ban_time'], $settings['dynamic_fieldnames'], $settings['debug_mode'])) {
 					$errorcode = 17; // too fast typing, possible spam robot?
@@ -224,7 +224,7 @@
 					$errorcode = 7; // captcha wrong or not set
 					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
-			} elseif($settings['captcha_method'] == 2) { // reCaptchav2
+			} elseif($settings['captcha_method'] === 2) { // reCaptchav2
 				$response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$settings['recaptcha_private_key']."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']);
         			$responseKeys = json_decode($response, true);
         			if(intval($responseKeys["success"]) !== 1) {
@@ -234,7 +234,7 @@
 			}
 
 			// captcha was wrong
-			if((!empty($settings['banlist_log']) AND $errorcode == 7) AND (!empty($_POST['captcha']) OR !empty($_POST['recaptcha_response_field']))) {
+			if((!empty($settings['banlist_log']) AND $errorcode === 7) AND (!empty($_POST['captcha']) OR !empty($_POST['recaptcha_response_field']))) {
 				$type = 9; // captcha wrong
 				$sql = "INSERT INTO ".$db['prefix']."spam_log (
 					ip,	name, email, user_agent, hp, message, type,	site, timestamp
@@ -278,7 +278,7 @@
 		}
 
 		// check ip, email and domain with banlists
-		if((!empty($_POST['name']) AND !empty($_POST['email']) AND !empty($_POST['message'])) AND ($errorcode != 7) AND ($mark_as_spam != 1) AND (!$settings['banlist_ips'] == 1 OR $settings['banlist_emails'] == 1 OR $settings['banlist_domains'] == 1)) {
+		if((!empty($_POST['name']) AND !empty($_POST['email']) AND !empty($_POST['message'])) AND ($errorcode != 7) AND ($mark_as_spam != 1) AND (!$settings['banlist_ips'] === 1 OR $settings['banlist_emails'] === 1 OR $settings['banlist_domains'] === 1)) {
 			$check_banlists = mgb_check_banlists(
 				$mysqli,
 				$_SERVER['REMOTE_ADDR'],
@@ -345,11 +345,12 @@
 		// check required fields
 		if(empty($_POST['message'])) { $errorcode = 1; } // message is required
 		if(empty($_POST['email'])) {
-			if($settings['require_email'] == 1) {
+			if($settings['require_email'] === 1) {
 				$errorcode = 2; // email is required
 			}
 		} else {
-			if(!check_mail($_POST['email'])) { $errorcode = 4; } // email's not valid
+			// if(!mgb_check_mail($_POST['email'])) { $errorcode = 4; } else { $entry_email = $_POST['email']; } // email's not valid
+			$entry_email = mgb_check_mail($_POST['email']) ? $_POST['email'] : ($errorcode = 4); // email's not valid
 		}
 
 		if(empty($_POST['name'])) { $errorcode = 3; } // name is required
@@ -357,21 +358,10 @@
 		if(empty($errorcode)) { // everything's ok, let's format and save the entry
 			$_POST['email_name'] = $_POST['name'];
 			// delete bbcode except from message
-			$_POST['name'] = bbcode_delete($_POST['name']);
-			$_POST['city'] = bbcode_delete($_POST['city']);
-			$_POST['aim'] = bbcode_delete($_POST['aim']);
-			$_POST['msn'] = bbcode_delete($_POST['msn']);
-			$_POST['fb'] = bbcode_delete($_POST['fb']);
-			$_POST['twitter'] = bbcode_delete($_POST['twitter']);
-			$_POST['hp'] = bbcode_delete($_POST['hp']);
-
-			$_POST['message'] = nl2br($_POST['message']);
-			$t1 = chr(10); // new line
-			$t2 = chr(13); // carriage return
-			$_POST['message'] = str_replace($t1,'', $_POST['message']);
-			$_POST['message'] = str_replace($t2,'', $_POST['message']);
-			if($_POST['twitter'] === "@"){ $_POST['twitter'] = ""; }
-			if($_POST['hp'] === "http://" || "https://"){ $_POST['hp'] = ""; }
+			$entry_name = bbcode_delete($_POST['name']);
+			$entry_city = bbcode_delete($_POST['city']);			
+			$entry_hp = bbcode_delete($_POST['hp']);						
+			if($entry_hp === "http://" || "https://"){ $entry_hp = ""; }
 
 			// check if "moderated gb" and "user email notification" is on
 			if($settings['moderated'] === 1 OR $mark_as_spam === 1) {
@@ -381,76 +371,63 @@
 				$checked = 1;
 				$ip = mgb_anonymize_ip($_SERVER['REMOTE_ADDR']);
 			}
-			if($settings['user_notification'] == 0 OR empty($_POST['email'])) { $_POST['user_notification'] = 0; }
-			if($settings['user_show_email'] == 0 OR empty($_POST['email'])) { $_POST['user_show_email'] = 0; }
+			if($settings['user_notification'] === 0 OR empty($entry_email)) { $user_notification = 0; } else { $user_notification = 1; }
+			if($settings['user_show_email'] === 0 OR empty($entry_email)) { $user_show_email = 0; } else { $user_show_email = 1; }
 			
 			if(empty($mark_as_spam)) {
 				// Write data into database
 				$sql = "INSERT INTO ".$db['prefix']."entries (
-					name, city,	email, icq,	aim, msn, fb, twitter, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, checked, isspam
+					name, city,	email, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, checked, isspam
 				) VALUES (
-				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 				)";
 				$params = [
-					$_POST['name'],
-					$_POST['city'] ?? '',
-					$_POST['email'] ?? '',
-					$_POST['icq'] ?? '',
-					$_POST['aim'] ?? '',
-					$_POST['msn'] ?? '',
-					$_POST['fb'] ?? '',
-					$_POST['twitter'] ?? '',
-					$_POST['hp'] ?? '',
+					$entry_name,
+					$entry_city ?? '',
+					$entry_email ?? '',
+					$entry_hp ?? '',
 					$_POST['message'],
 					$ip,
 					$_SERVER['HTTP_USER_AGENT'],
 					time(),
-					$_POST['user_notification'],
-					$_POST['user_show_email'],
+					$user_notification,
+					$user_show_email,
 					$checked,
 					$mark_as_spam
 				];
-				$types = "ssssssssssssiiiii";
+				$types = "sssssssiiiii";
 			} else {
 				// Write data into database
 				$sql = "INSERT INTO ".$db['prefix']."spam (
-					name, city,	email, icq,	aim, msn, fb, twitter, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, sent_captcha
+					name, city,	email, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, sent_captcha
 				) VALUES (
-				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 				)";
 				$params = [
-					$_POST['name'],
-					$_POST['city'] ?? '',
-					$_POST['email'] ?? '',
-					$_POST['icq'] ?? '',
-					$_POST['aim'] ?? '',
-					$_POST['msn'] ?? '',
-					$_POST['fb'] ?? '',
-					$_POST['twitter'] ?? '',
-					$_POST['hp'] ?? '',
+					$entry_name,
+					$entry_city ?? '',
+					$entry_email ?? '',
+					$entry_hp ?? '',
 					$_POST['message'],
-					$_SERVER['REMOTE_ADDR'],
+					$ip,
 					$_SERVER['HTTP_USER_AGENT'],
 					time(),
-					$_POST['user_notification'],
-					$_POST['user_show_email'],
-					$_POST['captcha']
+					$user_notification,
+					$user_show_email,
+					trim($_POST['captcha'], ENT_QUOTES)
 				];
-				$types = "ssssssssssssiiis";
+				$types = "sssssssiiis";
 			}
 			
 			// saving entry
 			if(mgb_sql_connect($mysqli, $sql, "Error while saving a new guestbook entry.", 0, $params, $types)) {
-				if($checked == 1) {
+				if($checked === 1) {
 					mgb_erase_cache(MGB_ROOT."cache/");
 				}
 			}
 
-			// turn xhtml breaks into new lines
-			$_POST['message'] = xhtmlbr2nl($_POST['message']);
-
 			// send an email to admin
-			if(($settings['sendmail_admin'] == 1) AND ($noemail == 0)) {
+			if(($settings['sendmail_admin'] === 1) AND ($noemail === 0)) {
 				$date = date("d"."/"."m"."/"."Y");
 				$time = date("H".":"."i");
 
@@ -464,16 +441,16 @@
 				$mail_header .= "Reply-To: ".$settings['admin_gbemail']."\r\n";
 				$mail_header .= "X-Mailer: PHP/".phpversion();
 
-				if($settings['mailer_method'] == 0) {
+				if($settings['mailer_method'] === 0) {
 					$mail_send = @mail($settings['admin_email'], $lang['sendmail_admin_title'], $settings['sendmail_admin_text'], $mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
 					} else {
 						$sendemail_successfull = 0;
 					}
-				} elseif($settings['mailer_method'] == 1 AND file_exists("plugins/phpmailer/class.phpmailer.php")) {
+				} elseif($settings['mailer_method'] === 1 AND file_exists("plugins/phpmailer/class.phpmailer.php")) {
 					/* $mail_send = mgb_phpmailer($settings['admin_email'], $settings['admin_email'], $_POST['email_name'], $settings['h_domain'], $lang['sendmail_admin_title'], $settings['sendmail_admin_text'], $settings['debug_mode'], "user", $language_short, $charset); */
-					if($mail_send[0] == 0) {
+					if($mail_send[0] === 0) {
 						$sendemail_successfull = 0;
 						// $errormessage = $mail_send[1];
 					} else {
@@ -483,14 +460,14 @@
 			}
 
 			// send an email to user
-			if($settings['sendmail_user'] == 1 AND !empty($_POST['email']) AND ($noemail == 0)) {
+			if($settings['sendmail_user'] === 1 AND !empty($_POST['email']) AND ($noemail === 0)) {
 				$date = date("d"."/"."m"."/"."Y");
 				$time = date("H".":"."i");
 
 				$url_to_gb = "http://".$settings['h_domain'].$settings['gb_path']."index.php?lang=".$_GET['lang'];
 
 				$lang['sendmail_user_title'] = format_mail(repl_uml($lang['sendmail_user_title'], $charset), $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
-				if($settings['moderated'] == 0) {
+				if($settings['moderated'] === 0) {
 				  $settings['sendmail_user_text'] = format_mail(repl_uml($settings['sendmail_user_text'], $charset), $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 				} else {
 				  $settings['sendmail_user_text'] = format_mail(repl_uml($settings['sendmail_user_text_moderated'], $charset), $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
@@ -501,7 +478,7 @@
 				$mail_header .= "Reply-To: ".$settings['admin_gbemail']."\r\n";
 				$mail_header .= "X-Mailer: PHP/".phpversion();
 
-				if($settings['mailer_method'] == 0) {
+				if($settings['mailer_method'] === 0) {
 					$mail_send = @mail($_POST['email'], $lang['sendmail_user_title'], $settings['sendmail_user_text'], $mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
@@ -509,9 +486,9 @@
 					} else {
 						$sendemail_successfull = 0;
 					}
-				} elseif($settings['mailer_method'] == 1 AND file_exists("plugins/phpmailer/class.phpmailer.php")) {
+				} elseif($settings['mailer_method'] === 1 AND file_exists("plugins/phpmailer/class.phpmailer.php")) {
 					/* $mail_send = mgb_phpmailer($_POST['email'], $settings['admin_email'], $_POST['email_name'], $settings['h_domain'], $lang['sendmail_user_title'], $settings['sendmail_user_text'], $settings['debug_mode'], "user", $language_short, $charset); */
-					if($mail_send[0] == 0) {
+					if($mail_send[0] === 0) {
 						$sendemail_successfull = 0;
 						// $errormessage = $mail_send[1];
 					} else {
@@ -544,10 +521,10 @@
 
 			// generate captcha code if activated
 			if(empty($captcha_generated)) { $captcha_generated = 0; }
-			if(($settings['captcha'] == 1) AND ($captcha_generated != 1)) {
+			if(($settings['captcha'] === 1) AND ($captcha_generated != 1)) {
 				generate_captcha($settings['captcha_method'], $settings['captcha_length'], $settings['captcha_max_length'], $settings['captcha_salt'], $settings['captcha_hash_method'], $settings['captcha_double_hash']);
 				$captcha_generated = 1;
-			} elseif($settings['captcha'] == 0) {
+			} elseif($settings['captcha'] === 0) {
 				$content_captcha = "";
 			}
 		}
@@ -555,7 +532,7 @@
 		$content_newentry_preview = "";
 	} else {
 		// maybe preview button has been pushed instead?
-		if(!empty($_POST['preview']) AND $_POST['preview'] == $lang['preview'] AND !empty($_POST['message'])) {
+		if(!empty($_POST['preview']) AND $_POST['preview'] === $lang['preview'] AND !empty($_POST['message'])) {
 			// get information about formular elements
 			$_POST['name'] = $_POST[$_SESSION['FORM_ELEMENT_NAME']];
 			$_POST['city'] = $_POST[$_SESSION['FORM_ELEMENT_CITY']];
@@ -574,37 +551,37 @@
 			$preview_message = str_ireplace($t1, '', $preview_message);
 			$preview_message = str_ireplace($t2, '', $preview_message);
 
-			if(!$settings['wordwrap'] == 0) {
+			if(!$settings['wordwrap'] === 0) {
 				$preview_message = textWrap($preview_message, $settings['wordwrap']);
 			}
 
 			// set smilies
-			if($settings['smileys'] == 1) {
+			if($settings['smileys'] === 1) {
 				$preview_message = set_smilies($mysqli, $preview_message);
 			} else {
 				$preview_message = delete_smilies($mysqli, $preview_message);
 			}
 
 			// set bbcode
-			if($settings['bbcode'] == 1) {
+			if($settings['bbcode'] === 1) {
 				$preview_message = bbcode_format($mysqli, $preview_message, "");
 			} else {
 				$preview_message = bbcode_delete($preview_message);
 			}
 
-			if(!empty($settings['gravatar_show']) AND ($settings['gravatar_show'] == 1) AND (!empty($_POST['email']))) {
+			if(!empty($settings['gravatar_show']) AND ($settings['gravatar_show'] === 1) AND (!empty($_POST['email']))) {
 				// load gravatar
-				if($settings['gravatar_rating'] == 0) { $gravatar_rating = "G"; }
-				if($settings['gravatar_rating'] == 1) { $gravatar_rating = "PG"; }
-				if($settings['gravatar_rating'] == 2) { $gravatar_rating = "R"; }
-				if($settings['gravatar_rating'] == 3) { $gravatar_rating = "X"; }
-				if($settings['gravatar_type'] == 0) { $gravatar_type = "&amp;f=y"; }
-				if($settings['gravatar_type'] == 1) { $gravatar_type = "&amp;d=mm"; }
-				if($settings['gravatar_type'] == 2) { $gravatar_type = "&amp;d=identicon"; }
-				if($settings['gravatar_type'] == 3) { $gravatar_type = "&amp;d=monsterid"; }
-				if($settings['gravatar_type'] == 4) { $gravatar_type = "&amp;d=wavatar"; }
-				if($settings['gravatar_type'] == 5) { $gravatar_type = "&amp;d=retro"; }
-				if($settings['gravatar_type'] == 6) { $gravatar_type = "&amp;d=blank"; }
+				if($settings['gravatar_rating'] === 0) { $gravatar_rating = "G"; }
+				if($settings['gravatar_rating'] === 1) { $gravatar_rating = "PG"; }
+				if($settings['gravatar_rating'] === 2) { $gravatar_rating = "R"; }
+				if($settings['gravatar_rating'] === 3) { $gravatar_rating = "X"; }
+				if($settings['gravatar_type'] === 0) { $gravatar_type = "&amp;f=y"; }
+				if($settings['gravatar_type'] === 1) { $gravatar_type = "&amp;d=mm"; }
+				if($settings['gravatar_type'] === 2) { $gravatar_type = "&amp;d=identicon"; }
+				if($settings['gravatar_type'] === 3) { $gravatar_type = "&amp;d=monsterid"; }
+				if($settings['gravatar_type'] === 4) { $gravatar_type = "&amp;d=wavatar"; }
+				if($settings['gravatar_type'] === 5) { $gravatar_type = "&amp;d=retro"; }
+				if($settings['gravatar_type'] === 6) { $gravatar_type = "&amp;d=blank"; }
 
 				$gravatar_url = "http://www.gravatar.com/avatar/".md5(strtolower(trim($_POST['email'])))."?s=".$settings['gravatar_size']."&amp;r=".$gravatar_rating.$gravatar_type;
 				$img_gravatar = "<img src=\"".$gravatar_url."\" class=\"gravatar\" style=\"width: ".$settings['gravatar_size']."px; height: ".$settings['gravatar_size']."px;\" alt=\"".$lang['gravatar']."\" title=\"".$lang['gravatar']."\">";
@@ -615,7 +592,7 @@
 
 			$gravatar = mgb_template_replace(['IMG_GRAVATAR' => $img_gravatar], $content_newentry_preview_gravatar);
 
-			if($settings['gravatar_position'] == 0) {
+			if($settings['gravatar_position'] === 0) {
 				$content_newentry_preview = mgb_template_replace([
 					'ENTRY_GRAVATAR_LEFT' 	=> $gravatar,
 					'ENTRY_GRAVATAR_RIGHT'	=> "",
@@ -643,10 +620,10 @@
 
 		// generate captchacode if activated
 		if(empty($captcha_generated)) { $captcha_generated = ""; }
-		if(($settings['captcha'] == 1) AND ($captcha_generated != 1)) {
+		if(($settings['captcha'] === 1) AND ($captcha_generated != 1)) {
 			generate_captcha($settings['captcha_method'], $settings['captcha_length'], $settings['captcha_max_length'], $settings['captcha_salt'], $settings['captcha_hash_method'], $settings['captcha_double_hash']);
 			$captcha_generated = 1;
-		} elseif($settings['captcha'] == 0) {
+		} elseif($settings['captcha'] === 0) {
 			$content_captcha = "";
 		}
 	}
@@ -680,7 +657,7 @@
 	}
 
 	// Add smilies if activated
-	if($settings['smileys'] == 1) {
+	if($settings['smileys'] === 1) {
 		$sql = "SELECT * FROM ".$db['prefix']."smilies ORDER BY ID ".$settings['smileys_order'];
 		$result = mgb_sql_connect($mysqli, $sql, "Error while loading smilies.", 1);
 
@@ -699,7 +676,7 @@
 		for($i = 0; $i < count($smilies); $i++) {
 			$smiley_counter++;
 			$smiley_counter_2++;
-			if(($smiley_counter == $settings['smileys_break']) AND ($smiley_counter_2 != count($smilies))) {
+			if(($smiley_counter === $settings['smileys_break']) AND ($smiley_counter_2 != count($smilies))) {
 				if(preg_match("/,/is", $smilies[$i]['replacement'], $treffer)) {
 					$repl = explode(", ", $smilies[$i]['replacement']);
 					$smilies[$i]['replacement'] = $repl[0];
@@ -722,7 +699,7 @@
 	}
 
 	// Add BBCodes if activated
-	if($settings['bbcode'] == 1) {
+	if($settings['bbcode'] === 1) {
 		if(!empty($settings['allow_img_tag'])) {
 			$content_newentry_bbcodes = mgb_template_replace(['TEMPLATE_BBCODE_IMG' => $content_newentry_bbcodes_img], $content_newentry_bbcodes);
 		} else {
@@ -740,8 +717,8 @@
 	}
 
 	// insert template for user_notification checkbox
-	if($settings['user_notification'] == 1 AND $settings['moderated'] == 1) {
-		if($settings['require_email'] == 1 OR !empty($_POST['email'])) {
+	if($settings['user_notification'] === 1 AND $settings['moderated'] === 1) {
+		if($settings['require_email'] === 1 OR !empty($_POST['email'])) {
 			$content_newentry_user_notification = mgb_template_replace(['LANG_USER_NOTIFICATION' => $lang['user_notification']], $content_newentry_user_notification);
 			if(!empty($_POST['send']) OR !empty($_POST['preview']) OR !empty($_POST['refresh_captcha'])) {
 				if(!empty($_POST['user_notification'])) {
@@ -758,9 +735,9 @@
 		$user_notification = "";
 	}
 
-	// insert template if user_show_email == 1
-	if($settings['user_show_email'] == 1) {
-		if($settings['require_email'] == 1 OR !empty($_POST['email'])) {
+	// insert template if user_show_email === 1
+	if($settings['user_show_email'] === 1) {
+		if($settings['require_email'] === 1 OR !empty($_POST['email'])) {
 			$content_newentry_user_show_email = mgb_template_replace(['LANG_USER_SHOW_EMAIL' => $lang['user_show_email']], $content_newentry_user_show_email);
 			if(!empty($_POST['send']) OR !empty($_POST['preview']) OR !empty($_POST['refresh_captcha'])) {
 				if(!empty($_POST['user_show_email'])) {
@@ -786,35 +763,35 @@
 	}
 
 	// fill template with captcha
-	if(($settings['captcha'] == 1) AND ($captcha_generated != 1)) {
+	if(($settings['captcha'] === 1) AND ($captcha_generated != 1)) {
 		generate_captcha($settings['captcha_method'], $settings['captcha_length'], $settings['captcha_max_length'], $settings['captcha_salt'], $settings['captcha_hash_method'], $settings['captcha_double_hash']);
 		$captcha_generated = 1;
-	} elseif($settings['captcha'] == 0) {
+	} elseif($settings['captcha'] === 0) {
 		$content_captcha = "";
 	}
 
 	// fill template with activated / deactivated formular fields
-	if($settings['show_field_city'] == 0 OR "") {
+	if($settings['show_field_city'] === 0 OR "") {
 		$content_newentry_body_city = "";
 	}
 
-	if($settings['show_field_icq'] == 0 OR "") {
+	if($settings['show_field_icq'] === 0 OR "") {
 		$content_newentry_body_icq = "";
 	}
 
-	if($settings['show_field_aim'] == 0 OR "") {
+	if($settings['show_field_aim'] === 0 OR "") {
 		$content_newentry_body_aim = "";
 	}
 
-	if($settings['show_field_fb'] == 0 OR "") {
+	if($settings['show_field_fb'] === 0 OR "") {
 		$content_newentry_body_fb = "";
 	}
 
-	if($settings['show_field_twitter'] == 0 OR "") {
+	if($settings['show_field_twitter'] === 0 OR "") {
 		$content_newentry_body_twitter = "";
 	}
 
-	if($settings['show_field_hp'] == 0 OR "") {
+	if($settings['show_field_hp'] === 0 OR "") {
 		$content_newentry_body_hp = "";
 	}
 
@@ -828,7 +805,7 @@
 
 		// fill template with other templates if set
 		$page_newentry_body = mgb_template_replace(['HEADER' => $page_header], $page_newentry_body);
-		if($settings['captcha_method'] == 2) {
+		if($settings['captcha_method'] === 2) {
 			$page_newentry_body = mgb_template_replace(["SCRIPT_RECAPTCHAV2" => "<script type='text/javascript'> var onloadCallback = function() { grecaptcha.render('html_element', {'sitekey' : '".$settings['recaptcha_pub_key']."' }); }; </script>"], $page_newentry_body);
 		} else {
 			$page_newentry_body = mgb_template_replace(["SCRIPT_RECAPTCHAV2" => ""], $page_newentry_body);
@@ -872,8 +849,8 @@
 
 		// fill template with sent strings
 		if(empty($_POST['sent'])) {
-			if($settings['dynamic_fieldnames'] == 1) {
-				if($settings['dynamic_fieldnames_method'] == 0) {
+			if($settings['dynamic_fieldnames'] === 1) {
+				if($settings['dynamic_fieldnames_method'] === 0) {
 					$_SESSION['FORM_ELEMENT_NAME'] = mt_rand();
 					$_SESSION['FORM_ELEMENT_CITY'] = mt_rand();
 					$_SESSION['FORM_ELEMENT_EMAIL'] = mt_rand();
@@ -948,7 +925,7 @@
 		// fill template with general data
 		$page_newentry_body = mgb_template_replace(['FORM_ACTION' => "newentry.php{PARAMLANG_A}"], $page_newentry_body);
 
-		if($settings['require_email'] == 1) {
+		if($settings['require_email'] === 1) {
 			$page_newentry_body = mgb_template_replace([
 				'EMAIL_NECESSARY' 	=> "*",
 				'EMAIL_REQUIRED'	=> "required=\"required\""
@@ -983,7 +960,7 @@
 		// then strings
 		$page_newentry_body = mgb_template_replace(['TITLE' => $settings['title']], $page_newentry_body);
 
-		if($settings['moderated'] == 1) {
+		if($settings['moderated'] === 1) {
 			$page_newentry_body = mgb_template_replace(['LANG_ENTRY_SUCCESS' => $lang['entry_success_mod']], $page_newentry_body);
 		} else {
 			$page_newentry_body = mgb_template_replace(['LANG_ENTRY_SUCCESS' => $lang['entry_success']], $page_newentry_body);

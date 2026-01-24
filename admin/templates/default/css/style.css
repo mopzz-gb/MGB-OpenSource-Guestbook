@@ -476,7 +476,7 @@ input.textbox {
 	background-color: #EFEFEF;
 	color: #000000;
 	border: 1px solid #7F7F7F;
-	width: 99%; }
+	width: 95%; }
 
 input.textbox_nr {
 	font-family: verdana, arial, helvetica, sans-serif;
@@ -539,7 +539,7 @@ textarea {
 	background-color: #EFEFEF;
 	color: #000000;
 	border: 1px solid #7F7F7F;
-	width: 100%;
+	width: 95%;
 	height: 100px; }
 
 

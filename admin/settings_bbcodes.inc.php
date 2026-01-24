@@ -50,19 +50,19 @@
 				if($empty_needed_value == 0) { // no error, continue with saving settings
 					// everything's okay now, let's save the data
 					$sql = "UPDATE `".$db['prefix']."settings` SET
-						`bbcode` = '".cleanstr($_POST['bbcode'])."',
-						`allow_img_tag` = '".cleanstr($_POST['allow_img_tag'])."',
-						`max_img_width` = '".cleanstr($_POST['max_img_width'])."',
-						`max_img_height` = '".cleanstr($_POST['max_img_height'])."',
-						`center_img` = '".cleanstr($_POST['center_img'])."',
-						`allow_flash_tag` = '".cleanstr($_POST['allow_flash_tag'])."',
-						`max_flash_width` = '".cleanstr($_POST['max_flash_width'])."',
-						`max_flash_height` = '".cleanstr($_POST['max_flash_height'])."',
-						`center_flash` = '".cleanstr($_POST['center_flash'])."'";
+						`bbcode` = '".$_POST['bbcode']."',
+						`allow_img_tag` = '".$_POST['allow_img_tag']."',
+						`max_img_width` = '".$_POST['max_img_width']."',
+						`max_img_height` = '".$_POST['max_img_height']."',
+						`center_img` = '".$_POST['center_img']."',
+						`allow_flash_tag` = '".$_POST['allow_flash_tag']."',
+						`max_flash_width` = '".$_POST['max_flash_width']."',
+						`max_flash_height` = '".$_POST['max_flash_height']."',
+						`center_flash` = '".$_POST['center_flash']."'";
 
 					if (mgb_sql_connect($mysqli, $sql, "Error while saving general settings.", 0)) {
 						$saved_settings_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '1007', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 1007, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						mgb_erase_cache("../cache/");
 					}
 
@@ -79,7 +79,7 @@
 			// start replacement for template
 
 			// replacement that has nothing to do with front end
-			$page_include = template("URL_SETTINGS", "admin.php?action=settings_bbcodes".$sid, $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_bbcodes".$sid], $page_include);
 			
 			// initiate variables
 			$selected_bbcode_0 = "";
@@ -99,20 +99,22 @@
 			if ($settings['center_img'] == 0) { $selected_center_img_0 = " selected"; } else { $selected_center_img_1 = " selected"; }
 			if ($settings['allow_flash_tag'] == 0) { $selected_allow_flash_tag_0 = " selected"; } else { $selected_allow_flash_tag_1 = " selected"; }
 			if ($settings['center_flash'] == 0) { $selected_center_flash_0 = " selected"; } else { $selected_center_flash_1 = " selected"; }
-			$page_include = template("SELECTED_BBCODE_0", $selected_bbcode_0, $page_include);
-			$page_include = template("SELECTED_BBCODE_1", $selected_bbcode_1, $page_include);
-			$page_include = template("SELECTED_ALLOW_IMG_TAG_0", $selected_allow_img_tag_0, $page_include);
-			$page_include = template("SELECTED_ALLOW_IMG_TAG_1", $selected_allow_img_tag_1, $page_include);
-			$page_include = template("SELECTED_CENTER_IMG_0", $selected_center_img_0, $page_include);
-			$page_include = template("SELECTED_CENTER_IMG_1", $selected_center_img_1, $page_include);
-			$page_include = template("EDIT_MAX_IMG_WIDTH", $settings['max_img_width'], $page_include);
-			$page_include = template("EDIT_MAX_IMG_HEIGHT", $settings['max_img_height'], $page_include);
-			$page_include = template("SELECTED_ALLOW_FLASH_TAG_0", $selected_allow_flash_tag_0, $page_include);
-			$page_include = template("SELECTED_ALLOW_FLASH_TAG_1", $selected_allow_flash_tag_1, $page_include);
-			$page_include = template("SELECTED_CENTER_FLASH_0", $selected_center_flash_0, $page_include);
-			$page_include = template("SELECTED_CENTER_FLASH_1", $selected_center_flash_1, $page_include);
-			$page_include = template("EDIT_MAX_FLASH_WIDTH", $settings['max_flash_width'], $page_include);
-			$page_include = template("EDIT_MAX_FLASH_HEIGHT", $settings['max_flash_height'], $page_include);
+			$page_include = mgb_template_replace([
+				'SELECTED_BBCODE_0' 			=> $selected_bbcode_0,
+				'SELECTED_BBCODE_1' 			=> $selected_bbcode_1,
+				'SELECTED_ALLOW_IMG_TAG_0' 		=> $selected_allow_img_tag_0,
+				'SELECTED_ALLOW_IMG_TAG_1' 		=> $selected_allow_img_tag_1,
+				'SELECTED_CENTER_IMG_0' 		=> $selected_center_img_0,
+				'SELECTED_CENTER_IMG_1' 		=> $selected_center_img_1,
+				'EDIT_MAX_IMG_WIDTH' 			=> $settings['max_img_width'],
+				'EDIT_MAX_IMG_HEIGHT' 			=> $settings['max_img_height'],
+				'SELECTED_ALLOW_FLASH_TAG_0' 	=> $selected_allow_flash_tag_0,
+				'SELECTED_ALLOW_FLASH_TAG_1' 	=> $selected_allow_flash_tag_1,
+				'SELECTED_CENTER_FLASH_0' 		=> $selected_center_flash_0,
+				'SELECTED_CENTER_FLASH_1' 		=> $selected_center_flash_1,
+				'EDIT_MAX_FLASH_WIDTH' 			=> $settings['max_flash_width'],
+				'EDIT_MAX_FLASH_HEIGHT' 		=> $settings['max_flash_height']
+			], $page_include);
 
 			// is scrolling function needed?
 			$content_scrolling_function = "";

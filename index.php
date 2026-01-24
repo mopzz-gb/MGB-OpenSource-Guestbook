@@ -155,7 +155,6 @@
 	}
 
 	$pagenr = $_GET['p'];
-	// $pagenr = secure_value($_GET['p']);
 
 	$load_start = ($pagenr * $settings['entries_per_page']) - $settings['entries_per_page'];
 	$load_end = $settings['entries_per_page'];
@@ -197,7 +196,7 @@
 
 	// load guestbook entries
 	$sql = "SELECT ID, name, city, email, icq, aim, msn, hp, fb, twitter, message, comment, timestamp, user_show_email FROM ".$db['prefix']."entries WHERE checked = 1 ORDER BY ".$settings['entries_order']." ".$settings['entries_order_asc_desc']." LIMIT $load_start, $load_end";
-	$result = mgb_sql_connect($mysqli, $sql, "Error while loading guestbook entries.", 1);
+	$result = mgb_sql_connect($mysqli, $sql, "Error while loading guestbook entries.", 1, null, null);
 
 	// put them in an array
 	for($i = 0; $i < mysqli_num_rows($result); $i++) {
@@ -436,21 +435,21 @@
 			$page_entry[$i] = mgb_template_replace([
 				'ENTRY_ID'			=> $entry_counter,
 				'ENTRY_ANCHOR' 		=> "<a href=\"index.php{PARAMLANG_A}&amp;p=".$pagenr."#e".$entry_counter."\" title=\"".$lang['anchor']."\">&raquo;</a>'",
-				'ENTRY_CITY' 		=> $entry[$i]['city'], 
+				'ENTRY_CITY' 		=> mgb_format($entry[$i]['city']), 
 				'ENTRY_EMAIL_PIC' 	=> $entry_email_pic, 
 				'ENTRY_EMAIL_PATH' 	=> $entry_email_path, 
 				'ENTRY_TIMESTAMP' 	=> $timestamp, 
 				'GRAVATAR_SIZE' 	=> $settings['gravatar_size'], 
 				'IMG_GRAVATAR' 		=> $img_gravatar, 
-				'ENTRY_MESSAGE' 	=> $entry[$i]['message'], 
-				'ENTRY_HP' 			=> $entry[$i]['hp'], 
-				'ENTRY_ICQ_NUMBER' 	=> $entry[$i]['icq'], 
-				'ENTRY_AIM_NAME' 	=> $entry[$i]['aim'], 
-				'ENTRY_MSN' 		=> $entry[$i]['msn'], 
-				'ENTRY_FB' 			=> $entry[$i]['fb'], 
-				'ENTRY_TWITTER' 	=> $entry[$i]['twitter'], 
-				'ENTRY_COMMENT' 	=> $entry[$i]['comment'], 
-				'ENTRY_NAME' 		=> $entry[$i]['name'], 
+				'ENTRY_MESSAGE' 	=> mgb_format($entry[$i]['message']), 
+				'ENTRY_HP' 			=> mgb_format($entry[$i]['hp']), 
+				'ENTRY_ICQ_NUMBER' 	=> mgb_format($entry[$i]['icq']), 
+				'ENTRY_AIM_NAME' 	=> mgb_format($entry[$i]['aim']), 
+				'ENTRY_MSN' 		=> mgb_format($entry[$i]['msn']), 
+				'ENTRY_FB' 			=> mgb_format($entry[$i]['fb']), 
+				'ENTRY_TWITTER' 	=> mgb_format($entry[$i]['twitter']), 
+				'ENTRY_COMMENT' 	=> mgb_format($entry[$i]['comment']), 
+				'ENTRY_NAME' 		=> mgb_format($entry[$i]['name']), 
 				'TEMPLATE_PATH' 	=> "templates/".$settings['template_path']
 			], $page_entry[$i]);
 
@@ -465,13 +464,9 @@
 		$content_index_announcement_message = "";
 	}
 	else {
-		$settings['announcement_message'] = nl2br($settings['announcement_message']);
-		$t1 = chr(10);
-		$t2 = chr(13);
-		$settings['announcement_message'] = str_ireplace($t1, '', $settings['announcement_message']);
-		$settings['announcement_message'] = str_ireplace($t2, '', $settings['announcement_message']);
 		$settings['announcement_message'] = set_smilies($mysqli, $settings['announcement_message']);
-		$settings['announcement_message'] = bbcode_format($settings['announcement_message'], "");
+		$settings['announcement_message'] = bbcode_format($mysqli, $settings['announcement_message'], "");
+		$settings['announcement_message'] = mgb_format($settings['announcement_message']);
 	}
 
 	// fill index_body.tpl and load templates first

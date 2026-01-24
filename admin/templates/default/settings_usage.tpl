@@ -37,7 +37,7 @@
 		<span>{LANG_EDIT_EXPL_AUS_INSTALL_ID}</span>
 		</td>
 		<td class="settings_r">
-		<input class="textbox" name="aus_install_id" maxlength="255" size="12" value="{EDIT_AUS_INSTALL_ID}">
+		<textarea name="aus_install_id" rows="3" cols="10" disabled>{EDIT_AUS_INSTALL_ID}</textarea>		
 		</td>
 	</tr>
 </table>

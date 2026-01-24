@@ -86,12 +86,13 @@
 
 	$page_include = $content_version;
 
-	$page_include = template("LANG_CURRENT_VERSION", $lang['current_version'], $page_include);
-	$page_include = template("LANG_STABLE_VERSION", $lang['stable_version'], $page_include);
-
-	$page_include = template("STABLE_VERSION", $stable_version, $page_include);
-	$page_include = template("STABLE_VERSION_INFO", $stable_version_info, $page_include);
-	$page_include = template("VERSION_INFO", $version_info, $page_include);
+	$page_include = mgb_template_replace([
+		'LANG_CURRENT_VERSION' 	=> $lang['current_version'],
+		'LANG_STABLE_VERSION' 	=> $lang['stable_version'],
+		'STABLE_VERSION' 		=> $stable_version,
+		'STABLE_VERSION_INFO' 	=> $stable_version_info,
+		'VERSION_INFO' 			=> $version_info
+	], $page_include);
 
 	$content_scrolling_function = "<br>";
 ?>

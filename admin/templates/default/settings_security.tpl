@@ -526,29 +526,6 @@
 		</select>
 		</td>
 	</tr>
-	<tr>
-		<td colspan="2" class="settings_overall">
-		<center><span class="edit_caption">{LANG_EDIT_CAPTION_AYAH}</span></center>
-		</td>
-	</tr>
-	<tr>
-		<td class="settings_l">
-		<span><b>{LANG_EDIT_AYAH_PUB_KEY}</b></span><br>
-		<span>{LANG_EDIT_EXPL_AYAH_PUB_KEY}</span>
-		</td>
-		<td class="settings_r">
-		<input class="textbox" name="ayah_pub_key" maxlength="255" size="12" value="{EDIT_AYAH_PUB_KEY}">
-		</td>
-	</tr>
-	<tr>
-		<td class="settings_l">
-		<span><b>{LANG_EDIT_AYAH_SCORE_KEY}</b></span><br>
-		<span>{LANG_EDIT_EXPL_AYAH_SCORE_KEY}</span>
-		</td>
-		<td class="settings_r">
-		<input class="textbox" name="ayah_score_key" maxlength="255" size="12" value="{EDIT_AYAH_SCORE_KEY}">
-		</td>
-	</tr>
 	<!--
 	<tr>
 		<td class="settings_l">
@@ -602,50 +579,6 @@
 		</td>
 		<td class="settings_r">
 		<input class="textbox_nr" name="dynamic_fieldnames_length" maxlength="3" size="50" value="{EDIT_DYNAMIC_FIELDNAMES_LENGTH}">
-		</td>
-	</tr>
-</table>
-<br>
-<input type="submit" class="button" name="{LANG_SAVE}" value="{LANG_SAVE}">
-<br>
-<br>
-<table class="settings" summary="settings" cellspacing="0" cellpadding="2">
-	<tr>
-		<td colspan="2" class="settings_overall">
-		<center><span class="edit_caption">{LANG_EDIT_CAPTION_AKISMET}</span></center>
-		</td>
-	</tr>
-	<tr>
-		<td class="settings_l">
-		<span><b>{LANG_EDIT_AKISMET_PLUGIN}</b></span><br>
-		<span>{LANG_EDIT_EXPL_AKISMET_PLUGIN}<br><br>{EDIT_AKISMET_CHECK_IMAGE}{LANG_EDIT_EXPL_AKISMET_CHECK}</span>
-		</td>
-		<td class="settings_r">
-		<select class="option" name="akismet_plugin" size="1">
-			<option{SELECTED_AKISMET_PLUGIN_0} value="0">{LANG_NO}</option>
-			<option{SELECTED_AKISMET_PLUGIN_1} value="1">{LANG_YES}</option>
-		</select>
-		</td>
-	</tr>
-	<tr>
-		<td class="settings_l">
-		<span><b>{LANG_EDIT_AKISMET_API}</b></span><br>
-		<span>{LANG_EDIT_EXPL_AKISMET_API}</span>
-		</td>
-		<td class="settings_r">
-		<input class="textbox_nr" name="akismet_api" maxlength="50" size="50" value="{EDIT_AKISMET_API}">
-		</td>
-	</tr>
-	<tr>
-		<td class="settings_l">
-		<span><b>{LANG_EDIT_AKISMET_MARK_AS_SPAM}</b></span><br>
-		<span>{LANG_EDIT_EXPL_AKISMET_MARK_AS_SPAM}</span>
-		</td>
-		<td class="settings_r">
-		<select class="option" name="akismet_mark_as_spam" size="1">
-			<option{SELECTED_AKISMET_MARK_AS_SPAM_0} value="0">{LANG_NO}</option>
-			<option{SELECTED_AKISMET_MARK_AS_SPAM_1} value="1">{LANG_YES}</option>
-		</select>
 		</td>
 	</tr>
 </table>

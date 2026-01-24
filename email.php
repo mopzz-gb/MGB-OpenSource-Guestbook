@@ -117,13 +117,6 @@
       	$content_captcha.= "<br>";
     	$content_captcha.= "<script type='text/javascript' src='https://www.google.com/recaptcha/api.js?onload=onloadCallback&amp;render=explicit' async defer>";
     	$content_captcha.= "</script>";
-	} elseif($settings['captcha_method'] == 3) {
-      	if(file_exists("plugins/ayah/ayah.php")) {
-        	require_once("plugins/ayah/ayah.php");
-        	$ayah = new AYAH();
-        	// $content_captcha = mgb_load_template("user", $settings['template_path'], "general/captcha_ayah", $settings['debug_mode']);
-        	$content_captcha = $ayah->getPublisherHTML();
-      	}
 	} else {
 		$content_captcha = mgb_load_template("user", $settings['template_path'], "general/captcha", $settings['debug_mode']);
 	}
@@ -145,7 +138,7 @@
 		} else {
 			if(time() - $_SESSION['file_call'] <= $settings['autoblock_config']) {
 				// check if user's ip is on banlist
-				$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_ips WHERE banned_ip = ".$_SERVER['REMOTE_ADDR'];
+				$sql = "SELECT * FROM ".$db['prefix']."banlist_ips WHERE banned_ip = ".$_SERVER['REMOTE_ADDR'];
 				$result = mgb_sql_connect($mysqli, $sql, "Error while checking remote IP.", 1, null, null); 
 				if ($result && $result->num_rows > 0) {
 					$ip = $result->fetch_assoc();				
@@ -185,7 +178,7 @@
 			} else {
 				if(time() - $_SESSION['file_call'] <= $settings['autoblock_config']) {
 					// check if user's ip is on banlist
-					$sql = "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."banlist_ips WHERE banned_ip = ".$_SERVER['REMOTE_ADDR'];
+					$sql = "SELECT * FROM ".$db['prefix']."banlist_ips WHERE banned_ip = ".$_SERVER['REMOTE_ADDR'];
 					$result = mgb_sql_connect($mysqli, $sql, "Error while checking remote IP.", 1, null, null); 
 					if ($result && $result->num_rows > 0) {
 						$ip = $result->fetch_assoc();		
@@ -247,52 +240,11 @@
 		$_POST['email'] = $_POST['email'];
 		$_POST['user_sendcopytome'] = $_POST['user_sendcopytome'];
 
-		// include akismet if it exists
-		if(file_exists("plugins/akismet/akismet.class.php") AND (!empty($settings['akismet_api'])) AND ($settings['akismet_api'] != "") AND (!empty($_POST['user_accept_akismet_service']) AND $_POST['user_accept_akismet_service'] == 1) AND ($_POST['name'] != "") AND ($_POST['email'] != "") AND ($_POST['message'] != "")) {
-			include ("plugins/akismet/akismet.class.php");
-
-			$akismet_author = bbcode_delete($_POST['name']);
-			$akismet_email = bbcode_delete($_POST['email']);
-			$akismet_website = bbcode_delete($_POST['hp']);
-			$akismet_body = bbcode_delete($_POST['message']);
-
-			// check for spam
-			// Load array with comment data.
-			$comment = array(
-				'author' => $akismet_author,
-				'email' => $akismet_email,
-				'website' => $akismet_website,
-				'body' => $akismet_body,
-				'permalink' => 'http://'.$settings['h_domain'].$settings['gb_path'],
-				'user_ip' => $_SERVER['REMOTE_ADDR'], // Optional, if not in array defaults to $_SERVER['REMOTE_ADDR'].
-				'user_agent' => $_SERVER['HTTP_USER_AGENT'], // Optional, if not in array defaults to $_SERVER['HTTP_USER_AGENT'].
-				);
-
-			// Instantiate an instance of the class.
-			$akismet = new Akismet('http://'.$settings['h_domain'].$settings['gb_path'], $settings['akismet_api'], $comment);
-
-			// Test for errors.
-			if($akismet->errorsExist()) { // Returns true if any errors exist.
-				if($akismet->isError('AKISMET_INVALID_KEY')) {
-					echo "AKISMET API KEY INVALID";
-				} elseif($akismet->isError('AKISMET_RESPONSE_FAILED')) {
-					echo "AKISMET RESPONSE FAILED";
-				} elseif($akismet->isError('AKISMET_SERVER_NOT_FOUND')) {
-					echo "AKISMET_SERVER_NOT_FOUND";
-				}
-			} else {
-				// No errors, check for spam.
-				if($akismet->isSpam()) { // Returns true if Akismet thinks the comment is spam.
-					die();
-				}
-			}
-		}
-
 		// form was sent and is ok!
 		if(empty($errorcode)) { $errorcode = ""; }
 		if(empty($errorcode) OR $errorcode != 8) {
 			// check if user typed too fast and detect possible spam
-			if($settings['keystroke'] == 1 AND $errorcode != 10) {
+			if($settings['keystroke'] === 1 AND $errorcode !== 10) {
 				if(empty($_SESSION['keystroke_ban_time'])) {
 					if(!mgb_get_keystrokes($settings['keystroke_max_cps'], $settings['keystroke_ban_time'], $settings['dynamic_fieldnames'], $settings['debug_mode'])) {
 						$errorcode = 17; // too fast typing, possible spam robot?
@@ -330,20 +282,6 @@
 						$errorcode = 7; // captcha wrong or not set
 						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
         			}
-				} elseif($settings['captcha_method'] == 3) { // ayah (are you a human?)
-							if(file_exists("plugins/ayah/ayah.php")) {
-								if (array_key_exists('send', $_POST)) {
-									$score = $ayah->scoreResult();
-									if(!$score) {
-										// user didn't pass the game
-										$errorcode = 7;
-										mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
-									}
-								}
-							} else {
-						echo "<span>ayah Plugin not found!</span></br>";
-						$errorcode = 7;
-					}
 				}
 
 				if((!empty($settings['banlist_log']) AND $errorcode == 7) AND (!empty($_POST['captcha']) OR !empty($_POST['recaptcha_response_field']))) {
@@ -369,7 +307,7 @@
 			}
 
 			// check email
-			if(!check_mail($_POST['email'])) { $errorcode = 4; }
+			if(!mgb_check_mail($_POST['email'])) { $errorcode = 4; }
 
 			// check ip, email and domain with banlists
 			if((!empty($_POST['name']) AND !empty($_POST['email']) AND !empty($_POST['message'])) AND ($errorcode != 7) AND ($errorcode != 4) AND (!$settings['banlist_ips'] == 1 OR $settings['banlist_emails'] == 1 OR $settings['banlist_domains'] == 1)) {

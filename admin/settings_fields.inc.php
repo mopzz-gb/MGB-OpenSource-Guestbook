@@ -60,7 +60,7 @@
 
 					if (mgb_sql_connect($mysqli, $sql, "Error while saving general settings.", 0)) {
 						$saved_settings_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '1005', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 1005, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						mgb_erase_cache("../cache/");
 					}
 
@@ -77,7 +77,7 @@
 			// start replacement for template
 
 			// replacement that has nothing to do with front end
-			$page_include = template("URL_SETTINGS", "admin.php?action=settings_fields".$sid, $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_fields".$sid], $page_include);
 
 			// value replacement
 			if ($settings['show_field_city'] == "0" OR "") {
@@ -128,19 +128,21 @@
 				$checked_hp = " checked";
 			}
 
-			$page_include = template("EDIT_VALUE_CITY", $edit_value_city, $page_include);
-			$page_include = template("EDIT_VALUE_ICQ", $edit_value_icq, $page_include);
-			$page_include = template("EDIT_VALUE_AIM", $edit_value_aim, $page_include);
-			$page_include = template("EDIT_VALUE_FB", $edit_value_fb, $page_include);
-			$page_include = template("EDIT_VALUE_TWITTER", $edit_value_twitter, $page_include);
-			$page_include = template("EDIT_VALUE_HP", $edit_value_hp, $page_include);
+			$page_include = mgb_template_replace([
+				'EDIT_VALUE_CITY' 		=> $edit_value_city,
+				'EDIT_VALUE_ICQ' 		=> $edit_value_icq,
+				'EDIT_VALUE_AIM' 		=> $edit_value_aim,
+				'EDIT_VALUE_FB' 		=> $edit_value_fb,
+				'EDIT_VALUE_TWITTER' 	=> $edit_value_twitter,
+				'EDIT_VALUE_HP' 		=> $edit_value_hp,
 
-			$page_include = template("CHECKED_CITY", $checked_city, $page_include);
-			$page_include = template("CHECKED_ICQ", $checked_icq, $page_include);
-			$page_include = template("CHECKED_AIM", $checked_aim, $page_include);
-			$page_include = template("CHECKED_FB", $checked_fb, $page_include);
-			$page_include = template("CHECKED_TWITTER", $checked_twitter, $page_include);
-			$page_include = template("CHECKED_HP", $checked_hp, $page_include);
+				'CHECKED_CITY' 			=> $checked_city,
+				'CHECKED_ICQ' 			=> $checked_icq,
+				'CHECKED_AIM' 			=> $checked_aim,
+				'CHECKED_FB' 			=> $checked_fb,
+				'CHECKED_TWITTER' 		=> $checked_twitter,
+				'CHECKED_HP' 			=> $checked_hp
+			], $page_include);
 
 			// front end / language replacement
 			// $page_include = mgb_template_language($page_include, "../language/".$settings['language_path']."/lang_admin.php", $settings['debug_mode']); // last number defines debug mode

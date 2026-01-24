@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -47,38 +47,44 @@
 				// admin email
 				// guestbook mail
 				$empty_needed_value = 0;
+				$errorcode = 0;
 				if(empty($_POST['title'])) { $empty_needed_value = 1; } // no title information
 				if(empty($_POST['h_author'])) { $empty_needed_value = 2; } // no author information
 				if(empty($_POST['timezone'])) { $empty_needed_value = 3; } // no timezone information
 				if(empty($_POST['admin_name'])) { $empty_needed_value = 4; } // no admin_name information
 				if(empty($_POST['admin_email'])) { $empty_needed_value = 5; } // no admin_email information
 				if(empty($_POST['admin_gbemail'])) { $empty_needed_value = 6; } // no guestbook mail information
-				if($empty_needed_value == 0) { // no error, continue with saving settings
+				$admin_email = mgb_check_mail($_POST['admin_email']) ? $_POST['admin_email'] : ($errorcode = 7); // email's not valid
+				$admin_gbemail = mgb_check_mail($_POST['admin_gbemail']) ? $_POST['admin_gbemail'] : ($errorcode = 7); // email's not valid
+				if($empty_needed_value === 0 AND $errorcode === 0) { // no error, continue with saving settings
 					if ($_POST['h_domain'] == "") { $_POST['domain'] = $_SERVER["SERVER_NAME"]; }
 					if ($_POST['gb_path'] == "") { $_POST['gb_path'] = str_ireplace("admin/admin.php", "", $_SERVER["SCRIPT_NAME"]); }
-
+					
 					// everything's okay now, let's save the data
 					$sql = "UPDATE `".$db['prefix']."settings` SET
-						`title` = '".cleanstr($_POST['title'])."',
-						`h_author` = '".cleanstr($_POST['h_author'])."',
-						`h_domain` = '".cleanstr($_POST['h_domain'])."',
-						`gb_path` = '".cleanstr($_POST['gb_path'])."',
-						`h_keywords` = '".cleanstr($_POST['h_keywords'])."',
-						`h_description` = '".cleanstr($_POST['h_description'])."',
-						`timezone` = '".cleanstr($_POST['timezone'])."',
-						`announcement_message` = '".cleanstr($_POST['announcement_message'])."',
-						`admin_name` = '".cleanstr($_POST['admin_name'])."',
-						`admin_email` = '".cleanstr($_POST['admin_email'])."',
-						`admin_gbemail` = '".cleanstr($_POST['admin_gbemail'])."',
-						`caching` = '".cleanstr($_POST['caching'])."'";
+						`title` = '".$_POST['title']."',
+						`h_author` = '".$_POST['h_author']."',
+						`h_domain` = '".$_POST['h_domain']."',
+						`gb_path` = '".$_POST['gb_path']."',
+						`h_keywords` = '".$_POST['h_keywords']."',
+						`h_description` = '".$_POST['h_description']."',
+						`timezone` = '".$_POST['timezone']."',
+						`announcement_message` = '".$_POST['announcement_message']."',
+						`admin_name` = '".$_POST['admin_name']."',
+						`admin_email` = '".$admin_email."',
+						`admin_gbemail` = '".$admin_gbemail."',
+						`caching` = '".$_POST['caching']."'";
 
 					if (mgb_sql_connect($mysqli, $sql, "Error while saving general settings.", 0)) {
 						$saved_settings_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '1003', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 1003, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						mgb_erase_cache(MGB_ROOT."cache/");
 					}
 
 					require(MGB_ROOT."includes/load_settings.inc.php");
+				} else {
+					$saved_settings_successfull = 0;
+					$template_message = "<span class='old_version'>".$lang['errormessage'][7]."</span>"; // email is not valid
 				}
 			}
 
@@ -91,7 +97,7 @@
 			// start replacement for template
 
 			// replacement that has nothing to do with front end
-			$page_include = template("URL_SETTINGS", "admin.php?action=settings_general".$sid, $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_general".$sid], $page_include);
 
 			// value replacement
 			if ($settings['caching'] == 0) {
@@ -102,19 +108,21 @@
 				$selected_caching_1 = " selected";
 			}
 
-			$page_include = template("SELECTED_CACHING_0", $selected_caching_0, $page_include);
-			$page_include = template("SELECTED_CACHING_1", $selected_caching_1, $page_include);
-			$page_include = template("EDIT_TITLE", $settings['title'], $page_include);
-			$page_include = template("EDIT_H_AUTHOR", $settings['h_author'], $page_include);
-			$page_include = template("EDIT_H_DOMAIN", $settings['h_domain'], $page_include);
-			$page_include = template("EDIT_GB_PATH", $settings['gb_path'], $page_include);
-			$page_include = template("EDIT_H_KEYWORDS", $settings['h_keywords'], $page_include);
-			$page_include = template("EDIT_H_DESCRIPTION", $settings['h_description'], $page_include);
-			$page_include = template("TIMEZONE", $settings['timezone'], $page_include);
-			$page_include = template("EDIT_ANNOUNCEMENT_MESSAGE", $settings['announcement_message'], $page_include);
-			$page_include = template("EDIT_ADMIN_NAME", $settings['admin_name'], $page_include);
-			$page_include = template("EDIT_ADMIN_EMAIL", $settings['admin_email'], $page_include);
-			$page_include = template("EDIT_ADMIN_GBEMAIL", $settings['admin_gbemail'], $page_include);
+			$page_include = mgb_template_replace([
+				'SELECTED_CACHING_0' 			=> $selected_caching_0,
+				'SELECTED_CACHING_1' 			=> $selected_caching_1,
+				'EDIT_TITLE' 					=> mgb_formatForm($settings['title']),
+				'EDIT_H_AUTHOR' 				=> mgb_formatForm($settings['h_author']),
+				'EDIT_H_DOMAIN' 				=> mgb_formatForm($settings['h_domain']),
+				'EDIT_GB_PATH' 					=> mgb_formatForm($settings['gb_path']),
+				'EDIT_H_KEYWORDS' 				=> mgb_formatForm($settings['h_keywords']),
+				'EDIT_H_DESCRIPTION' 			=> mgb_formatForm($settings['h_description']),
+				'TIMEZONE' 						=> mgb_formatForm($settings['timezone']),
+				'EDIT_ANNOUNCEMENT_MESSAGE' 	=> mgb_formatForm($settings['announcement_message']),
+				'EDIT_ADMIN_NAME' 				=> mgb_formatForm($settings['admin_name']),
+				'EDIT_ADMIN_EMAIL' 				=> $settings['admin_email'],
+				'EDIT_ADMIN_GBEMAIL' 			=> $settings['admin_gbemail']
+			], $page_include);
 
 			// is scrolling function needed?
 			$content_scrolling_function = "";

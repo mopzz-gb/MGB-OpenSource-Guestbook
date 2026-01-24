@@ -35,7 +35,7 @@
 
 		if(!isset($_GET['action'])) { $_GET['action'] = "settings_usage"; }
 		if(check_rights($mysqli, $_GET['action'], $_SESSION['user_ID'])) {
-			if(isset($_POST['sent_settings']) AND $_POST['sent_settings'] == 1) {
+			if(isset($_POST['sent_settings']) AND $_POST['sent_settings'] === 1) {
 				// needed values in this script:
 				// =============================
 				// aus_ping_address
@@ -46,12 +46,12 @@
 				if($empty_needed_value == 0) { // no error, continue with saving settings
 					// everything's okay now, let's save the data
 					$sql = "UPDATE `".$db['prefix']."settings` SET
-						`aus_allow` = '".cleanstr($_POST['aus_allow'])."',
-						`aus_ping_address` = '".cleanstr($_POST['aus_ping_address'])."'";
+						`aus_allow` = '".$_POST['aus_allow']."',
+						`aus_ping_address` = '".$_POST['aus_ping_address']."'";
 
-					if (mgb_sql_connect($mysqli, $sql, "Error while saving general settings.", 0)) {
+					if (mgb_sql_connect($mysqli, $sql, "Error while saving telemetry settings.", 0)) {
 						$saved_settings_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '1031', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 1031, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						mgb_erase_cache("../cache/");
 					}
 

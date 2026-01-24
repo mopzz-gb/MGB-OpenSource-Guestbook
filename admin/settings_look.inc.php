@@ -52,23 +52,23 @@
 				if($empty_needed_value == 0) { // no error, continue with saving settings
 					// everything's okay now, let's save the data
 					$sql = "UPDATE `".$db['prefix']."settings` SET
-						`template_path` = '".cleanstr($_POST['template_path'])."',
-						`template_style_path` = '".cleanstr($_POST['template_style_path'])."',
-						`iconset_path` = '".cleanstr($_POST['iconset_path'])."',
-						`language_path` = '".cleanstr($_POST['language_path'])."',
-						`badwords` = '".cleanstr($_POST['badwords'])."',
-						`user_notification` = '".cleanstr($_POST['user_notification'])."',
-						`user_show_email` = '".cleanstr($_POST['user_show_email'])."',
-						`entries_per_page` = '".cleanstr($_POST['entries_per_page'])."',
-						`entries_order` = '".cleanstr($_POST['entries_order'])."',
-						`entries_order_asc_desc` = '".cleanstr($_POST['entries_order_asc_desc'])."',
-						`entries_numbering` = '".cleanstr($_POST['entries_numbering'])."',
-						`wordwrap` = '".cleanstr($_POST['wordwrap'])."',
-						`dateform` = '".cleanstr($_POST['dateform'])."'";
+						`template_path` = '".$_POST['template_path']."',
+						`template_style_path` = '".$_POST['template_style_path']."',
+						`iconset_path` = '".$_POST['iconset_path']."',
+						`language_path` = '".$_POST['language_path']."',
+						`badwords` = '".$_POST['badwords']."',
+						`user_notification` = '".$_POST['user_notification']."',
+						`user_show_email` = '".$_POST['user_show_email']."',
+						`entries_per_page` = '".$_POST['entries_per_page']."',
+						`entries_order` = '".$_POST['entries_order']."',
+						`entries_order_asc_desc` = '".$_POST['entries_order_asc_desc']."',
+						`entries_numbering` = '".$_POST['entries_numbering']."',
+						`wordwrap` = '".$_POST['wordwrap']."',
+						`dateform` = '".$_POST['dateform']."'";
 
 					if (mgb_sql_connect($mysqli, $sql, "Error while saving general settings.", 0)) {
 						$saved_settings_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '1004', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 1004, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						mgb_erase_cache(MGB_ROOT."cache/");
 					}
 
@@ -160,27 +160,26 @@
 			}
 
 			// replacement that has nothing to do with front end
-			$page_include = template("URL_SETTINGS", "admin.php?action=settings_look".$sid, $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_look".$sid], $page_include);
 
 			// value replacement
-			$page_include = template("LANG_EDIT_AUTHOR_NAME", $active_language_author, $page_include);
-			$page_include = template("LANG_EDIT_VERSION", $active_language_version, $page_include);
-			$page_include = template("LANG_EDIT_CHARSET", $active_language_charset, $page_include);
-			// $page_include = template("LANG_EDIT_EXPL_LANGUAGE_AUTHOR", $lang['edit_author'], $page_include);
-			$page_include = template("LANG_EDIT_EXPL_LANGUAGE_VERSION", $lang['version'].":", $page_include);
-			// $page_include = template("LANG_EDIT_EXPL_LANGUAGE_CHARSET", $lang['edit_expl_language_charset'], $page_include);
-
-			$page_include = template("LANG_ID", mgb_remove_evil_things($lang['id'], ":"), $page_include);
-			$page_include = template("LANG_NAME", mgb_remove_evil_things($lang['name'], ":"), $page_include);
-			$page_include = template("LANG_CITY", mgb_remove_evil_things($lang['city'], ":"), $page_include);
-			$page_include = template("LANG_EMAIL", mgb_remove_evil_things($lang['email'], ":"), $page_include);
-			$page_include = template("LANG_ICQ", mgb_remove_evil_things($lang['icq'], ":"), $page_include);
-			$page_include = template("LANG_AIM", mgb_remove_evil_things($lang['aim'], ":"), $page_include);
-			$page_include = template("LANG_MSN", mgb_remove_evil_things($lang['msn'], ":"), $page_include);
-			$page_include = template("LANG_HP", mgb_remove_evil_things($lang['hp'], ":"), $page_include);
-			$page_include = template("LANG_MESSAGE", mgb_remove_evil_things($lang['message'], ":"), $page_include);
-			$page_include = template("LANG_COMMENT", mgb_remove_evil_things($lang['comment'], ":"), $page_include);
-			$page_include = template("LANG_TIMESTAMP", mgb_remove_evil_things($lang['timestamp'], ":"), $page_include);
+			$page_include = mgb_template_replace([
+				'LANG_EDIT_AUTHOR_NAME' 			=> $active_language_author,
+				'LANG_EDIT_VERSION' 				=> $active_language_version,
+				'LANG_EDIT_CHARSET' 				=> $active_language_charset,
+				'LANG_EDIT_EXPL_LANGUAGE_VERSION' 	=> $lang['version'].":",
+				'LANG_ID' 							=> $lang['id'], ":",
+				'LANG_NAME' 						=> $lang['name'], ":",
+				'LANG_CITY' 						=> $lang['city'], ":",
+				'LANG_EMAIL' 						=> $lang['email'], ":",
+				'LANG_ICQ' 							=> $lang['icq'], ":",
+				'LANG_AIM' 							=> $lang['aim'], ":",
+				'LANG_MSN' 							=> $lang['msn'], ":",
+				'LANG_HP' 							=> $lang['hp'], ":",
+				'LANG_MESSAGE' 						=> $lang['message'], ":",
+				'LANG_COMMENT' 						=> $lang['comment'], ":",
+				'LANG_TIMESTAMP' 					=> $lang['timestamp'], ":"
+			], $page_include);
 			
 			if(empty($selected_entries_order_0)) { $selected_entries_order_0 = ""; }
 			if(empty($selected_entries_order_1)) { $selected_entries_order_1 = ""; }
@@ -193,28 +192,28 @@
 			if(empty($selected_entries_order_8)) { $selected_entries_order_8 = ""; }
 			if(empty($selected_entries_order_9)) { $selected_entries_order_9 = ""; }
 
-			if ($settings['entries_order'] == "ID") {
+			if ($settings['entries_order'] === "ID") {
 				$selected_entries_order_0 = " selected"; }
-			elseif ($settings['entries_order'] == "name") {
+			elseif ($settings['entries_order'] === "name") {
 				$selected_entries_order_1 = " selected"; }
-			elseif ($settings['entries_order'] == "city") {
+			elseif ($settings['entries_order'] === "city") {
 				$selected_entries_order_2 = " selected"; }
-			elseif ($settings['entries_order'] == "email") {
+			elseif ($settings['entries_order'] === "email") {
 				$selected_entries_order_3 = " selected"; }
-			elseif ($settings['entries_order'] == "icq") {
+			elseif ($settings['entries_order'] === "icq") {
 				$selected_entries_order_4 = " selected"; }
-			elseif ($settings['entries_order'] == "aim") {
+			elseif ($settings['entries_order'] === "aim") {
 				$selected_entries_order_5 = " selected"; }
-			elseif ($settings['entries_order'] == "hp") {
+			elseif ($settings['entries_order'] === "hp") {
 				$selected_entries_order_6 = " selected"; }
-			elseif ($settings['entries_order'] == "message") {
+			elseif ($settings['entries_order'] === "message") {
 				$selected_entries_order_7 = " selected"; }
-			elseif ($settings['entries_order'] == "comment") {
+			elseif ($settings['entries_order'] === "comment") {
 				$selected_entries_order_8 = " selected"; }
-			elseif ($settings['entries_order'] == "timestamp") {
+			elseif ($settings['entries_order'] === "timestamp") {
 				$selected_entries_order_9 = " selected"; }
 			
-			if ($settings['entries_order_asc_desc'] == "ASC") {
+			if ($settings['entries_order_asc_desc'] === "ASC") {
 				$selected_entries_order_asc_desc_0 = " selected";
 				$selected_entries_order_asc_desc_1 = "";
 			} else {
@@ -222,7 +221,7 @@
 				$selected_entries_order_asc_desc_1 = " selected";
 			}
 			
-			if ($settings['entries_numbering'] == 0) {
+			if ($settings['entries_numbering'] === 0) {
 				$selected_entries_numbering_0 = " selected";
 				$selected_entries_numbering_1 = "";
 			} else {
@@ -230,7 +229,7 @@
 				$selected_entries_numbering_1 = " selected";
 			}
 			
-			if ($settings['user_notification'] == 0) {
+			if ($settings['user_notification'] === 0) {
 				$selected_user_notification_0 = " selected";
 				$selected_user_notification_1 = "";
 			} else {
@@ -238,7 +237,7 @@
 				$selected_user_notification_1 = " selected";
 			}
 			
-			if ($settings['user_show_email'] == 0) {
+			if ($settings['user_show_email'] === 0) {
 				$selected_user_show_email_0 = " selected";
 				$selected_user_show_email_1 = "";
 			} else {
@@ -246,34 +245,36 @@
 				$selected_user_show_email_1	= " selected";
 			}
 
-			$page_include = template("EDIT_OPTION_TEMPLATE_PATH", $edit_option_template_path, $page_include);
-			$page_include = template("EDIT_OPTION_TEMPLATE_STYLE_PATH", $edit_option_template_style_path, $page_include);
-			$page_include = template("EDIT_OPTION_ICONSET_PATH", $edit_option_iconset_path, $page_include);
-			$page_include = template("EDIT_OPTION_LANGUAGE_PATH", $edit_option_language_path, $page_include);
-			$page_include = template("EDIT_BADWORDS", $settings['badwords'], $page_include);
-			$page_include = template("SELECTED_USER_NOTIFICATION_0", $selected_user_notification_0, $page_include);
-			$page_include = template("SELECTED_USER_NOTIFICATION_1", $selected_user_notification_1, $page_include);
-			$page_include = template("SELECTED_USER_SHOW_EMAIL_0", $selected_user_show_email_0, $page_include);
-			$page_include = template("SELECTED_USER_SHOW_EMAIL_1", $selected_user_show_email_1, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_0", $selected_entries_order_0, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_1", $selected_entries_order_1, $page_include);
-			$page_include = template("EDIT_ENTRIES_PER_PAGE", $settings['entries_per_page'], $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_0", $selected_entries_order_0, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_1", $selected_entries_order_1, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_2", $selected_entries_order_2, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_3", $selected_entries_order_3, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_4", $selected_entries_order_4, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_5", $selected_entries_order_5, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_6", $selected_entries_order_6, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_7", $selected_entries_order_7, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_8", $selected_entries_order_8, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_9", $selected_entries_order_9, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_ASC_DESC_0", $selected_entries_order_asc_desc_0, $page_include);
-			$page_include = template("SELECTED_ENTRIES_ORDER_ASC_DESC_1", $selected_entries_order_asc_desc_1, $page_include);
-			$page_include = template("SELECTED_ENTRIES_NUMBERING_0", $selected_entries_numbering_0, $page_include);
-			$page_include = template("SELECTED_ENTRIES_NUMBERING_1", $selected_entries_numbering_1, $page_include);
-			$page_include = template("EDIT_WORDWRAP", $settings['wordwrap'], $page_include);
-			$page_include = template("EDIT_DATEFORM", $settings['dateform'], $page_include);
+			$page_include = mgb_template_replace([
+				'EDIT_OPTION_TEMPLATE_PATH' 			=> $edit_option_template_path,
+				'EDIT_OPTION_TEMPLATE_STYLE_PATH' 		=> $edit_option_template_style_path,
+				'EDIT_OPTION_ICONSET_PATH' 				=> $edit_option_iconset_path,
+				'EDIT_OPTION_LANGUAGE_PATH' 			=> $edit_option_language_path,
+				'EDIT_BADWORDS'							=> mgb_formatForm($settings['badwords']),
+				'SELECTED_USER_NOTIFICATION_0' 			=> $selected_user_notification_0,
+				'SELECTED_USER_NOTIFICATION_1' 			=> $selected_user_notification_1,
+				'SELECTED_USER_SHOW_EMAIL_0' 			=> $selected_user_show_email_0,
+				'SELECTED_USER_SHOW_EMAIL_1' 			=> $selected_user_show_email_1,
+				'SELECTED_ENTRIES_ORDER_0' 				=> $selected_entries_order_0,
+				'SELECTED_ENTRIES_ORDER_1' 				=> $selected_entries_order_1,
+				'EDIT_ENTRIES_PER_PAGE' 				=> $settings['entries_per_page'],
+				'SELECTED_ENTRIES_ORDER_0' 				=> $selected_entries_order_0,
+				'SELECTED_ENTRIES_ORDER_1' 				=> $selected_entries_order_1,
+				'SELECTED_ENTRIES_ORDER_2' 				=> $selected_entries_order_2,
+				'SELECTED_ENTRIES_ORDER_3' 				=> $selected_entries_order_3,
+				'SELECTED_ENTRIES_ORDER_4' 				=> $selected_entries_order_4,
+				'SELECTED_ENTRIES_ORDER_5' 				=> $selected_entries_order_5,
+				'SELECTED_ENTRIES_ORDER_6' 				=> $selected_entries_order_6,
+				'SELECTED_ENTRIES_ORDER_7' 				=> $selected_entries_order_7,
+				'SELECTED_ENTRIES_ORDER_8' 				=> $selected_entries_order_8,
+				'SELECTED_ENTRIES_ORDER_9' 				=> $selected_entries_order_9,
+				'SELECTED_ENTRIES_ORDER_ASC_DESC_0' 	=> $selected_entries_order_asc_desc_0,
+				'SELECTED_ENTRIES_ORDER_ASC_DESC_1' 	=> $selected_entries_order_asc_desc_1,
+				'SELECTED_ENTRIES_NUMBERING_0' 			=> $selected_entries_numbering_0,
+				'SELECTED_ENTRIES_NUMBERING_1' 			=> $selected_entries_numbering_1,
+				'EDIT_WORDWRAP' 						=> mgb_formatForm($settings['wordwrap']),
+				'EDIT_DATEFORM' 						=> $settings['dateform']
+			], $page_include);
 
 			// front end / language replacement
 			// $page_include = mgb_template_language($page_include, MGB_ROOT."language/".$settings['language_path']."/lang_admin.php", $settings['debug_mode']); // last number defines debug mode

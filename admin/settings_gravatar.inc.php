@@ -44,15 +44,15 @@
 				if($empty_needed_value == 0) { // no error, continue with saving settings
 					// everything's okay now, let's save the data
 					$sql = "UPDATE `".$db['prefix']."settings` SET
-						`gravatar_show` = '".cleanstr($_POST['gravatar_show'])."',
-						`gravatar_rating` = '".cleanstr($_POST['gravatar_rating'])."',
-						`gravatar_type` = '".cleanstr($_POST['gravatar_type'])."',
-						`gravatar_size` = '".cleanstr($_POST['gravatar_size'])."',
-						`gravatar_position` = '".cleanstr($_POST['gravatar_position'])."'";
+						`gravatar_show` = '".$_POST['gravatar_show']."',
+						`gravatar_rating` = '".$_POST['gravatar_rating']."',
+						`gravatar_type` = '".$_POST['gravatar_type']."',
+						`gravatar_size` = '".$_POST['gravatar_size']."',
+						`gravatar_position` = '".$_POST['gravatar_position']."'";
 
 					if (mgb_sql_connect($mysqli, $sql, "Error while saving gravatar settings.", 0)) {
 						$saved_settings_successfull = 1;
-						mgb_trigger_sys_log($mysqli, '1009', '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 1009, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						mgb_erase_cache("../cache/");
 					}
 
@@ -108,22 +108,25 @@
 			elseif($settings['gravatar_type'] == 6) {
 				$selected_gravatar_type_6 = " selected"; }
 			if($settings['gravatar_position'] == 0) { $selected_gravatar_position_0 = " selected"; } else { $selected_gravatar_position_1 = " selected"; }
-			$page_include = template("SELECTED_GRAVATAR_SHOW_0", $selected_gravatar_show_0, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_SHOW_1", $selected_gravatar_show_1, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_RATING_0", $selected_gravatar_rating_0, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_RATING_1", $selected_gravatar_rating_1, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_RATING_2", $selected_gravatar_rating_2, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_RATING_3", $selected_gravatar_rating_3, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_TYPE_0", $selected_gravatar_type_0, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_TYPE_1", $selected_gravatar_type_1, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_TYPE_2", $selected_gravatar_type_2, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_TYPE_3", $selected_gravatar_type_3, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_TYPE_4", $selected_gravatar_type_4, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_TYPE_5", $selected_gravatar_type_5, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_TYPE_6", $selected_gravatar_type_6, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_POSITION_0", $selected_gravatar_position_0, $page_include);
-			$page_include = template("SELECTED_GRAVATAR_POSITION_1", $selected_gravatar_position_1, $page_include);
-			$page_include = template("EDIT_GRAVATAR_SIZE", $settings['gravatar_size'], $page_include);
+			
+			$page_include = mgb_template_replace([
+				'SELECTED_GRAVATAR_SHOW_0' 		=> $selected_gravatar_show_0,
+				'SELECTED_GRAVATAR_SHOW_1' 		=> $selected_gravatar_show_1,
+				'SELECTED_GRAVATAR_RATING_0' 	=> $selected_gravatar_rating_0,
+				'SELECTED_GRAVATAR_RATING_1' 	=> $selected_gravatar_rating_1,
+				'SELECTED_GRAVATAR_RATING_2' 	=> $selected_gravatar_rating_2,
+				'SELECTED_GRAVATAR_RATING_3' 	=> $selected_gravatar_rating_3,
+				'SELECTED_GRAVATAR_TYPE_0' 		=> $selected_gravatar_type_0,
+				'SELECTED_GRAVATAR_TYPE_1' 		=> $selected_gravatar_type_1,
+				'SELECTED_GRAVATAR_TYPE_2' 		=> $selected_gravatar_type_2,
+				'SELECTED_GRAVATAR_TYPE_3' 		=> $selected_gravatar_type_3,
+				'SELECTED_GRAVATAR_TYPE_4' 		=> $selected_gravatar_type_4,
+				'SELECTED_GRAVATAR_TYPE_5' 		=> $selected_gravatar_type_5,
+				'SELECTED_GRAVATAR_TYPE_6' 		=> $selected_gravatar_type_6,
+				'SELECTED_GRAVATAR_POSITION_0' 	=> $selected_gravatar_position_0,
+				'SELECTED_GRAVATAR_POSITION_1' 	=> $selected_gravatar_position_1,
+				'EDIT_GRAVATAR_SIZE' 			=> mgb_formatForm($settings['gravatar_size'])
+			], $page_include);
 
 			// is scrolling function needed?
 			$content_scrolling_function = "";
