@@ -146,11 +146,11 @@
 			$load_end = $epp;
 
 			$pages_total = ceil($p);
-
+			
 			if(empty($_GET['orderby'])) { $_GET['orderby'] = "id"; }
 			if(empty($_GET['sort'])) { $_GET['sort'] = "ASC"; }
 			if($_GET['orderby'] == "content") { $_GET['orderby'] = "banned_email"; }
-
+			
 			if ($_GET['p'] == 1) {
 				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=banlist_emails&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];

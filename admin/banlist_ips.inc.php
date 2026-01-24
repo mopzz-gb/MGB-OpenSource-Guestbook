@@ -43,7 +43,7 @@
 
 			if(!empty($_POST['dropbox'])) {
 				if($_POST['dropbox'] == 1) { // Delete all spam entries
-					mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."banlist_ips", "Error while deleting all ip entries.", 0);
+					mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."banlist_ips", "Error while deleting all ip entries.", 0, null, null);
 				} elseif($_POST['dropbox'] == 8) { // export as sql dump
 					$script_time_start = microtime(true);
 					include("../includes/config.inc.php");
@@ -79,9 +79,12 @@
 						}
 					}
 				} elseif($_POST['dropbox'] == 9) { // export as csv
+					/*
+						This option is currently not supported
+					*/
 					$script_time_start = microtime(true);
 
-					$result = mgb_sql_connect($mysqli, "SELECT banned_ip, banned_ip_first, banned_ip_second, banned_ip_third, banned_ip_fourth, timestamp FROM ".$db['prefix']."banlist_ips ORDER BY timestamp ASC", "Error while loading data from banlist_ips for sql export.", 1);
+					$result = mgb_sql_connect($mysqli, "SELECT banned_ip, banned_ip_first, banned_ip_second, banned_ip_third, banned_ip_fourth, timestamp FROM ".$db['prefix']."banlist_ips ORDER BY timestamp ASC", "Error while loading data from banlist_ips for sql export.", 1, null, null);
 					for($i = 0; $i < mysqli_num_rows($result); $i++) {
 						$export[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
 						$ID = $i + 1;
@@ -106,14 +109,17 @@
 			if(isset($_GET['id'])) {
 				if(isset($_GET['spam_action'])) {
 					if($_GET['spam_action'] == 'delete') {
-						mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."banlist_ips` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting a single ip entry.", 0);
+						$sql = "DELETE FROM `".$db['prefix']."banlist_ips` WHERE ID = ? LIMIT 1";
+						$params = [$_GET['id']];
+						$types = "i";
+						mgb_sql_connect($mysqli, $sql, "Error while deleting a single ip entry.", 0, $params, $types);
 					}
 				}
 			}
 
 			// get total number of entries
 			$sql = "SELECT COUNT(banned_ip) AS total FROM ".$db['prefix']."banlist_ips";
-			$results = mgb_sql_connect($mysqli, $sql, "Error while counting banned ip entries.", 1);
+			$results = mgb_sql_connect($mysqli, $sql, "Error while counting banned ip entries.", 1, null, null);
 			$row = $results->fetch_assoc();
 			$total = (int)$row['total'];
 
@@ -179,15 +185,28 @@
 				$content_scrolling_function = "<br><br>";
 			}
 
-			// load banlist entries
-			$result = mgb_sql_connect($mysqli, "SELECT id, banned_ip, matches, timestamp FROM ".$db['prefix']."banlist_ips ORDER BY ".$_GET['orderby']." ".$_GET['sort']." LIMIT $load_start, $load_end", "Error while loading banned ip entries.", 1);
+			// Erlaubte Spalten für ORDER BY
+			$allowed_columns = ['id', 'banned_ip', 'matches', 'timestamp'];
+			// Erlaubte Sortierrichtungen
+			$allowed_sort = ['ASC', 'DESC'];
 
-			$counter = 0;
+			// Standardwerte
+			$orderby = 'id';
+			$sort = 'ASC';
 
-			for($i = 0; $i < mysqli_num_rows($result); $i++) {
-				$entry[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-				$counter++;
+			// Benutzereingaben validieren
+			if (isset($_GET['orderby']) && in_array($_GET['orderby'], $allowed_columns)) {
+				$orderby = $_GET['orderby'];
 			}
+			if (isset($_GET['sort']) && in_array(strtoupper($_GET['sort']), $allowed_sort)) {
+				$sort = strtoupper($_GET['sort']);
+			}
+
+			// load guestbook entries
+			$sql = "SELECT id, banned_ip, matches, timestamp FROM ".$db['prefix']."banlist_ips ORDER BY $orderby $sort LIMIT $load_start, $load_end";			
+			$result = mgb_sql_connect($mysqli, $sql, "Error while loading banned email entries.", 1, null, null);
+			$entry = mysqli_fetch_all($result, MYSQLI_ASSOC);
+			$counter = count($entry);
 
 			if ($counter <= 1) {
 				if ($_GET['p'] == 1) {
@@ -213,13 +232,15 @@
 					}
 
 					// fill template with entry (strings)
-					$page_entry[$i] = template("ENTRY_ID", $entry[$i]['id'], $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_IP", $entry[$i]['banned_ip'], $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_EMAIL", "", $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_DOMAIN", "", $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_MATCHES", $entry[$i]['matches'], $page_entry[$i]);
-					$page_entry[$i] = template("ENTRY_TIMESTAMP", $entry_timestamp, $page_entry[$i]);
-					$page_entry[$i] = template("DELETE", "<a href=\"admin.php?action=banlist_ips&amp;id=".$entry[$i]['id']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('".$entry[$i]['id'].", ".$entry[$i]['banned_ip'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>", $page_entry[$i]);
+					$page_entry[$i] = mgb_template_replace([
+						'ENTRY_ID' 			=> $entry[$i]['id'],
+						'ENTRY_IP' 			=> $entry[$i]['banned_ip'],
+						'ENTRY_EMAIL' 		=> "",
+						'ENTRY_DOMAIN' 		=> "",
+						'ENTRY_MATCHES' 	=> $entry[$i]['matches'],
+						'ENTRY_TIMESTAMP' 	=> $entry_timestamp,
+						'DELETE' 			=> "<a href=\"admin.php?action=banlist_ips&amp;id=".$entry[$i]['id']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('".$entry[$i]['id'].", ".$entry[$i]['banned_ip'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
+					], $page_entry[$i]);
 
 					if(!isset($page_include)) { $page_include = NULL; }
 					$page_include .= $page_entry[$i];

@@ -108,6 +108,9 @@
 		$include = "login.inc.php";
 		$new_version_available = "&nbsp;";
 	}
+	
+	// define variables
+	$template_message = "";
 
 	// login status
 	if(empty($_SESSION['user_ID']) OR !empty($_GET['action']) AND $_GET['action'] == "logout") {
@@ -377,7 +380,7 @@
 			($_GET['action'] == "sys_log") OR
 			($_GET['action'] == "spam") OR
 			($_GET['action'] == "settings_database")) {
-			$page_admin = mgb_template_replace(["TEMPLATE_MESSAGE" => "<span>".$template_message."</span><br><br>"], $page_admin);
+			$page_admin = mgb_template_replace(['TEMPLATE_MESSAGE' => "<span>".$template_message."</span><br><br>"], $page_admin);
 		}
 	}
 

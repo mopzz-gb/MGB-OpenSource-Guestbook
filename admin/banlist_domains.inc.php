@@ -178,16 +178,29 @@
 			if ($pages_total <= 0) {
 				$content_scrolling_function = "<br><br>";
 			}
+			
+			// Erlaubte Spalten für ORDER BY
+			$allowed_columns = ['id', 'banned_domain', 'matches', 'timestamp'];
+			// Erlaubte Sortierrichtungen
+			$allowed_sort = ['ASC', 'DESC'];
+
+			// Standardwerte
+			$orderby = 'id';
+			$sort = 'ASC';
+
+			// Benutzereingaben validieren
+			if (isset($_GET['orderby']) && in_array($_GET['orderby'], $allowed_columns)) {
+				$orderby = $_GET['orderby'];
+			}
+			if (isset($_GET['sort']) && in_array(strtoupper($_GET['sort']), $allowed_sort)) {
+				$sort = strtoupper($_GET['sort']);
+			}
 
 			// load guestbook entries
-			$result = mgb_sql_connect($mysqli, "SELECT id, banned_domain, matches, timestamp FROM ".$db['prefix']."banlist_domains ORDER BY ".$_GET['orderby']." ".$_GET['sort']." LIMIT $load_start, $load_end", "Error while loading banned domain entries.", 1);
-
-			$counter = 0;
-
-			for($i = 0; $i < mysqli_num_rows($result); $i++) {
-				$entry[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-				$counter++;
-			}
+			$sql = "SELECT id, banned_domain, matches, timestamp FROM ".$db['prefix']."banlist_domains ORDER BY $orderby $sort LIMIT $load_start, $load_end";		
+			$result = mgb_sql_connect($mysqli, $sql, "Error while loading banned email entries.", 1, null, null);
+			$entry = mysqli_fetch_all($result, MYSQLI_ASSOC);
+			$counter = count($entry);
 
 			if ($counter <= 1) {
 				if ($_GET['p'] == 1) {
@@ -200,7 +213,7 @@
 			}
 
 			// fill entry template with content
-			require ("../includes/functions.inc.php");
+			require_once ("../includes/functions.inc.php");
 
 			if(!empty($entry)) {
 				for($i = 0; $i < count($entry); $i++) {

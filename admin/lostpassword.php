@@ -168,29 +168,30 @@
 	// Template replacement
 
 	// Header
+	if(!isset($refresh)) { $refresh = ""; }
 	$page_header = $content_header;
-	$page_header = template("H_LANGUAGE_SHORT", $language_short, $page_header);
-	$page_header = template("H_DOMAIN", $settings['h_domain'], $page_header);
-	$page_header = template("H_AUTHOR", $settings['h_author'], $page_header);
-	$page_header = template("H_KEYWORDS", $settings['h_keywords'], $page_header);
-	$page_header = template("H_DESCRIPTION", $settings['h_description'], $page_header);
-	$page_header = template("H_CHARSET", $charset, $page_header);
-	if(!isset($refresh)) { $refresh = NULL; }
-	$page_header = template("REFRESH", $refresh, $page_header);
+	$page_header = mgb_template_replace([
+		'H_LANGUAGE_SHORT' 	=> $language_short,
+		'H_DOMAIN' 			=> $settings['h_domain'],
+		'H_AUTHOR' 			=> $settings['h_author'],
+		'H_KEYWORDS' 		=> $settings['h_keywords'],
+		'H_DESCRIPTION' 	=> $settings['h_description'],
+		'H_CHARSET' 		=> $charset,	
+		'REFRESH' 			=> $refresh
+	], $page_header);
 
 	// Body
-	$page_lostpassword = template("TEMPLATE_HEADER", $page_header, $page_lostpassword);
-	$page_lostpassword = template("TEMPLATE_ERRORMESSAGE", $content_errormessage, $page_lostpassword);
-	$page_lostpassword = template("ERRORMESSAGE", $errormessage, $page_lostpassword);
-	$page_lostpassword = template("LOSTPASSWORD_STATUSMESSAGE", $statusmessage, $page_lostpassword);
-
-	$page_lostpassword = template("LANG_LOSTPASSWORD_MAIL", $lang['lostpassword_mail'], $page_lostpassword);
-	$page_lostpassword = template("LANG_GET_NEW_PW", $lang['get_new_pw'], $page_lostpassword);
-
-	// Footer
-	$page_lostpassword = template("TEMPLATE_COPYRIGHT", $content_copyright, $page_lostpassword);
-	$page_lostpassword = template("TEMPLATE_FOOTER", $content_footer, $page_lostpassword);
-	$page_lostpassword = template("COPYRIGHT_DATE", date("Y"), $page_lostpassword);
+	$page_lostpassword = mgb_template_replace([
+		'TEMPLATE_HEADER' 				=>  $page_header,
+		'TEMPLATE_ERRORMESSAGE' 		=>  $content_errormessage,
+		'ERRORMESSAGE' 					=>  $errormessage,
+		'LOSTPASSWORD_STATUSMESSAGE' 	=>  $statusmessage,
+		'LANG_LOSTPASSWORD_MAIL' 		=>  $lang['lostpassword_mail'],
+		'LANG_GET_NEW_PW' 				=>  $lang['get_new_pw'],
+		'TEMPLATE_COPYRIGHT' 			=>  $content_copyright, // Footer
+		'TEMPLATE_FOOTER' 				=>  $content_footer,
+		'COPYRIGHT_DATE' 				=>  date("Y")
+	], $page_lostpassword);
 
 	echo $page_lostpassword;
 ?>
