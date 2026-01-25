@@ -2310,7 +2310,7 @@
 			@file_get_contents($ping_address, false, $context);
 
 			// Timestamp speichern
-			$sql = "UPDATE ".$db_prefix."settings SET aus_last_ping = ?";
+			$sql = "UPDATE ".$db_prefix."settings SET telemetry_last_ping = ?";
 			$params = [time()];
 			$types = "i";
 			mgb_sql_connect($mysqli, $sql, "Error updating telemetry ping", 0, $params, $types);

@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.6.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -26,26 +26,32 @@
 
 	// 0.7.0.4
 	
-	// search for duplicate entries and delete them
-	$result = "SELECT banned_email, COUNT(*) AS cnt FROM ".$db['prefix']."banlist_emails GROUP BY banned_email HAVING cnt > 1;";
-	while ($row = mysqli_fetch_assoc($result)) {
-		$duplicates[] = [
-			'email' => $row['banned_email'],
-			'count' => (int)$row['cnt']
-		];
-	}
-	
-	for($i = 0; $i < count($duplicates['email']); $i++) {
-		$sql[$i] = "DELETE FROM `".$db['prefix']."banlist_emails` WHERE banned_email=".$duplicate[$i]['email']." LIMIT 1",
-	}
-	
 	// add columns for anonymous usage statistics
-	$sql[2] = "ALTER TABLE `".$db['prefix']."settings` ADD `allow_aus` INT(1) DEFAULT NULL AFTER `version`;";
-	$sql[2] = "ALTER TABLE `".$db['prefix']."settings` ADD `aus_ping_address` VARCHAR(255) NOT NULL DEFAULT 'https://www.m-gb.org/telemetry/ping.php' AFTER `allow_aus`;"; 
+	$sql[1] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry` TINYINT(1) DEFAULT NULL AFTER `debug_mode`;";
+	$sqldescription[1] = "Adding telemetry...";
+	$sql[2] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry_ping` VARCHAR(255) NOT NULL DEFAULT 'https://ping.m-gb.org/ping.php' AFTER `telemetry`;";
+	$sqldescription[2] = "Adding telemetry ping address...";
+	$sql[3] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry_install_id` CHAR(128) AFTER `telemetry_ping`;";
+	$sqldescription[3] = "Adding telemetry unique install id...";
+	$sql[4] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry_last_ping` INT(11) AFTER `telemetry_install_id`;";
+	$sqldescription[4] = "Adding telemetry last ping...";
 	
+	// update banlists
+	$sql[5] = "ALTER TABLE `".$db['prefix']."banlist_emails` DROP `banned_email_first`, DROP `banned_email_second`;";
+	$sqldescription[5] = "Updating structure of email banlist...";
+	$sql[6] = "ALTER TABLE `".$db['prefix']."banlist_ips` DROP `banned_ip_first`, DROP `banned_ip_second`, DROP `banned_ip_third`, DROP `banned_ip_fourth`;";
+	$sqldescription[6] = "Updating structure of ip banlist...";
+		
+	// generate unique install id for the ping
+	define('MGB_TELEMETRY_SALT', 'mgb-telemetry-v1-2026');
+	$install_id = mgb_generate_install_id(MGB_TELEMETRY_SALT);
+	
+	$sql[7] = "UPDATE `".$db['prefix']."_settings` SET `telemetry_install_id` = '".$install_id."'";
+	$sqlisinsert[7] = 1;
+	$sqldescription[7] = "Adding telemetry last ping...";
 
 	if(isset($_POST['update_version']) AND $_POST['update_version'] == 1) {
-		$sql[3] = "UPDATE `".$db['prefix']."settings` SET `version` = '".MGB_VERSION."'";
-		$sqldescription[3] = "- Updating version number...";
+		$sql[8] = "UPDATE `".$db['prefix']."settings` SET `version` = '".MGB_VERSION."'";
+		$sqldescription[8] = "- Updating version number...";
 	}
 ?>

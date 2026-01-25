@@ -21,7 +21,7 @@
 		<a class="admin" href="{LINK_SETTINGS_GRAVATAR}" title="{LANG_SETTINGS_GRAVATAR}">&nbsp;{LANG_SETTINGS_GRAVATAR}</a><br>
 		<a class="admin" href="{LINK_SETTINGS_MAILS}" title="{LANG_SETTINGS_MAILS}">&nbsp;{LANG_SETTINGS_MAILS}</a><br>
 		<a class="admin" href="{LINK_SETTINGS_DATABASE}" title="{LANG_SETTINGS_DATABASE}">&nbsp;{LANG_SETTINGS_DATABASE}</a><br>
-		<a class="admin" href="{LINK_SETTINGS_USAGE}" title="{LANG_SETTINGS_USAGE}">&nbsp;{LANG_SETTINGS_USAGE}</a></span>
+		<a class="admin" href="{LINK_SETTINGS_TELEMETRY}" title="{LANG_SETTINGS_TELEMETRY}">&nbsp;{LANG_SETTINGS_TELEMETRY}</a></span>
 		</td>
 	</tr>
 	<tr>

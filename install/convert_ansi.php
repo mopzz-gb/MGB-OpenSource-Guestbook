@@ -1,7 +1,7 @@
 ﻿<?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -43,9 +43,9 @@
 	}
 
 	// load includes
-	require("../includes/config.inc.php");
-	require("../includes/functions.inc.php");
-	require("../includes/load_settings.inc.php");
+	require_once ("../includes/config.inc.php");
+	require_once ("../includes/functions.inc.php");
+	require_once ("../includes/load_settings.inc.php");
 
 	if(empty($_POST['convert'])) { $_POST['convert'] = 0; }
 	if($_POST['convert'] == 1) {
@@ -73,8 +73,8 @@
 		$sql_dump.= "-- ---------------------------------------;\n\n";
 
 		// get structure of sql table
-		$sql_dump.= mgb_get_sql_structure($db['prefix'], "entries", 1); // table structure
-		$sql_dump.= mgb_get_sql_structure($db['prefix'], "entries", 2); // table content
+		$sql_dump.= mgb_get_sql_structure($mysqli, $db['prefix'], "entries", 1); // table structure
+		$sql_dump.= mgb_get_sql_structure($mysqli, $db['prefix'], "entries", 2); // table content
 
 		$sql_dump.= "-- END OF FILE --";
 
@@ -146,22 +146,38 @@
 			$settings = @mysqli_fetch_array($result_settings, MYSQLI_ASSOC);
 		}
 
+		$title = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['title']);
+		$h_author = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['h_author']);
+		$h_domain = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['h_domain']);
+		$h_keywords = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['h_keywords']);
+		$h_description = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['h_description']);
+		$admin_name = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['admin_name']);
+		$admin_email = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['admin_email']);
+		$admin_gbemail = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['admin_gbemail']);
+		$sendmail_admin_text = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['sendmail_admin_text']);
+		$sendmail_user_text = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['sendmail_user_text']);
+		$sendmail_user_text_moderated = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['sendmail_user_text_moderated']);
+		$sendmail_user_notification_text = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['sendmail_user_notification_text']);
+		$sendmail_comment_text = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['sendmail_comment_text']);
+		$sendmail_contactmail_text = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['sendmail_contactmail_text']);
+		$sendmail_contactmail_text_copy = iconv('ISO-8859-15', 'UTF-8//IGNORE', $settings['sendmail_contactmail_text_copy']);
+
 		$sql_settings = "UPDATE ".$db['prefix']."settings SET
-			`title` = '".convert($settings['title'])."',
-			`h_author` = '".convert($settings['h_author'])."',
-			`h_domain` = '".convert($settings['h_domain'])."',
-			`h_keywords` = '".convert($settings['h_keywords'])."',
-			`h_description` = '".convert($settings['h_description'])."',
-			`admin_name` = '".convert($settings['admin_name'])."',
-			`admin_email` = '".convert($settings['admin_email'])."',
-			`admin_gbemail` = '".convert($settings['admin_gbemail'])."',
-			`sendmail_admin_text` = '".convert($settings['sendmail_admin_text'])."',
-			`sendmail_user_text` = '".convert($settings['sendmail_user_text'])."',
-			`sendmail_user_text_moderated` = '".convert($settings['sendmail_user_text_moderated'])."',
-			`sendmail_user_notification_text` = '".convert($settings['sendmail_user_notification_text'])."',
-			`sendmail_comment_text` = '".convert($settings['sendmail_comment_text'])."',
-			`sendmail_contactmail_text` = '".convert($settings['sendmail_contactmail_text'])."',
-			`sendmail_contactmail_text_copy` = '".convert($settings['sendmail_contactmail_text_copy'])."'";
+			`title` = '".$title."',
+			`h_author` = '".$h_author."',
+			`h_domain` = '".$h_domain."',
+			`h_keywords` = '".$h_keywords."',
+			`h_description` = '".$h_description)."',
+			`admin_name` = '".$admin_name)."',
+			`admin_email` = '".$admin_email)."',
+			`admin_gbemail` = '".$admin_gbemail."',
+			`sendmail_admin_text` = '".$sendmail_admin_text."',
+			`sendmail_user_text` = '".$sendmail_user_text."',
+			`sendmail_user_text_moderated` = '".$sendmail_user_text_moderated."',
+			`sendmail_user_notification_text` = '".$sendmail_user_notification_text."',
+			`sendmail_comment_text` = '".$sendmail_comment_text."',
+			`sendmail_contactmail_text` = '".$sendmail_contactmail_text."',
+			`sendmail_contactmail_text_copy` = '".$sendmail_contactmail_text_copy."'";
 
 		if(@mysqli_query($link, $sql_settings) or die ("<span style='font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; color: darkblue;'>Line 165: Error in sql query. See SQL ERROR for details.<br><br><b>SQL QUERY:</b> ".$sql."<br><br><b>SQL ERROR:</b> ".mysqli_errno($link)." : ".mysqli_error($link)."</span>" )) {
 			echo "<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold\">Settings:</span>&nbsp;<span style='font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;'>OK!</span><br>\n";
@@ -179,14 +195,21 @@
 		echo "<span>\n";
 		if($total > 0) {
 			for($i = 0; $i < count($entry); $i++) {
+				$name = iconv('ISO-8859-15', 'UTF-8//IGNORE', $entry[$i]['name']);
+				$city = iconv('ISO-8859-15', 'UTF-8//IGNORE', $entry[$i]['city']);
+				$email = iconv('ISO-8859-15', 'UTF-8//IGNORE', $entry[$i]['email'];
+				$hp = iconv('ISO-8859-15', 'UTF-8//IGNORE', $entry[$i]['hp'];
+				$message = iconv('ISO-8859-15', 'UTF-8//IGNORE', $entry[$i]['message'];
+				$comment = iconv('ISO-8859-15', 'UTF-8//IGNORE', $entry[$i]['comment'];
+
 				// save data to database
 				$sql = "UPDATE ".$db['prefix']."entries SET
-					`name` = '".convert($entry[$i]['name'])."',
-					`city` = '".convert($entry[$i]['city'])."',
-					`email` = '".convert($entry[$i]['email'])."',
-					`hp` = '".convert($entry[$i]['hp'])."',
-					`message` = '".convert($entry[$i]['message'])."',
-					`comment` = '".convert($entry[$i]['comment'])."'
+					`name` = '".$name."',
+					`city` = '".$city."',
+					`email` = '".$email."',
+					`hp` = '".$hp."',
+					`message` = '".$message."',
+					`comment` = '".$comment."'
 					WHERE ID=".$entry[$i]['ID']." LIMIT 1";
 
 				if(@mysqli_query($link, $sql) or die ("<span style='font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; color: darkblue;'>Line 171: Error in sql query. See SQL ERROR for details.<br><br><b>SQL QUERY:</b> ".$sql."<br><br><b>SQL ERROR:</b> ".mysqli_errno($link)." : ".mysqli_error($link)."</span>")) {

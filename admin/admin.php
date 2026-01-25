@@ -132,7 +132,7 @@
 		}
 		
 		// send the ping
-		mgb_send_telemetry($settings['aus_allow'], $settings['aus_last_ping'], $settings['version'], $mysql_client, $db['prefix'], $settings['aus_install_id'], $settings['aus_ping_address'], $mysqli, 86400); // 1 day = 86400 seconds
+		mgb_send_telemetry($settings['telemetry'], $settings['telemetry_last_ping'], $settings['version'], $mysql_client, $db['prefix'], $settings['telemetry_install_id'], $settings['telemetry_ping'], $mysqli, 86400); // 1 day = 86400 seconds
 
 		$login_status_text = "<b>PHP</b>: ".phpversion()."&nbsp;| <b>MySQL Client</b>: ".$mysql_client."&nbsp;| <b>MySQL Server</b>: ".$mysql_server."&nbsp;|&nbsp;".$lang['logged_in']."&nbsp;|&nbsp;<a class='admin' href='admin.php?action=logout' title='{LANG_LOGOUT}'>{LANG_LOGOUT}</a>&nbsp;";
 		$login_status_img = "<img src='templates/default/images/logout.png' height='16' width='16' title='{LANG_LOGOUT}' alt='{LANG_LOGOUT}'>";
@@ -171,8 +171,8 @@
 				$include = "settings_database.inc.php";
 			}
 		}
-		elseif(!empty($_GET['action']) AND ($_GET['action'] == "settings_usage")) {
-			$include = "settings_usage.inc.php";
+		elseif(!empty($_GET['action']) AND ($_GET['action'] == "settings_telemetry")) {
+			$include = "settings_telemetry.inc.php";
 		}
 		elseif(!empty($_GET['action']) AND ($_GET['action'] == "activate")) {
 			$include = "activate.inc.php";
@@ -291,7 +291,7 @@
 		'LINK_SETTINGS_SECURITY' 	=> "admin.php?action=settings_security".$sid,
 		'LINK_SETTINGS_MAILS' 		=> "admin.php?action=settings_mails".$sid,
 		'LINK_SETTINGS_DATABASE' 	=> "admin.php?action=settings_database".$sid,
-		'LINK_SETTINGS_USAGE' 		=> "admin.php?action=settings_usage".$sid,
+		'LINK_SETTINGS_TELEMETRY'	=> "admin.php?action=settings_telemetry".$sid,
 		'LINK_ACTIVATE' 			=> "admin.php?action=activate".$sid,
 		'LINK_DEACTIVATE' 			=> "admin.php?action=deactivate".$sid,
 		'LINK_DELETE' 				=> "admin.php?action=delete".$sid,
@@ -364,7 +364,7 @@
 			($_GET['action'] == "settings_security") OR
 			($_GET['action'] == "settings_mails") OR
 			($_GET['action'] == "settings_database") OR
-			($_GET['action'] == "settings_usage") OR
+			($_GET['action'] == "settings_telemetry") OR
 			($_GET['action'] == "editusers") OR
 			($_GET['action'] == "edit") OR
 			($_GET['action'] == "smilies")) {
@@ -393,7 +393,8 @@
 			($_GET['action'] == "settings_gravatar") OR
 			($_GET['action'] == "settings_security") OR
 			($_GET['action'] == "settings_mails") OR
-			($_GET['action'] == "settings_database")) {
+			($_GET['action'] == "settings_database") OR
+			($_GET['action'] == "settings_telemetry")) {
 			$page_admin = mgb_template_replace(["TEMPLATE_MESSAGE" => "<span class='old_version'>".$lang['empty_needed_value'][$empty_needed_value]."</span><br><br>"], $page_admin);
 		}
 	}

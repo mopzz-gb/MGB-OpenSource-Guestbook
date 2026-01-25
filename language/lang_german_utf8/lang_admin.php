@@ -351,7 +351,7 @@
 	$lang['settings_security'] = "Sicherheit &amp; Anti-Spam";
 	$lang['settings_mails'] = "E-Mails";
 	$lang['settings_database'] = "Datenbank";
-	$lang['settings_usage'] = "Nutzungsstatistik";
+	$lang['settings_telemetry'] = "Nutzungsstatistik";
 	$lang['activate'] = "Eintrag freischalten";
 	$lang['deactivate'] = "Eintrag deaktivieren";
 	$lang['delete'] = "Eintrag l&ouml;schen";
@@ -401,7 +401,7 @@
 	$lang['edit_caption_database'] = "Datenbankinformationen";
 	$lang['edit_caption_database_backups'] = "Datenbank Backups";
 	$lang['edit_caption_keystroke'] = "Tippgeschwindigkeitserkennung";
-	$lang['edit_caption_aus'] = "Anonyme Nutzungsstatistiken";
+	$lang['edit_caption_telemetry'] = "Anonyme Nutzungsstatistiken";
 
 	$lang['edit_save_message'] = "Einstellungen erfolgreich gespeichert.";
 	$lang['edit_title'] = "Titel:";
@@ -552,9 +552,9 @@
 	$lang['edit_autoblock'] = "Automatisches Bannen von IPs:";
 	$lang['edit_autoblock_config'] = "Konfiguration:";
 	$lang['edit_banlist_cleanup'] = "Automatische Bannlistenreinigung:";
-	$lang['edit_aus_allow'] = "Anonyme Nutzungsstatistiken:";
-	$lang['edit_aus_ping_address'] = "Adresse für den Ping:";
-	$lang['edit_aus_install_id'] = "Einzigartige MGB ID:";
+	$lang['edit_telemetry'] = "Anonyme Nutzungsstatistiken:";
+	$lang['edit_telemetry_ping'] = "Adresse für den Ping:";
+	$lang['edit_telemetry_install_id'] = "Einzigartige MGB ID:";
 
 	$lang['edit_expl_title'] = "Der Titel &uuml;ber dem G&auml;stebuch.";
 	$lang['edit_expl_h_author'] = "Der Name des Autors der Internetseite.";
@@ -680,9 +680,9 @@
 	$lang['edit_expl_autoblock'] = "Sollen IPs die innerhalb der Konfiguration festgelegten Zeit eine Warnung ausl&ouml;sen automatisch auf die Bannliste gesetzt werden?";
 	$lang['edit_expl_autoblock_config'] = "Legt den Zeitraum fest, in dem eine Warnung ausgel&ouml;st werden muss, um vom G&auml;stebuch automatisch auf die Bannliste gesetzt zu werden.";
 	$lang['edit_expl_banlist_cleanup'] = "Ist diese Option aktiv, werden Eintr&auml;ge in den Bannlisten nach der festgelegten Sperrzeit automatisch gel&ouml;scht.";
-	$lang['edit_expl_aus_allow'] = "Ist diese Option aktiviert, sendet das Gästebuch einmal täglich anonyme technische Informationen (Version, PHP-Version, zufällige Installations-ID).<br><br>Es werden <b>keine</b> personenbezogenen Daten, wie z.B. die IP, Ort der Installation etc. übertragen.";
-	$lang['edit_expl_aus_ping_address'] = "Diese Adresse bitte <b>nicht</b> ändern. Nur bei einem entsprechenden Beitrag im offiziellen Forum in dem <b>explizit</b> dazu aufgefordert wird!";
-	$lang['edit_expl_aus_install_id'] = "Deine einzigartige, bei der Installation erstellte ID des Gästebuches. Kann nicht verändert werden.";
+	$lang['edit_expl_telemetry'] = "Ist diese Option aktiviert, sendet das Gästebuch einmal täglich anonyme technische Informationen (Version, PHP-Version, zufällige Installations-ID).<br><br>Es werden <b>keine</b> personenbezogenen Daten, wie z.B. die IP, Ort der Installation etc. übertragen.";
+	$lang['edit_expl_telemetry_ping'] = "Diese Adresse bitte <b>nicht</b> ändern. Nur bei einem entsprechenden Beitrag im offiziellen Forum in dem <b>explizit</b> dazu aufgefordert wird!";
+	$lang['edit_expl_telemetry_install_id'] = "Deine einzigartige, bei der Installation erstellte ID des Gästebuches. Kann nicht verändert werden.";
 
 	// EDIT.INC.PHP
 	$lang['id'] = "ID:";

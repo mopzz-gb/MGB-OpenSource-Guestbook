@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -62,10 +62,14 @@
 		echo "\t<body>\n";
 
 		// load includes
-		require ("../includes/config.inc.php");
-		require ("includes/config.inc.php");
-		require ("includes/functions.inc.php");
-		require ("includes/load_settings.inc.php");
+		require_once ("../includes/config.inc.php");
+		require_once ("includes/config.inc.php");		
+		require_once ('../includes/db.php');
+		require_once ("includes/functions.inc.php");
+		require_once ("includes/load_settings.inc.php");
+		
+		// do a full backup
+		mgb_backup_database($mysqli, $db['prefix'], $settings['version'], $db['hostname'], $db['dbname']);
 
 		// update database
 		if(!isset($success)) { $success = 0; }
@@ -98,84 +102,232 @@
 			// mysqli_report(MYSQLI_REPORT_ERROR);
 			mysqli_report(MYSQLI_REPORT_OFF);
 
-			// establish sql connection
-			$link = mysqli_connect($db['hostname'], $db['username'], $db['password'], $db['dbname']) or die ("(upgrade.php, Line 98) Error: ".mysqli_error($link));
+			// establish sql connection			
+			$link = mysqli_connect($db['hostname'], $db['username'], $db['password'], $db['dbname']) or die ("(upgrade.php) Error: ".mysqli_error($link));
 			mysqli_set_charset($link, 'utf8');
+			
+			// define variables
+			$success = 0;
+			$count = 0;
 
 			for($i = 1; $i <= count($sql); $i++) {
 				$sqlcommand = $sql[$i];
+				$stmt = mysqli_prepare($link, $sqlcommand);
+
 				// check if NO INSERTS is checked
 				if(!empty($_POST['no_inserts'])) {
 					if($sqlisinsert[$i] == 1) {
-						echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold;\">".$i.".&nbsp;".$sqldescription[$i]."</span>\n";
-						echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">INSERT denied.</span>\n";
-						echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">&nbsp;OK!<br><br></span>\n";
+						echo "\t\t<span style='
+							font-family: verdana, arial, helvetica, sans-serif;
+							font-size: 12px;
+							font-weight: bold;'>{$i}. {$sqldescription[$i]}</span>\n";
+						echo "\t\t<span style='
+							font-family: verdana, arial, helvetica, sans-serif;
+							font-size: 12px; #
+							font-weight: bold;
+							color: maroon;'>INSERT denied.</span>\n";
+						echo "\t\t<span style='
+							font-family: verdana, arial, helvetica, sans-serif;
+							font-size: 12px;
+							font-weight: bold;
+							color: green;'>OK!<br><br></span>\n";
 						$success++;
 						$count++;
 					} else {
-						if(mysqli_query($link, $sqlcommand) == TRUE) {
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold;\">".$i.".&nbsp;".$sqldescription[$i]."</span>\n";
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">&nbsp;OK!<br><br></span>\n";
+						if ($stmt && mysqli_stmt_execute($stmt)) {
+
+							echo "\t\t<span style='
+							font-family: verdana, arial, helvetica, sans-serif;
+							font-size: 12px;
+							font-weight: bold;'>{$i}. {$sqldescription[$i]}</span>\n";
+							echo "\t\t<span style='
+							font-family: verdana, arial, helvetica, sans-serif;
+							font-size: 12px;
+							font-weight: bold;
+							color: green;'>OK!<br><br></span>\n";
 							$success++;
 							$count++;
+
 						} else {
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold;\">".$i.".&nbsp;".$sqldescription[$i]."</span>\n";
-							if(mysqli_errno($link) == 1060) { // duplicate column
-								echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">DUPLICATE COLUMN, no changes were applied.</span>\n";
-								echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">&nbsp;OK!<br><br></span>\n";
-								$success++;
-								$count++;
-							} elseif(mysqli_errno($link) == 1050) { // duplicate table
-								echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">DUPLICATE TABLE, no changes were applied.</span>\n";
-								echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">&nbsp;OK!<br><br></span>\n";
-								$success++;
-								$count++;
-							} elseif(mysqli_errno($link) == 1062) { // duplicate entry
-								echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">DUPLICATE ENTRY, no changes were applied.</span>\n";
-								echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">&nbsp;OK!<br><br></span>\n";
-								$success++;
-								$count++;
-							} else {
-								echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: red;\">ERROR!<br></span>\n";
-								echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold;\">&nbsp;&nbsp;&nbsp;&nbsp;".mysqli_errno($link)." : ".mysqli_error($link)."</span><br><br>\n";
-								$count++;
+
+							$errno = $stmt ? mysqli_stmt_errno($stmt) : mysqli_errno($link);
+							$error = $stmt ? mysqli_stmt_error($stmt) : mysqli_error($link);
+
+							echo "<span style='
+									font-family: verdana, arial, helvetica, sans-serif;
+									font-size: 12px;
+									font-weight: bold;>{$i}. {$sqldescription[$i]}</span>";
+
+							switch ($errno) {
+								case 1060:
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:maroon'>{$sqldescription[$i]}: DUPLICATE COLUMN, no changes were applied.</span>";
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:green'> OK!<br><br></span>";
+									$success++;
+									break;
+
+								case 1050:
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:maroon'>{$sqldescription[$i]}: DUPLICATE TABLE, no changes were applied.</span>";
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:green'> OK!<br><br></span>";
+									$success++;
+									break;
+
+								case 1062:
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:maroon'>{$sqldescription[$i]}: DUPLICATE TABLE, no changes were applied.</span>";
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:green'> OK!<br><br></span>";
+									$success++;
+									break;
+								
+								case 1091:
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:maroon'>{$sqldescription[$i]}: COLUMN DOESN'T EXIST, no changes were applied.</span>";
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:green'> OK!<br><br></span>";
+									$success++;
+									break;
+
+								default:
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:red'>ERROR</span>";
+									echo "<span>{$errno} : {$error}</span><br><br>";
 							}
+
+							$count++;
 						}
 					}
 				} else {
-					if(mysqli_query($link, $sqlcommand) == TRUE) {
-						echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold;\">".$i.".&nbsp;".$sqldescription[$i]."</span>\n";
-						echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">&nbsp;OK!<br><br></span>\n";
+					if ($stmt && mysqli_stmt_execute($stmt)) {
+
+						echo "\t\t<span style='
+						font-family: verdana, arial, helvetica, sans-serif;
+						font-size: 12px;
+						font-weight: bold;'>{$i}. {$sqldescription[$i]}</span>\n";
+						echo "\t\t<span style='
+						font-family: verdana, arial, helvetica, sans-serif;
+						font-size: 12px;
+						font-weight: bold;
+						color: green;'>OK!<br><br></span>\n";
 						$success++;
 						$count++;
+
 					} else {
-						echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold;\">".$i.".&nbsp;".$sqldescription[$i]."</span>\n";
-						if(mysqli_errno($link) == 1060) { // duplicate column
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">DUPLICATE COLUMN, no changes were applied.</span>\n";
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">&nbsp;OK!<br><br></span>\n";
-							$success++;
-							$count++;
-						} elseif(mysqli_errno($link) == 1050) { // duplicate table
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">DUPLICATE TABLE, no changes were applied.</span>\n";
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">&nbsp;OK!<br><br></span>\n";
-							$success++;
-							$count++;
-						} elseif(mysqli_errno($link) == 1062) { // duplicate entry
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">DUPLICATE ENTRY, no changes were applied.</span>\n";
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">&nbsp;OK!<br><br></span>\n";
-							$success++;
-							$count++;
-						} else {
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: red;\">ERROR!<br></span>\n";
-							echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold;\">&nbsp;&nbsp;&nbsp;&nbsp;".mysqli_errno($link)." : ".mysqli_error($link)."</span><br><br>\n";
-							$count++;
+
+						$errno = $stmt ? mysqli_stmt_errno($stmt) : mysqli_errno($link);
+						$error = $stmt ? mysqli_stmt_error($stmt) : mysqli_error($link);
+
+						echo "<span style='
+								font-family: verdana, arial, helvetica, sans-serif;
+								font-size: 12px;
+								font-weight: bold;>{$i}. {$sqldescription[$i]}</span>";
+
+						switch ($errno) {
+							case 1060:
+								echo "<span style='
+									font-family: verdana, arial, helvetica, sans-serif;
+									font-size: 12px;
+									font-weight: bold;
+									color:maroon'>{$sqldescription[$i]}: DUPLICATE COLUMN, no changes were applied.</span>";
+								echo "<span style='
+									font-family: verdana, arial, helvetica, sans-serif;
+									font-size: 12px;
+									font-weight: bold;
+									color:green'> OK!<br><br></span>";
+								$success++;
+								break;
+
+							case 1050:
+								echo "<span style='
+									font-family: verdana, arial, helvetica, sans-serif;
+									font-size: 12px;
+									font-weight: bold;
+									color:maroon'>{$sqldescription[$i]}: DUPLICATE TABLE, no changes were applied.</span>";
+								echo "<span style='
+									font-family: verdana, arial, helvetica, sans-serif;
+									font-size: 12px;
+									font-weight: bold;
+									color:green'> OK!<br><br></span>";
+								$success++;
+								break;
+
+							case 1062:
+								echo "<span style='
+									font-family: verdana, arial, helvetica, sans-serif;
+									font-size: 12px;
+									font-weight: bold;
+									color:maroon'>{$sqldescription[$i]}: DUPLICATE TABLE, no changes were applied.</span>";
+								echo "<span style='
+									font-family: verdana, arial, helvetica, sans-serif;
+									font-size: 12px;
+									font-weight: bold;
+									color:green'> OK!<br><br></span>";
+								$success++;
+								break;
+							
+							case 1091:
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:maroon'>{$sqldescription[$i]}: COLUMN DOESN'T EXIST, no changes were applied.</span>";
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:green'> OK!<br><br></span>";
+									$success++;
+									break;
+
+							default:
+								echo "<span style='
+									font-family: verdana, arial, helvetica, sans-serif;
+									font-size: 12px;
+									font-weight: bold;
+									color:red'>ERROR</span>";
+								echo "<span>{$errno} : {$error}</span><br><br>";
 						}
+						$count++;
 					}
 				}
 			}
+			
+			// migrate old databases to newer ones
+			$sql = array();			
+			include('upgrade/migrate_text.php');
 
 			if($count != 0) {
-				if($count == $success) {
+				if($count === $success) {
 					echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\"><br>No Errors! Your Database has been updated successfully! :) Now you can delete the folder <i>install</i> and return to <a href='../index.php'>index.php</a>.</span>\n";
 				} else {
 					echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;\"><br>Some Errors have occured. Try updating again by using an older update information or try searching the forums: <a href='https://forum.m-gb.org/'>forum.m-gb.org</a>.<br /></span>\n";
@@ -274,7 +426,8 @@
 			echo "\t\t\t\t<option value='0694'>0.6.9.4</option>\n";
 			echo "\t\t\t\t<option value='0695'>0.6.9.5</option>\n";
 			echo "\t\t\t\t<option value='07'>0.7</option>\n";
-			echo "\t\t\t\t<option selected='selected' value='0701'>0.7.0.1 - 0.7.0.3</option>\n";
+			echo "\t\t\t\t<option value='0701'>0.7.0.1 - 0.7.0.3</option>\n";
+			echo "\t\t\t\t<option selected='selected' value='0704'>0.7.0.4</option>\n";
 			echo "\t\t\t</select><br>\n";
 			echo "\t\t\t<input type=\"checkbox\" name=\"no_inserts\" value=\"1\"><span style='font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;'>&nbsp;No INSERTS (check this ONLY if you are upgrading from an older upgrade version as yours and you don't want some data duplicate or changed like smilies etc.)</span><br><br>\n";
 			echo "\t\t\t<input type=\"submit\" class=\"button\" name=\"confirm\" value=\"Do it!\">\n";

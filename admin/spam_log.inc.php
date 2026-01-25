@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -549,8 +549,8 @@
 			$allowed_sort = ['ASC', 'DESC'];
 
 			// Standardwerte
-			$orderby = 'id';
-			$sort = 'ASC';
+			$orderby = 'timestamp';
+			$sort = 'DESC';
 
 			// Benutzereingaben validieren
 			if (isset($_GET['orderby']) && in_array($_GET['orderby'], $allowed_columns)) {
@@ -612,10 +612,12 @@
 							'ENTRY_EMAIL'  => "<a href=\"admin.php?action=spam_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_email_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_EMAIL_BANLIST}\">".$entry[$i]['email']."</a>",
 							'ENTRY_DOMAIN' => "<a href=\"admin.php?action=spam_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_domain_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_DOMAIN_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_DOMAIN_BANLIST}\">".$entry_domain."</a>"
 						], $page_entry[$i]); 
-					}/* else {
-						$page_entry[$i] = template("ENTRY_EMAIL", "-", $page_entry[$i]);
-						$page_entry[$i] = template("ENTRY_DOMAIN", "-", $page_entry[$i]);
-					} */
+					} else {
+						$page_entry[$i] = mgb_template_replace([
+							'ENTRY_EMAIL'	=> "-",
+							'ENTRY_DOMAIN' 	=> "-"
+						], $page_entry[$i]);
+					}
 					
 					if(empty($entry[$i]['sneaked'])) {
 						$page_entry[$i] = mgb_template_replace(['ENTRY_REPORT_SPAM' => "&nbsp;-&nbsp;<a href=\"admin.php?action=spam_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=report_to_stopforumspam".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_REPORT_TO_STOPFORUMSPAM}'); submit();\" title=\"{LANG_REPORT_SPAM}\">".$lang['confirm_report_spam']."</a>"], $page_entry[$i]);

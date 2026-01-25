@@ -200,10 +200,10 @@
 			`show_field_fb` TINYINT(1) NOT NULL DEFAULT '1',
 			`show_field_twitter` TINYINT(1) NOT NULL DEFAULT '1',
 			`show_field_hp` TINYINT(1) NOT NULL DEFAULT '1',
-			`aus_allow` TINYINT(1) NOT NULL DEFAULT '0',
-			`aus_ping_address` VARCHAR(255) NOT NULL DEFAULT 'https://ping.m-gb.org/ping.php',
-			`aus_install_id` CHAR(32),
-			`aus_last_ping` INT,
+			`telemetry` TINYINT(1) NOT NULL DEFAULT '0',
+			`telemetry_ping` VARCHAR(255) NOT NULL DEFAULT 'https://ping.m-gb.org/ping.php',
+			`telemetry_install_id` CHAR(32),
+			`telemetry_last_ping` INT(11),
 			`version` VARCHAR(20) NOT NULL,
 			PRIMARY KEY (`title`)
 			) DEFAULT CHARSET=utf8mb4 ;";
@@ -328,10 +328,10 @@
 			`show_field_fb` ,
 			`show_field_twitter` ,
 			`show_field_hp` ,
-			`aus_allow` ,
-			`aus_ping_address` ,
-			`aus_install_id` ,
-			`aus_last_ping` ,
+			`telemetry` ,
+			`telemetry_ping` ,
+			`telemetry_install_id` ,
+			`telemetry_last_ping` ,
 			`version`
 			) VALUES (
 			'MGB OpenSource Guestbook',
