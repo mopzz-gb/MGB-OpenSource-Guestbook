@@ -55,14 +55,14 @@
 			`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 			`name` VARCHAR( 255 ) NOT NULL DEFAULT '',
 			`city` VARCHAR( 255 ) NOT NULL DEFAULT '',
-			`email` VARCHAR( 255 ) NOT NULL DEFAULT '',
-			`icq` VARCHAR( 255 ) NOT NULL DEFAULT '',
-			`aim` VARCHAR( 255 ) NOT NULL DEFAULT '',
-			`msn` VARCHAR( 255 ) NOT NULL DEFAULT '',
-			`fb` VARCHAR( 255 ) NOT NULL DEFAULT '',
-			`twitter` VARCHAR( 255 ) NOT NULL DEFAULT '',
-			`instagram` VARCHAR( 255 ) NOT NULL DEFAULT '',
-			`hp` VARCHAR( 255 ) NOT NULL DEFAULT '',
+			`email` VARCHAR( 255 ) NOT NULL DEFAULT '',			
+			`hp` VARCHAR( 255 ) NOT NULL DEFAULT '',			
+			`social_mastodon` VARCHAR( 255 ) NOT NULL DEFAULT '',
+			`social_bluesky` VARCHAR( 255 ) NOT NULL DEFAULT '',
+			`social_w` VARCHAR( 255 ) NOT NULL DEFAULT '',
+			`social_eu_voice` VARCHAR( 255 ) NOT NULL DEFAULT '',
+			`social_eu_video` VARCHAR( 255 ) NOT NULL DEFAULT '',
+			`social_monnett` VARCHAR( 255 ) NOT NULL DEFAULT '',
 			`message` MEDIUMTEXT NOT NULL DEFAULT '',
 			`comment` MEDIUMTEXT NOT NULL DEFAULT '',
 			`ip` VARBINARY( 16 ) NOT NULL DEFAULT '',
@@ -72,7 +72,7 @@
 			`user_show_email` TINYINT( 1 ) NOT NULL DEFAULT '0',
 			`checked` TINYINT( 1 ) NOT NULL DEFAULT '0',
 			`isspam` TINYINT( 1 ) NOT NULL DEFAULT '0'
-			) DEFAULT CHARSET=utf8mb4 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci ;";
 
 		$sql[2] = "CREATE TABLE IF NOT EXISTS ".$db_prefix."settings (
 			`title` VARCHAR(255) NOT NULL DEFAULT 'MGB 0.7.x OpenSource Guestbook',
@@ -195,18 +195,20 @@
 			`sfs_mark_as_spam` INT(1) NOT NULL DEFAULT '0',
 			`sfs_api_key` VARCHAR(255) NOT NULL,
 			`show_field_city` TINYINT(1) NOT NULL DEFAULT '1',
-			`show_field_icq` TINYINT(1) NOT NULL DEFAULT '1',
-			`show_field_aim` TINYINT(1) NOT NULL DEFAULT '1',
-			`show_field_fb` TINYINT(1) NOT NULL DEFAULT '1',
-			`show_field_twitter` TINYINT(1) NOT NULL DEFAULT '1',
 			`show_field_hp` TINYINT(1) NOT NULL DEFAULT '1',
+			`show_field_mastodon` TINYINT(1) NOT NULL DEFAULT '1',
+			`show_field_bluesky` TINYINT(1) NOT NULL DEFAULT '1',
+			`show_field_w` TINYINT(1) NOT NULL DEFAULT '1',
+			`show_field_eu_voice` TINYINT(1) NOT NULL DEFAULT '1',
+			`show_field_eu_video` TINYINT(1) NOT NULL DEFAULT '1',
+			`show_field_monnett` TINYINT(1) NOT NULL DEFAULT '1',
 			`telemetry` TINYINT(1) NOT NULL DEFAULT '0',
 			`telemetry_ping` VARCHAR(255) NOT NULL DEFAULT 'https://ping.m-gb.org/ping.php',
 			`telemetry_install_id` CHAR(32),
 			`telemetry_last_ping` INT(11),
 			`version` VARCHAR(20) NOT NULL,
 			PRIMARY KEY (`title`)
-			) DEFAULT CHARSET=utf8mb4 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci ;";
 
 		$sql[3] = "INSERT INTO ".$db_prefix."settings (
 			`title` ,
@@ -323,11 +325,13 @@
 			`sfs_mark_as_spam` ,
 			`sfs_api_key` ,
 			`show_field_city` ,
-			`show_field_icq` ,
-			`show_field_aim` ,
-			`show_field_fb` ,
-			`show_field_twitter` ,
 			`show_field_hp` ,
+			`show_field_mastodon` ,
+			`show_field_bluesky` ,
+			`show_field_w` ,
+			`show_field_eu_voice` ,
+			`show_field_eu_video` ,
+			`show_field_monnett` ,
 			`telemetry` ,
 			`telemetry_ping` ,
 			`telemetry_install_id` ,
@@ -449,10 +453,12 @@
 			'',
 			'1',
 			'1',
-			'1',
-			'1',
-			'1',
-			'1',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
 			'0',
 			'https://ping.m-gb.org/ping.php',
 			'".$install_id."'
@@ -479,11 +485,12 @@
 			`r_spam` TINYINT( 1 ) NOT NULL ,
 			`r_edit_smilies` TINYINT( 1 ) NOT NULL ,
 			`r_banlists` TINYINT( 1 ) NOT NULL ,
+			`r_telemetry` TINYINT( 1 ) NOT NULL ,
 			`logged_in` INT( 255 ) NOT NULL DEFAULT '0',
 			`logged_out` TINYINT( 1 ) NOT NULL ,
 			`np_key` VARCHAR( 16 ) NOT NULL DEFAULT '',
 			`np_expiration` VARCHAR( 255 ) NOT NULL DEFAULT ''
-			) DEFAULT CHARSET=utf8 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci ;";
 
 		$sql[5] = "INSERT INTO ".$db_prefix."user (
 			`ID` ,
@@ -503,6 +510,7 @@
 			`r_spam`,
 			`r_edit_smilies` ,
 			`r_banlists` ,
+			`r_telemetry` ,
 			`logged_in` ,
 			`logged_out`,
 			`np_key` ,
@@ -525,6 +533,7 @@
 			'1',
 			'1',
 			'1',
+			'1',
 			'".time()."',
 			'1',
 			'',
@@ -537,7 +546,7 @@
 			`replacement` VARCHAR( 255 ) NOT NULL ,
 			`height` TINYINT( 4 ) NOT NULL ,
 			`width` TINYINT( 4 ) NOT NULL
-			) DEFAULT CHARSET=utf8 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci ;";
 
 		$sql[7] = "INSERT INTO ".$db_prefix."smilies (
 			`ID` ,
@@ -576,7 +585,7 @@
 			`matches` INT( 11 ) NOT NULL DEFAULT 0,
 			`timestamp` INT( 11 ) NOT NULL,
 			UNIQUE KEY `uniq_banned_ip` (`banned_ip`)
-			) DEFAULT CHARSET=utf8 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci ;";
 
 		$sql[9] = "CREATE TABLE IF NOT EXISTS ".$db_prefix."banlist_emails (
 			`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -584,7 +593,7 @@
 			`matches` INT( 11 ) NOT NULL DEFAULT 0,
 			`timestamp` INT( 11 ) NOT NULL,
 			UNIQUE KEY `uniq_banned_email` (`banned_email`)
-			) DEFAULT CHARSET=utf8 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci ;";
 
 		$sql[10] = "CREATE TABLE IF NOT EXISTS ".$db_prefix."banlist_domains (
 			`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -592,7 +601,7 @@
 			`matches` INT( 11 ) NOT NULL ,
 			`timestamp` INT( 11 ) NOT NULL DEFAULT 0,
 			UNIQUE KEY `uniq_banned_domain` (`banned_domain`)
-			) DEFAULT CHARSET=utf8 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci ;";
 
 		$sql[11] = "CREATE TABLE IF NOT EXISTS ".$db_prefix."spam_log (
 			`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -607,20 +616,21 @@
 			`type` INT( 2 ) NOT NULL ,
 			`site` VARCHAR( 255 ) NOT NULL ,
 			`timestamp` INT( 11 ) NOT NULL
-			) DEFAULT CHARSET=utf8 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci ;";
 
 		$sql[12] = "CREATE TABLE IF NOT EXISTS ".$db_prefix."spam (
 			`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 			`name` VARCHAR( 255 ) NOT NULL ,
 			`ip` VARBINARY( 16 ) NOT NULL ,
 			`email` VARCHAR( 255 ) NOT NULL ,
-			`city` VARCHAR( 255 ) NOT NULL ,
-			`icq` VARCHAR( 255 ) NOT NULL ,
-			`aim` VARCHAR( 255 ) NOT NULL ,
-			`msn` VARCHAR( 255 ) NOT NULL ,
-			`fb` VARCHAR( 255 ) NOT NULL ,
-			`twitter` VARCHAR( 255 ) NOT NULL ,
+			`city` VARCHAR( 255 ) NOT NULL ,			
 			`hp` VARCHAR( 255 ) NOT NULL ,
+			`social_mastodon` VARCHAR( 255 ) NOT NULL,
+			`social_bluesky` VARCHAR( 255 ) NOT NULL,
+			`social_w` VARCHAR( 255 ) NOT NULL,
+			`social_eu_voice` VARCHAR( 255 ) NOT NULL,
+			`social_eu_video` VARCHAR( 255 ) NOT NULL,
+			`social_monnett` VARCHAR( 255 ) NOT NULL,
 			`message` MEDIUMTEXT NOT NULL ,
 			`comment` MEDIUMTEXT NOT NULL ,
 			`user_notification` TINYINT( 1 ) NOT NULL ,
@@ -631,7 +641,7 @@
 			`user_agent` VARCHAR( 255 ) NOT NULL ,
 			`sneaked` INT( 1 ) NOT NULL DEFAULT '0',
 			`timestamp` INT( 11 ) NOT NULL
-			) DEFAULT CHARSET=utf8 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci ;";
 
 		$sql[13] = "CREATE TABLE IF NOT EXISTS ".$db_prefix."sys_log (
 			`ID` INT (11) NOT NULL AUTO_INCREMENT,
@@ -645,7 +655,7 @@
 			`ip` VARBINARY (16) NOT NULL,
 			`timestamp` INT (11) NOT NULL,
 			PRIMARY KEY (`ID`)
-			) DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";
+			) DEFAULT CHARSET=utf8mb4_unicode_ci AUTO_INCREMENT=1 ;";
 
 		// establish sql connection
 		$mysqli = new mysqli(

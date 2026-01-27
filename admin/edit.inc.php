@@ -55,10 +55,12 @@
 					$_POST['time'] = bbcode_delete($_POST['time']);
 					$_POST['name'] = bbcode_delete($_POST['name']);
 					$_POST['city'] = bbcode_delete($_POST['city']);
-					$_POST['aim'] = bbcode_delete($_POST['aim']);
-					$_POST['msn'] = bbcode_delete($_POST['msn']);
-					$_POST['fb'] = bbcode_delete($_POST['fb']);
-					$_POST['twitter'] = bbcode_delete($_POST['twitter']);
+					$_POST['social_mastodon'] = bbcode_delete($_POST['social_mastodon']);
+					$_POST['social_bluesky'] = bbcode_delete($_POST['social_bluesky']);
+					// $_POST['social_w'] = bbcode_delete($_POST['social_w']);						// not supported yet
+					// $_POST['social_eu_voice'] = bbcode_delete($_POST['social_eu_voice']);
+					// $_POST['social_eu_video'] = bbcode_delete($_POST['social_eu_video']);
+					// $_POST['social_monnett'] = bbcode_delete($_POST['social_monnett']);
 					$_POST['hp'] = bbcode_delete($_POST['hp']);
 
 					// set date and time back to unix timestamp format
@@ -110,28 +112,22 @@
 						`name` = ?,
 						`city` = ?,
 						`email`	= ?,
-						`icq` = ?,
-						`aim` = ?,
-						`msn` = ?,
-						`fb` = ?,
-						`twitter` = ?,
+						`social_mastodon` = ?,
+						`social_bluesky` = ?,
 						`hp` = ?,
 						`message` = ?,
 						`comment` = ?,
 						`timestamp` = ?,
 						`user_notification` = ?,
-						`user_show_email` = ?'
+						`user_show_email` = ?
 						WHERE ID = ? LIMIT 1";
 					
 					$params = [
 						$_POST['name'],
 						$_POST['city'],
 						$_POST['email'],
-						$_POST['icq'],
-						$_POST['aim'],
-						$_POST['msn'],
-						$_POST['fb'],
-						$_POST['twitter'],
+						$_POST['social_mastodon'],
+						$_POST['social_bluesky'],
 						$_POST['hp'],
 						$_POST['message'],
 						$_POST['comment'],
@@ -141,7 +137,7 @@
 						$_GET['id']
 					];
 					
-					$types = "sssssssssssiiii";
+					$types = "ssssssssiiii";
 
 					if(mgb_sql_connect($mysqli, $sql, "Error while updating entry.", 0, $params, $types)) {
 						$saved_settings_successfull = 1;
@@ -205,17 +201,18 @@
 						'ENTRY_ID' 				=> $entry['ID'],
 						'ENTRY_DATE' 			=> $date,
 						'ENTRY_TIME' 			=> $time,
-						'ENTRY_NAME' 			=> $entry['name'],
-						'ENTRY_CITY'	 		=> $entry['city'],
+						'ENTRY_NAME' 			=> mgb_format($entry['name']),
+						'ENTRY_CITY'	 		=> mgb_format($entry['city']),
 						'ENTRY_EMAIL' 			=> $entry['email'],
-						'ENTRY_ICQ' 			=> $entry['icq'],
-						'ENTRY_AIM' 			=> $entry['aim'],
-						'ENTRY_MSN' 			=> $entry['msn'],
-						'ENTRY_FB' 				=> $entry['fb'],
-						'ENTRY_TWITTER' 		=> $entry['twitter'],
+						'ENTRY_MASTODON'		=> mgb_format($entry['social_mastodon']),
+						'ENTRY_BLUESKY' 		=> mgb_format($entry['social_bluesky']),
+						// 'ENTRY_W' 			=> mgb_format($entry['social_w']),
+						// 'ENTRY_EU_VOICE'		=> mgb_format($entry['social_eu_voice']),
+						// 'ENTRY_EU_VIDEO' 	=> mgb_format($entry['social_eu_video']),
+						// 'ENTRY_MONNETT' 		=> mgb_format($entry['social_monnett']),
 						'ENTRY_HP' 				=> $entry['hp'],
-						'ENTRY_MESSAGE' 		=> $entry['message'],
-						'ENTRY_COMMENT' 		=> $entry['comment'],
+						'ENTRY_MESSAGE' 		=> mgb_format($entry['message']),
+						'ENTRY_COMMENT' 		=> mgb_format($entry['comment']),
 						'ENTRY_IP' 				=> $entry['ip'],
 						'CHECKED_NOTIFY' 		=> $checked_notify,
 						'CHECKED_SHOW_EMAIL' 	=> $checked_show_email,
@@ -347,11 +344,11 @@
 				$page_entry[$i] = mgb_template_replace([
 					'ENTRY_ID' 		=> $entry[$i]['ID'],
 					'ENTRY_NAME' 	=> mgb_format(substr($entry[$i]['name'], 0, 20)),
-					'ENTRY_MESSAGE' => mgb_format($entry[$i]['message']),
+					'ENTRY_MESSAGE' => mgb_render_text($entry[$i]['message'], 2, 2, $mysqli), // '2' means do nothing. don't parse bbcode and don't parse smilies. don't delete them either.
 					'ENTRY_IP' 		=> $entry[$i]['ip'],
 					'ENTRY_EMAIL' 	=> $entry[$i]['email'],
 					'ENTRY_HP' 		=> mgb_format($entry[$i]['hp']),
-					'ENTRY_COMMENT' => mgb_format($entry[$i]['comment']),
+					'ENTRY_COMMENT' => mgb_render_text($entry[$i]['comment'], 2, 2, $mysqli),
 					'LANG_QUOTE' 	=> $lang['quote'],
 					'EDIT' 			=> $status."<br><a href=\"admin.php?action=edit&amp;id=".$entry[$i]['ID'].$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/edit.png\" title=\"".$lang['edit_entry']."\" alt=\"".$lang['edit_entry']."\"></a>"
 			], $page_entry[$i]);

@@ -275,23 +275,30 @@
 			font-family: verdana, arial, helvetica, sans-serif;
 			font-size: 12px;
 			font-weight: bold;'>".$sqldescription[$i]."</span>\n";
-		$sql_status = "SHOW TABLE LIKE ".$db['prefix'].$tablename[$i];
+		$sql_status = "SHOW TABLES LIKE '".$db['prefix'].$tablename[$i]."'";
 		$result = $mysqli->query($sql_status);
 		if($result == true) {
 			$result = $mysqli->query($sql[$i]);
-			if($result == true) {				
+			if($result == true) {
 				echo "\t\t<span style='
 					font-family: verdana, arial, helvetica, sans-serif;
 					font-size: 12px;
 					font-weight: bold;
-					color: green;'>OK!<br><br></span>\n";
+					color: green;'>OK!</span><br><br>\n";
+				$success++;
 			} else {
 				echo "\t\t<span style='
 				font-family: verdana, arial, helvetica, sans-serif;
 				font-size: 12px;
 				font-weight: bold;
-				color: red;'>ERROR: ".$mysqli->error."<br><br></span>\n";
+				color: red;'>ERROR: ".$mysqli->error."</span><br><br>\n";
 			}
 		}
+		$count++;
 	}
+	
+	echo "\t\t<br><span style='
+		font-family: verdana, arial, helvetica, sans-serif;
+		font-size: 12px;
+		font-weight: bold;'>".$success." of ".$count." queries are ok.</span><br><br>\n";
 ?>

@@ -371,8 +371,7 @@
 		<select class="option" name="captcha_method" size="1">
 			<option{SELECTED_CAPTCHA_METHOD_0} value="0">{LANG_CAPTCHA_METHOD_CODE}</option>
 			<option{SELECTED_CAPTCHA_METHOD_1} value="1">{LANG_CAPTCHA_METHOD_MATH}</option>
-			<option{SELECTED_CAPTCHA_METHOD_2} value="2">{LANG_CAPTCHA_METHOD_RECAPTCHA}</option>
-			<option{SELECTED_CAPTCHA_METHOD_3} value="3">{LANG_CAPTCHA_METHOD_AYAH}</option>
+			<option{SELECTED_CAPTCHA_METHOD_2} value="2">{LANG_CAPTCHA_METHOD_RECAPTCHA}</option>			
 		</select>
 		</td>
 	</tr>

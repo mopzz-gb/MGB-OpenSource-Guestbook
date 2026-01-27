@@ -107,12 +107,7 @@
 			<option{SELECTED_ENTRIES_ORDER_1} value="name">{LANG_NAME}</option>
 			<option{SELECTED_ENTRIES_ORDER_2} value="city">{LANG_CITY}</option>
 			<option{SELECTED_ENTRIES_ORDER_3} value="email">{LANG_EMAIL}</option>
-			<option{SELECTED_ENTRIES_ORDER_4} value="icq">{LANG_ICQ}</option>
-			<option{SELECTED_ENTRIES_ORDER_5} value="aim">{LANG_AIM}</option>
-			<option{SELECTED_ENTRIES_ORDER_6} value="hp">{LANG_HP}</option>
-			<option{SELECTED_ENTRIES_ORDER_7} value="message">{LANG_MESSAGE}</option>
-			<option{SELECTED_ENTRIES_ORDER_8} value="comment">{LANG_COMMENT}</option>
-			<option{SELECTED_ENTRIES_ORDER_9} value="timestamp">{LANG_TIMESTAMP}</option>
+			<option{SELECTED_ENTRIES_ORDER_4} value="timestamp">{LANG_TIMESTAMP}</option>			
 		</select>
 		</td>
 	</tr>

@@ -116,11 +116,11 @@
 
 				// check if NO INSERTS is checked
 				if(!empty($_POST['no_inserts'])) {
-					if($sqlisinsert[$i] == 1) {
+					if($sqlisinsert[$i] === 1) {
 						echo "\t\t<span style='
 							font-family: verdana, arial, helvetica, sans-serif;
 							font-size: 12px;
-							font-weight: bold;'>{$i}. {$sqldescription[$i]}</span>\n";
+							font-weight: bold;'>{$sqldescription[$i]}</span>\n";
 						echo "\t\t<span style='
 							font-family: verdana, arial, helvetica, sans-serif;
 							font-size: 12px; #
@@ -139,7 +139,7 @@
 							echo "\t\t<span style='
 							font-family: verdana, arial, helvetica, sans-serif;
 							font-size: 12px;
-							font-weight: bold;'>{$i}. {$sqldescription[$i]}</span>\n";
+							font-weight: bold;'>{$sqldescription[$i]}</span>\n";
 							echo "\t\t<span style='
 							font-family: verdana, arial, helvetica, sans-serif;
 							font-size: 12px;
@@ -156,7 +156,7 @@
 							echo "<span style='
 									font-family: verdana, arial, helvetica, sans-serif;
 									font-size: 12px;
-									font-weight: bold;>{$i}. {$sqldescription[$i]}</span>";
+									font-weight: bold;>{$sqldescription[$i]}</span>";
 
 							switch ($errno) {
 								case 1060:
@@ -185,6 +185,19 @@
 										font-weight: bold;
 										color:green'> OK!<br><br></span>";
 									$success++;
+									break;
+								
+								case 1054:
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:maroon'>{$sqldescription[$i]}: MISSING COLUMN, no changes were applied.</span>";
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:red'> ERROR!<br><br></span>";
 									break;
 
 								case 1062:
@@ -220,7 +233,7 @@
 										font-family: verdana, arial, helvetica, sans-serif;
 										font-size: 12px;
 										font-weight: bold;
-										color:red'>ERROR</span>";
+										color:red'>{$sqldescription[$i]}: ERROR</span>";
 									echo "<span>{$errno} : {$error}</span><br><br>";
 							}
 
@@ -233,7 +246,7 @@
 						echo "\t\t<span style='
 						font-family: verdana, arial, helvetica, sans-serif;
 						font-size: 12px;
-						font-weight: bold;'>{$i}. {$sqldescription[$i]}</span>\n";
+						font-weight: bold;'>{$sqldescription[$i]}</span>\n";
 						echo "\t\t<span style='
 						font-family: verdana, arial, helvetica, sans-serif;
 						font-size: 12px;
@@ -250,7 +263,7 @@
 						echo "<span style='
 								font-family: verdana, arial, helvetica, sans-serif;
 								font-size: 12px;
-								font-weight: bold;>{$i}. {$sqldescription[$i]}</span>";
+								font-weight: bold;>{$sqldescription[$i]}</span>";
 
 						switch ($errno) {
 							case 1060:
@@ -280,6 +293,19 @@
 									color:green'> OK!<br><br></span>";
 								$success++;
 								break;
+							
+							case 1054:
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:maroon'>{$sqldescription[$i]}: MISSING COLUMN, no changes were applied.</span>";
+									echo "<span style='
+										font-family: verdana, arial, helvetica, sans-serif;
+										font-size: 12px;
+										font-weight: bold;
+										color:red'> ERROR!<br><br></span>";
+									break;
 
 							case 1062:
 								echo "<span style='
@@ -314,7 +340,7 @@
 									font-family: verdana, arial, helvetica, sans-serif;
 									font-size: 12px;
 									font-weight: bold;
-									color:red'>ERROR</span>";
+									color:red'>{$sqldescription[$i]}: ERROR!</span>";
 								echo "<span>{$errno} : {$error}</span><br><br>";
 						}
 						$count++;
@@ -330,7 +356,7 @@
 				if($count === $success) {
 					echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\"><br>No Errors! Your Database has been updated successfully! :) Now you can delete the folder <i>install</i> and return to <a href='../index.php'>index.php</a>.</span>\n";
 				} else {
-					echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;\"><br>Some Errors have occured. Try updating again by using an older update information or try searching the forums: <a href='https://forum.m-gb.org/'>forum.m-gb.org</a>.<br /></span>\n";
+					echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;\"><br>Some errors have occurred, but that does not necessarily mean that the update did not run smoothly.<br><br>Open the guestbook and check that everything is OK. If you still encounter problems, please report them in the forum: <a href='https://forum.m-gb.org/'>forum.m-gb.org</a>.<br /></span>\n";
 				}
 			} else {
 				echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">No changes were applied.<br /></span>\n";

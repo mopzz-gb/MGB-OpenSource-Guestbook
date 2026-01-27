@@ -20,42 +20,58 @@
 	</tr>
 	<tr>
 		<td class="settings_l" width="100%">
-		<span>{LANG_ICQ}</span>
-		</td>
-		<td class="settings_r">
-			<input type="checkbox" name="show_field_icq" value="show_field_icq"{CHECKED_ICQ}>
-		</td>
-	</tr>
-	<tr>
-		<td class="settings_l" width="100%">
-		<span>{LANG_AIM}</span>
-		</td>
-		<td class="settings_r">
-			<input type="checkbox" name="show_field_aim" value="show_field_aim"{CHECKED_AIM}>
-		</td>
-	</tr>
-	<tr>
-		<td class="settings_l" width="100%">
-		<span>{LANG_FB}</span>
-		</td>
-		<td class="settings_r">
-			<input type="checkbox" name="show_field_fb" value="show_field_fb"{CHECKED_FB}>
-		</td>
-	</tr>
-	<tr>
-		<td class="settings_l" width="100%">
-		<span>{LANG_TWITTER}</span>
-		</td>
-		<td class="settings_r">
-			<input type="checkbox" name="show_field_twitter" value="show_field_twitter"{CHECKED_TWITTER}>
-		</td>
-	</tr>
-		<tr>
-		<td class="settings_l" width="100%">
 		<span>{LANG_HP}</span>
 		</td>
 		<td class="settings_r">
 			<input type="checkbox" name="show_field_hp" value="show_field_hp"{CHECKED_HP}>
+		</td>
+	</tr>
+	<tr>
+		<td class="settings_l" width="100%">
+		<span>{LANG_MASTODON}</span>
+		</td>
+		<td class="settings_r">
+			<input type="checkbox" name="show_field_mastodon" value="show_field_mastodon"{CHECKED_MASTODON}>
+		</td>
+	</tr>
+	<tr>
+		<td class="settings_l" width="100%">
+		<span>{LANG_BLUESKY}</span>
+		</td>
+		<td class="settings_r">
+			<input type="checkbox" name="show_field_bluesky" value="show_field_bluesky"{CHECKED_BLUESKY}>
+		</td>
+	</tr>
+	<tr>
+		<td class="settings_l" width="100%">
+		<span>{LANG_W}</span>
+		</td>
+		<td class="settings_r">
+			<input type="checkbox" name="show_field_w" value="show_field_w"{CHECKED_W} disabled>
+		</td>
+	</tr>
+	<tr>
+		<td class="settings_l" width="100%">
+		<span>{LANG_EU_VOICE}</span>
+		</td>
+		<td class="settings_r">
+			<input type="checkbox" name="show_field_eu_voice" value="show_field_eu_voice"{CHECKED_EU_VOICE} disabled>
+		</td>
+	</tr>
+	<tr>
+		<td class="settings_l" width="100%">
+		<span>{LANG_EU_VIDEO}</span>
+		</td>
+		<td class="settings_r">
+			<input type="checkbox" name="show_field_eu_video" value="show_field_eu_video"{CHECKED_EU_VIDEO} disabled>
+		</td>
+	</tr>
+	<tr>
+		<td class="settings_l" width="100%">
+		<span>{LANG_MONNETT}</span>
+		</td>
+		<td class="settings_r">
+			<input type="checkbox" name="show_field_monnett" value="show_field_monnett"{CHECKED_MONNETT} disabled>
 		</td>
 	</tr>
 </table>

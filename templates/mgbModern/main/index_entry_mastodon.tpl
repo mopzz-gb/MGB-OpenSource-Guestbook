@@ -1,0 +1,1 @@
+<a href="{ENTRY_MASTODON}" target="_blank"><img class="icon" src="images/iconsets/{ICONSET_PATH}/mastodon.png" alt="{ENTRY_MASTODON}" title="{ENTRY_MASTODON}"></a>

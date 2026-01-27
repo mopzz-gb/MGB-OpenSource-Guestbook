@@ -516,8 +516,34 @@
 	$sql[99] = "ALTER TABLE `".$db['prefix']."settings` ADD `banlist_cleanup` TINYINT(1) NOT NULL DEFAULT '1' AFTER `banlist_log`";
 	$sqldescription[99] = "- Adding field for automatic banlist cleanup...";
 
+	// 0.7.1
+	
+	// add columns for anonymous usage statistics
+	$sql[100] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry` TINYINT(1) DEFAULT NULL AFTER `debug_mode`;";
+	$sqldescription[100] = "Adding telemetry...";
+	$sql[101] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry_ping` VARCHAR(255) NOT NULL DEFAULT 'https://ping.m-gb.org/ping.php' AFTER `telemetry`;";
+	$sqldescription[101] = "Adding telemetry ping address...";
+	$sql[102] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry_install_id` CHAR(128) AFTER `telemetry_ping`;";
+	$sqldescription[102] = "Adding telemetry unique install id...";
+	$sql[103] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry_last_ping` INT(11) AFTER `telemetry_install_id`;";
+	$sqldescription[103] = "Adding telemetry last ping...";
+	
+	// generate unique install id for the ping
+	define('MGB_TELEMETRY_SALT', 'mgb-telemetry-v1-2026');
+	$install_id = mgb_generate_install_id(MGB_TELEMETRY_SALT);
+	
+	$sqlisinsert[104] = 1;
+	$sql[104] = "UPDATE `".$db['prefix']."settings` SET `telemetry_install_id` = '".$install_id."'";	
+	$sqldescription[104] = "Adding unique install id...";
+	
+	// update banlists
+	$sql[105] = "ALTER TABLE `".$db['prefix']."banlist_emails` DROP `banned_email_first`, DROP `banned_email_second`;";
+	$sqldescription[105] = "Updating structure of email banlist...";
+	$sql[106] = "ALTER TABLE `".$db['prefix']."banlist_ips` DROP `banned_ip_first`, DROP `banned_ip_second`, DROP `banned_ip_third`, DROP `banned_ip_fourth`;";
+	$sqldescription[106] = "Updating structure of ip banlist...";
+	
 	if(isset($_POST['update_version']) AND $_POST['update_version'] == 1) {
-		$sql[100] = "UPDATE `".$db['prefix']."settings` SET `version` = '".MGB_VERSION."'";
-		$sqldescription[100] = "- Updating version number...";
+		$sql[107] = "UPDATE `".$db['prefix']."settings` SET `version` = '".MGB_VERSION."'";
+		$sqldescription[107] = "- Updating version number...";
 	}
 ?>

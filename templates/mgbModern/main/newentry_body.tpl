@@ -40,11 +40,15 @@
 				<span>{EMAIL_NECESSARY}</span>
 				</td>
 			</tr>
-			{TEMPLATE_ICQ}
-			{TEMPLATE_AIM}
-			{TEMPLATE_FB}
-			{TEMPLATE_TWITTER}
 			{TEMPLATE_HP}
+			{TEMPLATE_MASTODON}
+			{TEMPLATE_BLUESKY}
+			<!--
+			{TEMPLATE_W}
+			{TEMPLATE_EU_VOICE}
+			{TEMPLATE_EU_VIDEO}
+			{TEMPLATE_MONNETT}
+			-->
 			<tr>
 				<td class="signin_l" align="left">
 				<span>{LANG_NEW_ENTRY_MESSAGE}</span>

@@ -60,11 +60,12 @@
 	$lang['new_entry_name'] = "Dein Name:";
 	$lang['new_entry_city'] = "Wohnort:";
 	$lang['new_entry_email'] = "eMail:";
-	$lang['new_entry_icq'] = "ICQ:";
-	$lang['new_entry_aim'] = "AIM:";
-	$lang['new_entry_msn'] = "MSN:";
-	$lang['new_entry_fb'] = "Facebook:";
-	$lang['new_entry_twitter'] = "Twitter:";
+	$lang['new_entry_mastodon'] = "Mastodon:";
+	$lang['new_entry_bluesky'] = "Bluesky:";
+	$lang['new_entry_w'] = "W:";
+	$lang['new_entry_eu_vision'] = "EU Vision:";
+	$lang['new_entry_eu_video'] = "EU Video:";
+	$lang['new_entry_eu_monnett'] = "EU Monnett:";
 	$lang['new_entry_hp'] = "Homepage:";
 	$lang['new_entry_message'] = "Deine Nachricht:";
 	$lang['necessary_fields'] = "[ Pflichtfelder sind mit einem Stern (*) gekennzeichnet ]";
@@ -106,7 +107,7 @@
 	$lang['errormessage'][2] = "Bitte gib eine g&uuml;ltige eMail Adresse ein!";
 	$lang['errormessage'][3] = "Bitte gib einen Namen ein!";
 	$lang['errormessage'][4] = "ist keine g&uuml;ltige<br>eMail Adresse!";
-	$lang['errormessage'][5] = "ist keine g&uuml;ltige<br>ICQ Nummer!";
+	$lang['errormessage'][5] = "ist keine g&uuml;ltiger<br> Mastodon-Account!";
 	$lang['errormessage'][6] = "Die IP Sperre verbietet einen weiteren Eintrag!";
 	$lang['errormessage'][7] = "Der Sicherheitscode wurde falsch oder nicht eingegeben!";
 	$lang['errormessage'][8] = "Dieser Benutzer m&ouml;chte keine eMails empfangen!";

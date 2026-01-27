@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySQL Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -112,19 +112,16 @@
 	$content_index_announcement_message = mgb_load_template("user", $settings['template_path'], "main/index_announcement_message", $settings['debug_mode']);
 	$content_index_body = mgb_load_template("user", $settings['template_path'], "main/index_body", $settings['debug_mode']);
 	$content_index_entry = mgb_load_template("user", $settings['template_path'], "main/index_entry", $settings['debug_mode']);
-	$content_index_entry_aim = mgb_load_template("user", $settings['template_path'], "main/index_entry_aim", $settings['debug_mode']);
 	$content_index_entry_city = mgb_load_template("user", $settings['template_path'], "main/index_entry_city", $settings['debug_mode']);
 	$content_index_entry_comment = mgb_load_template("user", $settings['template_path'], "main/index_entry_comment", $settings['debug_mode']);
 	$content_index_entry_email = mgb_load_template("user", $settings['template_path'], "main/index_entry_email", $settings['debug_mode']);
 	$content_index_entry_gravatar = mgb_load_template("user", $settings['template_path'], "main/index_entry_gravatar", $settings['debug_mode']);
 	$content_index_entry_hp = mgb_load_template("user", $settings['template_path'], "main/index_entry_hp", $settings['debug_mode']);
-	$content_index_entry_icq = mgb_load_template("user", $settings['template_path'], "main/index_entry_icq", $settings['debug_mode']);
+	$content_index_entry_mastodon = mgb_load_template("user", $settings['template_path'], "main/index_entry_mastodon", $settings['debug_mode']);
+	$content_index_entry_bluesky = mgb_load_template("user", $settings['template_path'], "main/index_entry_bluesky", $settings['debug_mode']);
 	$content_index_entry_info = mgb_load_template("user", $settings['template_path'], "main/index_entry_info", $settings['debug_mode']);
 	$content_index_entry_message = mgb_load_template("user", $settings['template_path'], "main/index_entry_message", $settings['debug_mode']);
-	$content_index_entry_msn = mgb_load_template("user", $settings['template_path'], "main/index_entry_msn", $settings['debug_mode']);
-	$content_index_entry_fb = mgb_load_template("user", $settings['template_path'], "main/index_entry_fb", $settings['debug_mode']);
-	$content_index_entry_twitter = mgb_load_template("user", $settings['template_path'], "main/index_entry_twitter", $settings['debug_mode']);
-
+	
 	// set number of site to "1" if it is "0"
 	if(empty($_GET['p'])) { $_GET['p'] = 1; }
 
@@ -195,7 +192,7 @@
 	}
 
 	// load guestbook entries
-	$sql = "SELECT ID, name, city, email, icq, aim, msn, hp, fb, twitter, message, comment, timestamp, user_show_email FROM ".$db['prefix']."entries WHERE checked = 1 ORDER BY ".$settings['entries_order']." ".$settings['entries_order_asc_desc']." LIMIT $load_start, $load_end";
+	$sql = "SELECT ID, name, city, email, hp, social_mastodon, social_bluesky, message, comment, timestamp, user_show_email FROM ".$db['prefix']."entries WHERE checked = 1 ORDER BY ".$settings['entries_order']." ".$settings['entries_order_asc_desc']." LIMIT $load_start, $load_end";
 	$result = mgb_sql_connect($mysqli, $sql, "Error while loading guestbook entries.", 1, null, null);
 
 	// put them in an array
@@ -227,6 +224,14 @@
 		'H_CHARSET' 		=> $charset,
 		'REFRESH' 			=> $refresh
 	], $page_header);
+	
+	// check if announcement message is set
+	if(empty($settings['announcement_message'])) {
+		$content_index_announcement_message = "";
+	} else {
+		echo $settings['announcement_message'];
+		$settings['announcement_message'] = mgb_render_text($settings['announcement_message'], $settings['bbcode'], $settings['smileys'], $mysqli);
+	}
 
 	// fill entry template with content
 	if($settings['entries_numbering'] == 0) {
@@ -253,75 +258,48 @@
 			// this method taken from http://de.php.net/manual/en/function.wordwrap.php#64517
 			// by ab_at_notenet(dot)dk (thanks for that!!) will luckily not break html tags
 
-			if(!$settings['wordwrap'] == 0) {
+			if($settings['wordwrap'] == 1) {
 				$entry[$i]['message'] = textWrap($entry[$i]['message'], $settings['wordwrap']);
 			}
 
-			// set smilies
-			if($settings['smileys'] == 1) {
-				$entry[$i]['message'] = set_smilies($mysqli, $entry[$i]['message']);
-				$entry[$i]['comment'] = set_smilies($mysqli, $entry[$i]['comment']);
-			}
-			else {
-				$entry[$i]['message'] = delete_smilies($mysqli, $entry[$i]['message']);
-				$entry[$i]['comment'] = delete_smilies($mysqli, $entry[$i]['comment']);
-			}
-
-			// set bbcode
-			if($settings['bbcode'] == 1) {
-				$entry[$i]['message'] = bbcode_format($mysqli, $entry[$i]['message'], "");
-				$entry[$i]['comment'] = bbcode_format($mysqli, $entry[$i]['comment'], "");
-			}
-			else {
-				$entry[$i]['message'] = bbcode_delete($entry[$i]['message']);
-				$entry[$i]['comment'] = bbcode_delete($entry[$i]['comment']);
-			}
-
+			// format message, comment, announcement 
+			$entry[$i]['message'] = mgb_render_text($entry[$i]['message'], $settings['bbcode'], $settings['smileys'], $mysqli);
+			$entry[$i]['comment'] = mgb_render_text($entry[$i]['comment'], $settings['bbcode'], $settings['smileys'], $mysqli);						
+			
 			// find out which optional data has been set by the user
 			$info = $content_index_entry_info;
 			$email = $content_index_entry_email;
 			$message = $content_index_entry_message;
 			$city = $content_index_entry_city;
+			$mastodon = $content_index_entry_mastodon;
+			$bluesky = $content_index_entry_bluesky;
 			$hp = $content_index_entry_hp;
 			$gravatar = $content_index_entry_gravatar;
-			$icq = $content_index_entry_icq;
-			$aim = $content_index_entry_aim;
-			$msn = $content_index_entry_msn;
-			$fb = $content_index_entry_fb;
-			$twitter = $content_index_entry_twitter;
 			$comment = $content_index_entry_comment;
 
-			$info_icons = 7;
+			$info_icons = 4;
 
 			if(empty($entry[$i]['city'])) {
 				$city = "";
 			}
+			
 			if(empty($entry[$i]['hp'])) {
 				$hp = "";
 				$info_icons--;
 			} else {
 				$entry_hp_text = $lang['hp_of'];
 			}
-			if(empty($entry[$i]['icq'])) {
-				$icq = "";
+			
+			if(empty($entry[$i]['social_mastodon'])) {
+				$mastodon = "";
 				$info_icons--;
 			}
-			if(empty($entry[$i]['aim'])) {
-				$aim = "";
+			
+			if(empty($entry[$i]['social_bluesky'])) {
+				$bluesky = "";
 				$info_icons--;
 			}
-			if(empty($entry[$i]['msn'])) {
-				$msn = "";
-				$info_icons--;
-			}
-			if(empty($entry[$i]['fb'])) {
-				$fb = "";
-				$info_icons--;
-			}
-			if(empty($entry[$i]['twitter'])) {
-				$twitter = "";
-				$info_icons--;
-			}
+			
 			if(empty($entry[$i]['comment'])) {
 				$comment = "";
 			}
@@ -390,11 +368,8 @@
 					'TEMPLATE_ENTRY_INFO' 		=> $info,
 					'TEMPLATE_ENTRY_EMAIL' 		=> $email,
 					'TEMPLATE_ENTRY_HP' 		=> $hp,
-					'TEMPLATE_ENTRY_ICQ' 		=> $icq,
-					'TEMPLATE_ENTRY_AIM' 		=> $aim,
-					'TEMPLATE_ENTRY_MSN' 		=> $msn,
-					'TEMPLATE_ENTRY_FB' 		=> $fb,
-					'TEMPLATE_ENTRY_TWITTER' 	=> $twitter
+					'TEMPLATE_ENTRY_MASTODON'	=> $mastodon,
+					'TEMPLATE_ENTRY_BLUESKY'	=> $bluesky
 				], $page_entry[$i]);
 			} elseif($info_icons == 0) {
 				$page_entry[$i] = mgb_template_replace([
@@ -421,7 +396,7 @@
 				], $page_entry[$i]);
 			}
 
-			$page_entry[$i] = template("TEMPLATE_ENTRY_COMMENT", $comment, $page_entry[$i]);
+			$page_entry[$i] = mgb_template_replace(['TEMPLATE_ENTRY_COMMENT' => $comment], $page_entry[$i]);
 
 			// fill template with entry (language)
 			if(empty($entry_email_text)) { $entry_email_text = ""; }
@@ -434,22 +409,19 @@
 			// fill template with entry (strings)
 			$page_entry[$i] = mgb_template_replace([
 				'ENTRY_ID'			=> $entry_counter,
-				'ENTRY_ANCHOR' 		=> "<a href=\"index.php{PARAMLANG_A}&amp;p=".$pagenr."#e".$entry_counter."\" title=\"".$lang['anchor']."\">&raquo;</a>'",
-				'ENTRY_CITY' 		=> mgb_format($entry[$i]['city']), 
+				'ENTRY_ANCHOR' 		=> "<a href=\"index.php{PARAMLANG_A}&amp;p=".$pagenr."#e".$entry_counter."\" title=\"".$lang['anchor']."\">&raquo;</a>",
+				'ENTRY_CITY' 		=> $entry[$i]['city'], 
 				'ENTRY_EMAIL_PIC' 	=> $entry_email_pic, 
 				'ENTRY_EMAIL_PATH' 	=> $entry_email_path, 
 				'ENTRY_TIMESTAMP' 	=> $timestamp, 
 				'GRAVATAR_SIZE' 	=> $settings['gravatar_size'], 
 				'IMG_GRAVATAR' 		=> $img_gravatar, 
-				'ENTRY_MESSAGE' 	=> mgb_format($entry[$i]['message']), 
-				'ENTRY_HP' 			=> mgb_format($entry[$i]['hp']), 
-				'ENTRY_ICQ_NUMBER' 	=> mgb_format($entry[$i]['icq']), 
-				'ENTRY_AIM_NAME' 	=> mgb_format($entry[$i]['aim']), 
-				'ENTRY_MSN' 		=> mgb_format($entry[$i]['msn']), 
-				'ENTRY_FB' 			=> mgb_format($entry[$i]['fb']), 
-				'ENTRY_TWITTER' 	=> mgb_format($entry[$i]['twitter']), 
-				'ENTRY_COMMENT' 	=> mgb_format($entry[$i]['comment']), 
-				'ENTRY_NAME' 		=> mgb_format($entry[$i]['name']), 
+				'ENTRY_MESSAGE' 	=> $entry[$i]['message'], 
+				'ENTRY_HP' 			=> $entry[$i]['hp'],
+				'ENTRY_MASTODON'	=> $entry[$i]['social_mastodon'],
+				'ENTRY_BLUESKY'		=> $entry[$i]['social_bluesky'],
+				'ENTRY_COMMENT' 	=> $entry[$i]['comment'], 
+				'ENTRY_NAME' 		=> $entry[$i]['name'], 
 				'TEMPLATE_PATH' 	=> "templates/".$settings['template_path']
 			], $page_entry[$i]);
 
@@ -458,16 +430,6 @@
 	}
 
 	if(empty($page_entry_echo)) { $page_entry_echo = ""; }
-
-	// check if an announcement message is set
-	if(empty($settings['announcement_message'])) {
-		$content_index_announcement_message = "";
-	}
-	else {
-		$settings['announcement_message'] = set_smilies($mysqli, $settings['announcement_message']);
-		$settings['announcement_message'] = bbcode_format($mysqli, $settings['announcement_message'], "");
-		$settings['announcement_message'] = mgb_format($settings['announcement_message']);
-	}
 
 	// fill index_body.tpl and load templates first
 	$page_body_index = $content_index_body;
@@ -502,8 +464,8 @@
 		'SF_LAST' 				=> $sf_last,
 		'MGB_VERSION' 			=> $settings['version'],
 		'COPYRIGHT_DATE' 		=> date("Y"),
-		'PARAMLANG_A' 			=> "?lang=".cleanstr($_GET['lang']),
-		'PARAMLANG_B' 			=> "&amp;lang=".cleanstr($_GET['lang'])
+		'PARAMLANG_A' 			=> "?lang=".$_GET['lang'],
+		'PARAMLANG_B' 			=> "&amp;lang=".$_GET['lang']
 	], $page_body_index);
 
 	// fill in the rest of the language strings

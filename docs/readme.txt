@@ -1,5 +1,5 @@
 ===================================================================================
-= MGB 0.7.x - OpenSource PHP and MySql Guestbook - 10/19/2013 11:58 am            =
+= MGB 0.7.x - OpenSource PHP and MySql Guestbook - 26/01/2026 		          =
 = Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/             =
 =                                                                                 =
 = This program is free software; you can redistribute it and/or modify            =
@@ -27,7 +27,7 @@ This is VERY IMPORTANT! So do it! You can rename it too.
 
 For more Details see here:
 --------------------------
-https://www.m-gb.org/wiki/doku.php/installation (ONLY GERMAN, sorry)
+https://www.m-gb.org/wiki/doku.php/installation (ONLY GERMAN, sorry) -- OUTDATED, newer Version coming soon!
 
 
 Upgrading:
@@ -60,11 +60,12 @@ for persons who are not so familiar with things like that.
 UPDATE: http://www.m-gb.org/wiki/doku.php/erstellung_eigener_templates (ONLY GERMAN, sorry)
 
 
-----------------------------------------------
-Forum: 		| https://forum.m-gb.org/     |
-Wiki:		| https://www.m-gb.org/wiki/  |
-Bugreport:	| https://bugreport.m-gb.org/ |
-----------------------------------------------
+---------------------------------------------------------------------------------
+Forum: 		| https://forum.m-gb.org/     					|
+Wiki:		| https://github.com/mopzz-gb/MGB-OpenSource-Guestbook/wiki  	|
+Bugreport:	| https://github.com/mopzz-gb/MGB-OpenSource-Guestbook/issues	|
+GitHub		| https://github.com/mopzz-gb/MGB-OpenSource-Guestbook		|
+---------------------------------------------------------------------------------
 
 
 NOTE: The font "akoom.ttf" used in here is copyrighted by http://veredgf.fredfarm.com/.
@@ -81,3 +82,6 @@ _________________________________________
 Silk icon set 1.3 is licensed under a
 Creative Commons Attribution 2.5 License.
 [ http://creativecommons.org/licenses/by/2.5/ ]
+
+bluesky logo by Icons8
+https://icons8.com/icon/3ovMFy5JDSWq/bluesky

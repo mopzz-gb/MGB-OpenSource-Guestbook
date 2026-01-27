@@ -578,19 +578,45 @@
 	$sql[109] = "ALTER TABLE `".$db['prefix']."settings` ADD `banlist_cleanup` TINYINT(1) NOT NULL DEFAULT '1' AFTER `banlist_log`";
 	$sqldescription[109] = "- Adding field for automatic banlist cleanup...";
 
+	// 0.7.1
+	
+	// add columns for anonymous usage statistics
+	$sql[110] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry` TINYINT(1) DEFAULT NULL AFTER `debug_mode`;";
+	$sqldescription[110] = "Adding telemetry...";
+	$sql[111] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry_ping` VARCHAR(255) NOT NULL DEFAULT 'https://ping.m-gb.org/ping.php' AFTER `telemetry`;";
+	$sqldescription[111] = "Adding telemetry ping address...";
+	$sql[112] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry_install_id` CHAR(128) AFTER `telemetry_ping`;";
+	$sqldescription[112] = "Adding telemetry unique install id...";
+	$sql[113] = "ALTER TABLE `".$db['prefix']."settings` ADD `telemetry_last_ping` INT(11) AFTER `telemetry_install_id`;";
+	$sqldescription[113] = "Adding telemetry last ping...";
+	
+	// generate unique install id for the ping
+	define('MGB_TELEMETRY_SALT', 'mgb-telemetry-v1-2026');
+	$install_id = mgb_generate_install_id(MGB_TELEMETRY_SALT);
+	
+	$sqlisinsert[114] = 1;
+	$sql[114] = "UPDATE `".$db['prefix']."settings` SET `telemetry_install_id` = '".$install_id."'";	
+	$sqldescription[114] = "Adding unique install id...";
+	
+	// update banlists
+	$sql[115] = "ALTER TABLE `".$db['prefix']."banlist_emails` DROP `banned_email_first`, DROP `banned_email_second`;";
+	$sqldescription[115] = "Updating structure of email banlist...";
+	$sql[116] = "ALTER TABLE `".$db['prefix']."banlist_ips` DROP `banned_ip_first`, DROP `banned_ip_second`, DROP `banned_ip_third`, DROP `banned_ip_fourth`;";
+	$sqldescription[116] = "Updating structure of ip banlist...";
+
 	// update version number every time
 	if(isset($_POST['update_version']) AND $_POST['update_version'] == 1) {
-		$sql[110] = "UPDATE `".$db['prefix']."settings` SET `version` = '".MGB_VERSION."'";
-		$sqldescription[110] = "- Updating version number...";
+		$sql[117] = "UPDATE `".$db['prefix']."settings` SET `version` = '".MGB_VERSION."'";
+		$sqldescription[117] = "- Updating version number...";
 
 		if(isset($settings['language_path']) AND $settings['language_path'] == "lang_german_ansi") {
-			$sql[111] = "UPDATE `".$db['prefix']."settings` SET `language_path` = 'lang_german_utf8'";
-			$sqldescription[111] = "- Updating language path (delete \"language/lang_german_ansi/\" after this upgrade and VERY IMPORTANT: start <a href='convert_ansi.php'>convert_ansi.php</a>)!";
+			$sql[118] = "UPDATE `".$db['prefix']."settings` SET `language_path` = 'lang_german_utf8'";
+			$sqldescription[118] = "- Updating language path (delete \"language/lang_german_ansi/\" after this upgrade)!";
 		}
 	} else {
 		if(isset($settings['language_path']) AND $settings['language_path'] == "lang_german_ansi") {
-			$sql[110] = "UPDATE `".$db['prefix']."settings` SET `language_path` = 'lang_german_utf8'";
-			$sqldescription[110] = "- Updating language path (delete \"language/lang_german_ansi/\" after this upgrade and VERY IMPORTANT: start <a href='convert_ansi.php'>convert_ansi.php</a>)!";
+			$sql[117] = "UPDATE `".$db['prefix']."settings` SET `language_path` = 'lang_german_utf8'";
+			$sqldescription[117] = "- Updating language path (delete \"language/lang_german_ansi/\" after this upgrade)!";
 		}
 	}
 ?>

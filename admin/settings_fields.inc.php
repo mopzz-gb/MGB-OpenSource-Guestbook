@@ -43,20 +43,24 @@
 				if($empty_needed_value == 0) { // no error, continue with saving settings
 
 					if(empty($_POST['show_field_city'])) { $show_field_city = 0; } else { $show_field_city = 1; }
-					if(empty($_POST['show_field_icq'])) { $show_field_icq = 0; } else { $show_field_icq = 1; }
-					if(empty($_POST['show_field_aim'])) { $show_field_aim = 0; } else { $show_field_aim = 1; }
-					if(empty($_POST['show_field_fb'])) { $show_field_fb = 0; } else { $show_field_fb = 1; }
-					if(empty($_POST['show_field_twitter'])) { $show_field_twitter = 0; } else { $show_field_twitter = 1; }
 					if(empty($_POST['show_field_hp'])) { $show_field_hp = 0; } else { $show_field_hp = 1; }
-
+					if(empty($_POST['show_field_mastodon'])) { $show_field_mastodon = 0; } else { $show_field_mastodon = 1; }
+					if(empty($_POST['show_field_bluesky'])) { $show_field_bluesky = 0; } else { $show_field_bluesky = 1; }
+					if(empty($_POST['show_field_w'])) { $show_field_w = 0; } else { $show_field_w = 1; }
+					if(empty($_POST['show_field_eu_voice'])) { $show_field_eu_voice = 0; } else { $show_field_eu_voice = 1; }
+					if(empty($_POST['show_field_eu_video'])) { $show_field_eu_video = 0; } else { $show_field_eu_video = 1; }
+					if(empty($_POST['show_field_monnett'])) { $show_field_monnett = 0; } else { $show_field_monnett = 1; }
+					
 					// everything's okay now, let's save the data
 					$sql = "UPDATE `".$db['prefix']."settings` SET
 						`show_field_city` = '".$show_field_city."',
-						`show_field_icq` = '".$show_field_icq."',
-						`show_field_aim` = '".$show_field_aim."',
-						`show_field_fb` = '".$show_field_fb."',
-						`show_field_twitter` = '".$show_field_twitter."',
-						`show_field_hp` = '".$show_field_hp."'";
+						`show_field_hp` = '".$show_field_hp."',
+						`show_field_mastodon` = '".$show_field_mastodon."',
+						`show_field_bluesky` = '".$show_field_bluesky."',
+						`show_field_w` = '".$show_field_w."',
+						`show_field_eu_voice` = '".$show_field_eu_voice."',
+						`show_field_eu_video` = '".$show_field_eu_video."',
+						`show_field_monnett` = '".$show_field_monnett."'";
 
 					if (mgb_sql_connect($mysqli, $sql, "Error while saving general settings.", 0)) {
 						$saved_settings_successfull = 1;
@@ -87,39 +91,7 @@
 				$edit_value_city = "1";
 				$checked_city = " checked";
 			}
-
-			if ($settings['show_field_icq'] == "0" OR "") {
-				$edit_value_icq = "0";
-				$checked_icq = "";
-			} else {
-				$edit_value_icq = "1";
-				$checked_icq = " checked";
-			}
-
-			if ($settings['show_field_aim'] == "0" OR "") {
-				$edit_value_aim = "0";
-				$checked_aim = "";
-			} else {
-				$edit_value_aim = "1";
-				$checked_aim = " checked";
-			}
-
-			if ($settings['show_field_fb'] == "0" OR "") {
-				$edit_value_fb = "0";
-				$checked_fb = "";
-			} else {
-				$edit_value_fb = "1";
-				$checked_fb = " checked";
-			}
-
-			if ($settings['show_field_twitter'] == "0" OR "") {
-				$edit_value_twitter = "0";
-				$checked_twitter = "";
-			} else {
-				$edit_value_twitter = "1";
-				$checked_twitter = " checked";
-			}
-
+			
 			if ($settings['show_field_hp'] == "0" OR "") {
 				$edit_value_hp = "0";
 				$checked_hp = "";
@@ -128,20 +100,72 @@
 				$checked_hp = " checked";
 			}
 
+			if ($settings['show_field_mastodon'] == "0" OR "") {
+				$edit_value_mastodon = "0";
+				$checked_mastodon = "";
+			} else {
+				$edit_value_mastodon = "1";
+				$checked_mastodon = " checked";
+			}
+
+			if ($settings['show_field_bluesky'] == "0" OR "") {
+				$edit_value_bluesky = "0";
+				$checked_bluesky = "";
+			} else {
+				$edit_value_bluesky = "1";
+				$checked_bluesky = " checked";
+			}
+
+			if ($settings['show_field_w'] == "0" OR "") {
+				$edit_value_w = "0";
+				$checked_w = "";
+			} else {
+				$edit_value_w = "1";
+				$checked_w = " checked";
+			}
+
+			if ($settings['show_field_eu_voice'] == "0" OR "") {
+				$edit_value_eu_voice = "0";
+				$checked_eu_voice = "";
+			} else {
+				$edit_value_eu_voice = "1";
+				$checked_eu_voice = " checked";
+			}
+
+			if ($settings['show_field_eu_video'] == "0" OR "") {
+				$edit_value_eu_video = "0";
+				$checked_eu_video = "";
+			} else {
+				$edit_value_eu_video = "1";
+				$checked_eu_video = " checked";
+			}
+			
+			if ($settings['show_field_monnett'] == "0" OR "") {
+				$edit_value_monnett = "0";
+				$checked_monnett = "";
+			} else {
+				$edit_value_monnett = "1";
+				$checked_monnett = " checked";
+			}
+
 			$page_include = mgb_template_replace([
 				'EDIT_VALUE_CITY' 		=> $edit_value_city,
-				'EDIT_VALUE_ICQ' 		=> $edit_value_icq,
-				'EDIT_VALUE_AIM' 		=> $edit_value_aim,
-				'EDIT_VALUE_FB' 		=> $edit_value_fb,
-				'EDIT_VALUE_TWITTER' 	=> $edit_value_twitter,
 				'EDIT_VALUE_HP' 		=> $edit_value_hp,
+				'EDIT_VALUE_MASTODON'	=> $edit_value_mastodon,
+				'EDIT_VALUE_BLUESKY'	=> $edit_value_bluesky,
+				'EDIT_VALUE_W'	 		=> $edit_value_w,
+				'EDIT_VALUE_EU_VOICE'	=> $edit_value_eu_voice,
+				'EDIT_VALUE_EU_VIDEO' 	=> $edit_value_eu_video,
+				'EDIT_VALUE_MONNETT' 	=> $edit_value_monnett,
 
 				'CHECKED_CITY' 			=> $checked_city,
-				'CHECKED_ICQ' 			=> $checked_icq,
-				'CHECKED_AIM' 			=> $checked_aim,
-				'CHECKED_FB' 			=> $checked_fb,
-				'CHECKED_TWITTER' 		=> $checked_twitter,
-				'CHECKED_HP' 			=> $checked_hp
+				'CHECKED_HP' 			=> $checked_hp,
+				'CHECKED_MASTODON'		=> $checked_mastodon,
+				'CHECKED_BLUESKY' 		=> $checked_bluesky,
+				'CHECKED_W' 			=> $checked_w,
+				'CHECKED_EU_VOICE' 		=> $checked_eu_voice,
+				'CHECKED_EU_VIDEO'		=> $checked_eu_video,
+				'CHECKED_MONNETT' 		=> $checked_monnett
 			], $page_include);
 
 			// front end / language replacement

@@ -86,6 +86,9 @@
 			die();
 		}
 	}
+	
+	// define variables
+	$noemail = 0;
 
 	// load general templates
 	$content_header = mgb_load_template("user", $settings['template_path'], "general/header", $settings['debug_mode']);
@@ -108,12 +111,30 @@
 
 	// load main templates
 	$content_newentry_body = mgb_load_template("user", $settings['template_path'], "main/newentry_body", $settings['debug_mode']);
-	$content_newentry_body_city = mgb_load_template("user", $settings['template_path'], "main/newentry_body_city", $settings['debug_mode']);
-	$content_newentry_body_icq = mgb_load_template("user", $settings['template_path'], "main/newentry_body_icq", $settings['debug_mode']);
-	$content_newentry_body_aim = mgb_load_template("user", $settings['template_path'], "main/newentry_body_aim", $settings['debug_mode']);
-	$content_newentry_body_fb = mgb_load_template("user", $settings['template_path'], "main/newentry_body_fb", $settings['debug_mode']);
-	$content_newentry_body_twitter = mgb_load_template("user", $settings['template_path'], "main/newentry_body_twitter", $settings['debug_mode']);
-	$content_newentry_body_hp = mgb_load_template("user", $settings['template_path'], "main/newentry_body_hp", $settings['debug_mode']);
+	if($settings['show_field_city'] == 1) {
+		$content_newentry_body_city = mgb_load_template("user", $settings['template_path'], "main/newentry_body_city", $settings['debug_mode']);
+	} else {
+		$content_newentry_body_city = "";
+	}
+	if($settings['show_field_hp'] == 1) {
+		$content_newentry_body_hp = mgb_load_template("user", $settings['template_path'], "main/newentry_body_hp", $settings['debug_mode']);
+	} else {
+		$content_newentry_body_hp = "";
+	}
+	if($settings['show_field_mastodon'] == 1) {
+		$content_newentry_body_mastodon = mgb_load_template("user", $settings['template_path'], "main/newentry_body_mastodon", $settings['debug_mode']);
+	} else {
+		$content_newentry_body_mastodon = "";
+	}
+	if($settings['show_field_bluesky'] == 1) {
+		$content_newentry_body_bluesky = mgb_load_template("user", $settings['template_path'], "main/newentry_body_bluesky", $settings['debug_mode']);
+	} else {
+		$content_newentry_body_bluesky = "";
+	}
+	// $content_newentry_body_w = mgb_load_template("user", $settings['template_path'], "main/newentry_body_w", $settings['debug_mode']);
+	// $content_newentry_body_eu_voice = mgb_load_template("user", $settings['template_path'], "main/newentry_body_eu_voice", $settings['debug_mode']);
+	// $content_newentry_body_eu_video = mgb_load_template("user", $settings['template_path'], "main/newentry_body_eu_video", $settings['debug_mode']);
+	// $content_newentry_body_monnett = mgb_load_template("user", $settings['template_path'], "main/newentry_body_monnett", $settings['debug_mode']);
 	$content_newentry_bbcodes = mgb_load_template("user", $settings['template_path'], "main/newentry_bbcodes", $settings['debug_mode']);
 	$content_newentry_bbcodes_flash = mgb_load_template("user", $settings['template_path'], "main/newentry_bbcodes_flash", $settings['debug_mode']);
 	$content_newentry_bbcodes_img = mgb_load_template("user", $settings['template_path'], "main/newentry_bbcodes_img", $settings['debug_mode']);
@@ -124,7 +145,7 @@
 	$content_newentry_user_accept_akismet_service = mgb_load_template("user", $settings['template_path'], "main/newentry_user_accept_akismet_service", $settings['debug_mode']);
 	$content_newentry_user_notification = mgb_load_template("user", $settings['template_path'], "main/newentry_user_notification", $settings['debug_mode']);
 	$content_newentry_user_show_email = mgb_load_template("user", $settings['template_path'], "main/newentry_user_show_email", $settings['debug_mode']);
-
+	
 	if($settings['time_lock'] === 1) {
 		// set start time
 		if(!empty($_SESSION['start_time'])) {
@@ -145,11 +166,14 @@
 		if(empty($_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']])) { $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']] = ""; } 
 		$_POST['name'] = $_POST[$_SESSION['FORM_ELEMENT_NAME']];
 		$_POST['city'] = $_POST[$_SESSION['FORM_ELEMENT_CITY']];
-		$_POST['email'] = $_POST[$_SESSION['FORM_ELEMENT_EMAIL']];
-		$_POST['icq'] = $_POST[$_SESSION['FORM_ELEMENT_ICQ']];		
-		$_POST['fb'] = $_POST[$_SESSION['FORM_ELEMENT_FB']];
-		$_POST['twitter'] = $_POST[$_SESSION['FORM_ELEMENT_TWITTER']];
 		$_POST['hp'] = $_POST[$_SESSION['FORM_ELEMENT_HP']];
+		$_POST['social_mastodon'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MASTODON']];
+		$_POST['social_bluesky'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_BLUESKY']];
+		// $_POST['social_w'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_W']];
+		// $_POST['social_eu_voice'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VOICE']];
+		// $_POST['social_eu_video'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VIDEO']];
+		// $_POST['social_monnett'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MONNETT']];
+		$_POST['email'] = $_POST[$_SESSION['FORM_ELEMENT_EMAIL']];
 		$_POST['captcha'] = $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']];
 
 		// ANTI-SPAM #1
@@ -257,24 +281,14 @@
 			}
 		}
 
-		if(!empty($_POST['icq'])) {
-			if(!check_number($_POST['icq'])) { $errorcode = 5; } // icq# is not valid
+		if(!empty($_POST['social_mastodon'])) {
+			if(!check_mastodon($_POST['social_mastodon'])) { $errorcode = 5; } // mastodon link is not valid
 		}
 
 		if(!empty($_POST['fb'])) {
 			$_POST['fb'] = strtolower($_POST['fb']); // convert capital letters to small letters
 			$_POST['fb'] = preg_replace("/https:\/\/www.facebook.com\//", "", $_POST['fb']); // extract facebook url
 			if(!check_fb_name($_POST['fb'])) { $errorcode = 15; } // facebook name is not valid
-		}
-
-		if(!empty($_POST['twitter'])) {
-			$_POST['twitter'] = strtolower($_POST['twitter']); // convert capital letters to small letters
-			$_POST['twitter'] = preg_replace("/https:\/\/www.twitter.com\//", "", $_POST['twitter']);
-			if(!check_twitter_name($_POST['twitter'])) { $errorcode = 16; } // twitter user name is not valid
-		}
-
-		if(!preg_match("/https:\/\//i", $_POST['hp'])) { // if https:// is not set, do it
-			$_POST['hp'] = "https://".$_POST['hp'];
 		}
 
 		// check ip, email and domain with banlists
@@ -358,10 +372,15 @@
 		if(empty($errorcode)) { // everything's ok, let's format and save the entry
 			$_POST['email_name'] = $_POST['name'];
 			// delete bbcode except from message
-			$entry_name = bbcode_delete($_POST['name']);
-			$entry_city = bbcode_delete($_POST['city']);			
-			$entry_hp = bbcode_delete($_POST['hp']);						
-			if($entry_hp === "http://" || "https://"){ $entry_hp = ""; }
+			if(isset($_POST['name'])) { $entry_name = bbcode_delete($_POST['name']); }
+			if(isset($_POST['city'])) { $entry_city = bbcode_delete($_POST['city']); }			
+			if(isset($_POST['hp'])) {
+				$entry_hp = bbcode_delete($_POST['hp']);
+				if($entry_hp === "http://" || "https://") { 
+					$entry_hp = "";
+				}
+			}						
+			
 
 			// check if "moderated gb" and "user email notification" is on
 			if($settings['moderated'] === 1 OR $mark_as_spam === 1) {
@@ -513,7 +532,7 @@
 		} else {
 			// create errormessage if needed
 			if(!empty($errorcode)) {
-				$errormessage = mgb_errormessage($errorcode, MGB_ROOT."language/".$settings['language_path'], "user");
+				$errormessage = mgb_errormessage($errorcode, $settings['language_path'], "user");
 			}
 
 			// do not refresh site
@@ -537,12 +556,13 @@
 			$_POST['name'] = $_POST[$_SESSION['FORM_ELEMENT_NAME']];
 			$_POST['city'] = $_POST[$_SESSION['FORM_ELEMENT_CITY']];
 			$_POST['email'] = $_POST[$_SESSION['FORM_ELEMENT_EMAIL']];
-			$_POST['icq'] = $_POST[$_SESSION['FORM_ELEMENT_ICQ']];
-			// $_POST['aim'] = $_POST[$_SESSION['FORM_ELEMENT_AIM']];
-			// $_POST['msn'] = $_POST[$_SESSION['FORM_ELEMENT_MSN']];
-			// $_POST['fb'] = $_POST[$_SESSION['FORM_ELEMENT_FB']];
-			// $_POST['twitter'] = $_POST[$_SESSION['FORM_ELEMENT_TWITTER']];
 			$_POST['hp'] = $_POST[$_SESSION['FORM_ELEMENT_HP']];
+			$_POST['social_mastodon'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MASTODON']];
+			$_POST['social_bluesky'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_BLUESKY']];
+			$_POST['social_w'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_W']];
+			$_POST['social_eu_voice'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VOICE']];
+			$_POST['social_eu_video'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VIDEO']];
+			$_POST['social_monnett'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MONNETT']];
 			$_POST['captcha'] = $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']];
 
 			$preview_message = nl2br($_POST['message']);
@@ -770,31 +790,6 @@
 		$content_captcha = "";
 	}
 
-	// fill template with activated / deactivated formular fields
-	if($settings['show_field_city'] === 0 OR "") {
-		$content_newentry_body_city = "";
-	}
-
-	if($settings['show_field_icq'] === 0 OR "") {
-		$content_newentry_body_icq = "";
-	}
-
-	if($settings['show_field_aim'] === 0 OR "") {
-		$content_newentry_body_aim = "";
-	}
-
-	if($settings['show_field_fb'] === 0 OR "") {
-		$content_newentry_body_fb = "";
-	}
-
-	if($settings['show_field_twitter'] === 0 OR "") {
-		$content_newentry_body_twitter = "";
-	}
-
-	if($settings['show_field_hp'] === 0 OR "") {
-		$content_newentry_body_hp = "";
-	}
-
 	 // entry was not successfull or it is the first time the site was loaded
 	if(empty($entry_successfull)) {
 		// generate unique id for captcha. necessary for reloading it every time instead of loading it out of the cache
@@ -813,12 +808,14 @@
 		$page_newentry_body = mgb_template_replace([
 			'TEMPLATE_ERRORMESSAGE' 				=> $content_errormessage,
 			'TEMPLATE_PREVIEW' 						=> $content_newentry_preview,
-			'TEMPLATE_CITY' 						=> $content_newentry_body_city,
-			'TEMPLATE_ICQ' 							=> $content_newentry_body_icq,
-			'TEMPLATE_AIM' 							=> $content_newentry_body_aim,
-			'TEMPLATE_FB'							=> $content_newentry_body_fb,
-			'TEMPLATE_TWITTER' 						=> $content_newentry_body_twitter,
+			'TEMPLATE_CITY' 						=> $content_newentry_body_city,			
 			'TEMPLATE_HP' 							=> $content_newentry_body_hp,
+			'TEMPLATE_MASTODON'						=> $content_newentry_body_mastodon,
+			'TEMPLATE_BLUESKY'						=> $content_newentry_body_bluesky,
+			// 'TEMPLATE_W' 							=> $content_newentry_body_w,
+			// 'TEMPLATE_EU_VOICE'						=> $content_newentry_body_eu_voice,
+			// 'TEMPLATE_EU_VIDEO'						=> $content_newentry_body_eu_video,
+			// 'TEMPLATE_MONNETT'						=> $content_newentry_body_monnett,
 			'TEMPLATE_SMILEYS' 						=> $content_newentry_smileys,
 			'TEMPLATE_BBCODES' 						=> $bbcodes,
 			'TEMPLATE_USER_NOTIFICATION' 			=> $user_notification,
@@ -853,47 +850,55 @@
 				if($settings['dynamic_fieldnames_method'] === 0) {
 					$_SESSION['FORM_ELEMENT_NAME'] = mt_rand();
 					$_SESSION['FORM_ELEMENT_CITY'] = mt_rand();
-					$_SESSION['FORM_ELEMENT_EMAIL'] = mt_rand();
-					$_SESSION['FORM_ELEMENT_ICQ'] = mt_rand();
-					$_SESSION['FORM_ELEMENT_AIM'] = mt_rand();
-					$_SESSION['FORM_ELEMENT_FB'] = mt_rand();
-					$_SESSION['FORM_ELEMENT_TWITTER'] = mt_rand();
+					$_SESSION['FORM_ELEMENT_EMAIL'] = mt_rand();					
 					$_SESSION['FORM_ELEMENT_HP'] = mt_rand();
+					$_SESSION['FORM_ELEMENT_MASTODON'] = mt_rand();
+					$_SESSION['FORM_ELEMENT_BLUESKY'] = mt_rand();
+					// $_SESSION['FORM_ELEMENT_W'] = mt_rand();
+					// $_SESSION['FORM_ELEMENT_EU_VOICE'] = mt_rand();
+					// $_SESSION['FORM_ELEMENT_EU_VIDEO'] = mt_rand();
+					// $_SESSION['FORM_ELEMENT_MONNETT'] = mt_rand();
 					// $_SESSION['FORM_ELEMENT_MESSAGE'] = mt_rand();
 					$_SESSION['FORM_ELEMENT_CAPTCHA'] = mt_rand();
 				} else {
 					$_SESSION['FORM_ELEMENT_NAME'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
 					$_SESSION['FORM_ELEMENT_CITY'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
-					$_SESSION['FORM_ELEMENT_EMAIL'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
-					$_SESSION['FORM_ELEMENT_ICQ'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
-					$_SESSION['FORM_ELEMENT_AIM'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
-					$_SESSION['FORM_ELEMENT_FB'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
-					$_SESSION['FORM_ELEMENT_TWITTER'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
+					$_SESSION['FORM_ELEMENT_EMAIL'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");					
 					$_SESSION['FORM_ELEMENT_HP'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
+					$_SESSION['FORM_ELEMENT_MASTODON'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
+					$_SESSION['FORM_ELEMENT_BLUESKY'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
+					// $_SESSION['FORM_ELEMENT_W'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
+					// $_SESSION['FORM_ELEMENT_EU_VOICE'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
+					// $_SESSION['FORM_ELEMENT_EU_VIDEO'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
+					// $_SESSION['FORM_ELEMENT_MONNETT'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
 					// $_SESSION['FORM_ELEMENT_MESSAGE'] = generate_key_and_pw("", $settings['dynamic_fieldnames_length'], "user");
 					$_SESSION['FORM_ELEMENT_CAPTCHA'] = generate_key_and_pw(MGB_ROOT, $mysqli, "", $settings['dynamic_fieldnames_length'], "user");
 				}
 			} else {
 				$_SESSION['FORM_ELEMENT_NAME'] = "name";
 				$_SESSION['FORM_ELEMENT_CITY'] = "city";
-				$_SESSION['FORM_ELEMENT_EMAIL'] = "email";
-				$_SESSION['FORM_ELEMENT_ICQ'] = "icq";
-				$_SESSION['FORM_ELEMENT_AIM'] = "aim";
-				$_SESSION['FORM_ELEMENT_FB'] = "fb";
-				$_SESSION['FORM_ELEMENT_TWITTER'] = "twitter";
+				$_SESSION['FORM_ELEMENT_EMAIL'] = "email";				
 				$_SESSION['FORM_ELEMENT_HP'] = "hp";
+				$_SESSION['FORM_ELEMENT_MASTODON'] = "social_mastodon";
+				$_SESSION['FORM_ELEMENT_BLUESKY'] = "social_bluesky";
+				// $_SESSION['FORM_ELEMENT_W'] = "social_w";
+				// $_SESSION['FORM_ELEMENT_EU_VOICE'] = "social_eu_voice";
+				// $_SESSION['FORM_ELEMENT_EU_VIDEO'] = "social_eu_video";
+				// $_SESSION['FORM_ELEMENT_MONNETT'] = "social_monnett";
 				// $_SESSION['FORM_ELEMENT_MESSAGE'] = "message";
 				$_SESSION['FORM_ELEMENT_CAPTCHA'] = "captcha";
 			}
 
 			$_POST[$_SESSION['FORM_ELEMENT_NAME']] = "";
 			$_POST[$_SESSION['FORM_ELEMENT_CITY']] = "";
-			$_POST[$_SESSION['FORM_ELEMENT_EMAIL']] = "";
-			$_POST[$_SESSION['FORM_ELEMENT_ICQ']] = "";
-			$_POST[$_SESSION['FORM_ELEMENT_AIM']] = "";
-			$_POST[$_SESSION['FORM_ELEMENT_FB']] = "";
-			$_POST[$_SESSION['FORM_ELEMENT_TWITTER']] = "";
+			$_POST[$_SESSION['FORM_ELEMENT_EMAIL']] = "";			
 			$_POST[$_SESSION['FORM_ELEMENT_HP']] = "";
+			$_POST[$_SESSION['FORM_ELEMENT_MASTODON']] = "";
+			$_POST[$_SESSION['FORM_ELEMENT_BLUESKY']] = "";
+			// $_POST[$_SESSION['FORM_ELEMENT_W']] = "";
+			// $_POST[$_SESSION['FORM_ELEMENT_EU_VOICE']] = "";
+			// $_POST[$_SESSION['FORM_ELEMENT_EU_VIDEO']] = "";
+			// $_POST[$_SESSION['FORM_ELEMENT_MONNETT']] = "";
 			// $_POST[$_SESSION['FORM_ELEMENT_MESSAGE']] = "";
 			$_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']] = "";
 		}
@@ -904,20 +909,25 @@
 			'POST_NAME' 	=> $_POST[$_SESSION['FORM_ELEMENT_NAME']],
 			'POST_CITY' 	=> $_POST[$_SESSION['FORM_ELEMENT_CITY']],
 			'POST_EMAIL' 	=> $_POST[$_SESSION['FORM_ELEMENT_EMAIL']],
-			'POST_ICQ' 		=> $_POST[$_SESSION['FORM_ELEMENT_ICQ']],
-			'POST_FB' 		=> $_POST[$_SESSION['FORM_ELEMENT_FB']],
-			'POST_TWITTER' 	=> $_POST[$_SESSION['FORM_ELEMENT_TWITTER']],
 			'POST_HP' 		=> $_POST[$_SESSION['FORM_ELEMENT_HP']],
+			'POST_MASTODON'	=> $_POST[$_SESSION['FORM_ELEMENT_MASTODON']],
+			'POST_BLUESKY'	=> $_POST[$_SESSION['FORM_ELEMENT_BLUESKY']],
+			// 'POST_W'		=> $_POST[$_SESSION['FORM_ELEMENT_W']],
+			// 'POST_EU_VOICE'	=> $_POST[$_SESSION['FORM_ELEMENT_EU_VOICE']],
+			// 'POST_EU_VIDEO'	=> $_POST[$_SESSION['FORM_ELEMENT_EU_VIDEO']],
+			// 'POST_MONNETT'	=> $_POST[$_SESSION['FORM_ELEMENT_MONNETT']],
 			'POST_MESSAGE' 	=> $_POST['message'],
 
 			'FORM_ELEMENT_NAME' 	=> $_SESSION['FORM_ELEMENT_NAME'],
 			'FORM_ELEMENT_CITY' 	=> $_SESSION['FORM_ELEMENT_CITY'],
-			'FORM_ELEMENT_EMAIL' 	=> $_SESSION['FORM_ELEMENT_EMAIL'],
-			'FORM_ELEMENT_ICQ' 		=> $_SESSION['FORM_ELEMENT_ICQ'],
-			'FORM_ELEMENT_AIM'		=> $_SESSION['FORM_ELEMENT_AIM'],
-			'FORM_ELEMENT_FB' 		=> $_SESSION['FORM_ELEMENT_FB'],
-			'FORM_ELEMENT_TWITTER' 	=> $_SESSION['FORM_ELEMENT_TWITTER'],
+			'FORM_ELEMENT_EMAIL' 	=> $_SESSION['FORM_ELEMENT_EMAIL'],						
 			'FORM_ELEMENT_HP' 		=> $_SESSION['FORM_ELEMENT_HP'],
+			'FORM_ELEMENT_MASTODON'	=> $_SESSION['FORM_ELEMENT_MASTODON'],
+			'FORM_ELEMENT_BLUESKY'	=> $_SESSION['FORM_ELEMENT_BLUESKY'],
+			// 'FORM_ELEMENT_W'		=> $_SESSION['FORM_ELEMENT_W'],
+			// 'FORM_ELEMENT_EU_VOICE'	=> $_SESSION['FORM_ELEMENT_EU_VOICE'],
+			// 'FORM_ELEMENT_EU_VIDEO'	=> $_SESSION['FORM_ELEMENT_EU_VIDEO'],
+			// 'FORM_ELEMENT_MONNETT'	=> $_SESSION['FORM_ELEMENT_MONNETT'],
 			// 'FORM_ELEMENT_MESSAGE' 	=> $_SESSION['FORM_ELEMENT_MESSAGE'],
 			'FORM_ELEMENT_CAPTCHA' 	=> $_SESSION['FORM_ELEMENT_CAPTCHA']
 		], $page_newentry_body);

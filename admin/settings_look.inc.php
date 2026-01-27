@@ -170,14 +170,8 @@
 				'LANG_EDIT_EXPL_LANGUAGE_VERSION' 	=> $lang['version'].":",
 				'LANG_ID' 							=> $lang['id'], ":",
 				'LANG_NAME' 						=> $lang['name'], ":",
-				'LANG_CITY' 						=> $lang['city'], ":",
+				'LANG_CITY' 						=> $lang['city'], ":",				
 				'LANG_EMAIL' 						=> $lang['email'], ":",
-				'LANG_ICQ' 							=> $lang['icq'], ":",
-				'LANG_AIM' 							=> $lang['aim'], ":",
-				'LANG_MSN' 							=> $lang['msn'], ":",
-				'LANG_HP' 							=> $lang['hp'], ":",
-				'LANG_MESSAGE' 						=> $lang['message'], ":",
-				'LANG_COMMENT' 						=> $lang['comment'], ":",
 				'LANG_TIMESTAMP' 					=> $lang['timestamp'], ":"
 			], $page_include);
 			
@@ -185,12 +179,7 @@
 			if(empty($selected_entries_order_1)) { $selected_entries_order_1 = ""; }
 			if(empty($selected_entries_order_2)) { $selected_entries_order_2 = ""; }
 			if(empty($selected_entries_order_3)) { $selected_entries_order_3 = ""; }
-			if(empty($selected_entries_order_4)) { $selected_entries_order_4 = ""; }
-			if(empty($selected_entries_order_5)) { $selected_entries_order_5 = ""; }
-			if(empty($selected_entries_order_6)) { $selected_entries_order_6 = ""; }
-			if(empty($selected_entries_order_7)) { $selected_entries_order_7 = ""; }
-			if(empty($selected_entries_order_8)) { $selected_entries_order_8 = ""; }
-			if(empty($selected_entries_order_9)) { $selected_entries_order_9 = ""; }
+			if(empty($selected_entries_order_4)) { $selected_entries_order_4 = ""; }			
 
 			if ($settings['entries_order'] === "ID") {
 				$selected_entries_order_0 = " selected"; }
@@ -199,19 +188,9 @@
 			elseif ($settings['entries_order'] === "city") {
 				$selected_entries_order_2 = " selected"; }
 			elseif ($settings['entries_order'] === "email") {
-				$selected_entries_order_3 = " selected"; }
-			elseif ($settings['entries_order'] === "icq") {
-				$selected_entries_order_4 = " selected"; }
-			elseif ($settings['entries_order'] === "aim") {
-				$selected_entries_order_5 = " selected"; }
-			elseif ($settings['entries_order'] === "hp") {
-				$selected_entries_order_6 = " selected"; }
-			elseif ($settings['entries_order'] === "message") {
-				$selected_entries_order_7 = " selected"; }
-			elseif ($settings['entries_order'] === "comment") {
-				$selected_entries_order_8 = " selected"; }
+				$selected_entries_order_3 = " selected"; }			
 			elseif ($settings['entries_order'] === "timestamp") {
-				$selected_entries_order_9 = " selected"; }
+				$selected_entries_order_4 = " selected"; }
 			
 			if ($settings['entries_order_asc_desc'] === "ASC") {
 				$selected_entries_order_asc_desc_0 = " selected";
@@ -262,12 +241,7 @@
 				'SELECTED_ENTRIES_ORDER_1' 				=> $selected_entries_order_1,
 				'SELECTED_ENTRIES_ORDER_2' 				=> $selected_entries_order_2,
 				'SELECTED_ENTRIES_ORDER_3' 				=> $selected_entries_order_3,
-				'SELECTED_ENTRIES_ORDER_4' 				=> $selected_entries_order_4,
-				'SELECTED_ENTRIES_ORDER_5' 				=> $selected_entries_order_5,
-				'SELECTED_ENTRIES_ORDER_6' 				=> $selected_entries_order_6,
-				'SELECTED_ENTRIES_ORDER_7' 				=> $selected_entries_order_7,
-				'SELECTED_ENTRIES_ORDER_8' 				=> $selected_entries_order_8,
-				'SELECTED_ENTRIES_ORDER_9' 				=> $selected_entries_order_9,
+				'SELECTED_ENTRIES_ORDER_4' 				=> $selected_entries_order_4,				
 				'SELECTED_ENTRIES_ORDER_ASC_DESC_0' 	=> $selected_entries_order_asc_desc_0,
 				'SELECTED_ENTRIES_ORDER_ASC_DESC_1' 	=> $selected_entries_order_asc_desc_1,
 				'SELECTED_ENTRIES_NUMBERING_0' 			=> $selected_entries_numbering_0,

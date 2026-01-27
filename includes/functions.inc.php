@@ -166,28 +166,6 @@
 		}
 	}
 
-	/* 
-	if (!function_exists('mgb_sql_connect')) {
-		function mgb_sql_connect(mysqli $mysqli, string $sql, string $errormessage, int $return) {
-			if ($return === 0) {
-				$result = $mysqli->query($sql);
-				if (!$result) {
-					die("<span style='font-family: verdana, arial, helvetica, sans-serif; font-size:12px;color:darkblue;'>
-						 ".$errormessage."<br><b>SQL:</b> ".$sql."<br><b>ERROR:</b> ".$mysqli->errno." : ".$mysqli->error."</span>");
-				}
-				return true;
-			} else {
-				$result = $mysqli->query($sql);
-				if (!$result) {
-					die("<span style='font-family: verdana, arial, helvetica, sans-serif; font-size:12px;color:darkblue;'>
-						 ".$errormessage."<br><b>SQL:</b> ".$sql."<br><b>ERROR:</b> ".$mysqli->errno." : ".$mysqli->error."</span>");
-				}
-				return $result;
-			}
-		}
-	}
-	*/
-
 	// MGB_IOU_CHECK
 	// CREATED: 20.08.2012
 	// UPDATED: 12.01.2026
@@ -201,7 +179,7 @@
 					die();
 				} elseif(isset($mgb_installation_complete) AND $mgb_installation_complete == TRUE AND file_exists($path.'install') AND is_dir($path.'install')) {
 					require $path."install/includes/config.inc.php";
-					$sql = "SELECT version FROM ".mgb_sql_prefix($db['prefix'])."settings";
+					$sql = "SELECT version FROM ".$db['prefix']."settings";
 					$result = mgb_sql_connect($mysqli, $sql, "Error while retrieving version of MGB.", 1);
 					$existing_version = $result->fetch_assoc();
 					if(version_compare($existing_version['version'], MGB_VERSION, "!=")) {
@@ -368,7 +346,7 @@
 						$sql_dump.= " NOT NULL";
 					}
 					if(!empty($fielddefault[$i])) {
-						$sql_dump.= " DEFAULT ".secure_value($fielddefault[$i]);
+						$sql_dump.= " DEFAULT ".$fielddefault[$i];
 					}
 					if(!empty($fieldextra[$i])) {
 						$sql_dump.= " ".$fieldextra[$i];
@@ -415,7 +393,7 @@
 							$sql_dump .= "(";
 							for($j = 0; $j < count($fieldnames); $j++) {
 								$counterj = count($fieldnames) - 1;
-								$sql_dump .= secure_value($export[$i][$fieldnames[$j]]);
+								$sql_dump .= $export[$i][$fieldnames[$j]];
 								if($j < $counterj) {
 									$sql_dump .= ", ";
 								} else {
@@ -475,10 +453,10 @@
 	}
 
 
-	// checks if icq number is valid
-	if(!function_exists("check_number")) {
-		function check_number($number) {
-			if(preg_match("/^[0-9]+$/i", $number)) {
+	// checks if a mastodon account is valid
+	if(!function_exists("check_mastodon")) {
+		function check_mastodon($string) {
+			if(preg_match("^https?:\/\/[a-z0-9.-]+\.[a-z]{2,}\/@[a-z0-9._-]+$", $string)) {
 				return TRUE;
 			} else {
 				return FALSE;
@@ -516,7 +494,7 @@
 		function set_smilies($mysqli, $text) {
 			// load smilies
 			require "includes/config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."smilies ORDER BY ID DESC", "Error while loading smilies.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."smilies ORDER BY ID DESC", "Error while loading smilies.", 1);
 
 			for($i = 0; $i < mysqli_num_rows($result); $i++) {
 				$smiley[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
@@ -555,7 +533,7 @@
 		function delete_smilies($mysqli, $text) {
 			// load smilies
 			require "includes/config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".mgb_sql_prefix($db['prefix'])."smilies ORDER BY ID DESC", "Error while loading smilies.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."smilies ORDER BY ID DESC", "Error while loading smilies.", 1);
 
 			for($i = 0; $i < mysqli_num_rows($result); $i++) {
 				$smiley[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
@@ -612,7 +590,7 @@
 
 			// load maximum width and height settings
 			require "config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".mgb_sql_prefix($db['prefix'])."settings", "Error while loading img settings.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".$db['prefix']."settings", "Error while loading img settings.", 1);
 			$settings = mysqli_fetch_array($result, MYSQLI_ASSOC);
 			if($settings['center_img'] == 1) { $center_1 = "<center>"; $center_2 = "</center>"; }
 
@@ -668,7 +646,7 @@
 		function img_1($mysqli, $treffer) {
 			// load maximum width and height settings
 			require "config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".mgb_sql_prefix($db['prefix'])."settings", "Error while loading img settings.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".$db['prefix']."settings", "Error while loading img settings.", 1);
 			$settings = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			if(isset($settings['allow_img_tag']) AND $settings['allow_img_tag'] == 1) {
@@ -706,7 +684,7 @@
 		function img_2($mysqli, $treffer) {
 			// load maximum width and height settings
 			require "config.inc.php";
-			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".mgb_sql_prefix($db['prefix'])."settings", "Error while loading img settings.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT allow_img_tag, max_img_width, max_img_height, center_img FROM ".$db['prefix']."settings", "Error while loading img settings.", 1);
 			$settings = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			if(isset($settings['allow_img_tag']) AND $settings['allow_img_tag'] == 1) {
@@ -922,9 +900,9 @@
 			require ('../includes/config.inc.php');
 
 			if(!empty($ID)) {
-				$sql = "SELECT user_password FROM ".mgb_sql_prefix($db['prefix'])."user WHERE ID='".$ID."'";
+				$sql = "SELECT user_password FROM ".$db['prefix']."user WHERE ID='".$ID."'";
 			} else {
-				$sql = "SELECT user_password FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_name='".$name."'";
+				$sql = "SELECT user_password FROM ".$db['prefix']."user WHERE user_name='".$name."'";
 			}
 
 			$result = mgb_sql_connect($mysqli, $sql, "Error while checking login information!", 1);
@@ -935,7 +913,7 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
 				return TRUE;
 			} elseif($user['user_password'] === $old_password) {
 				$newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -943,9 +921,9 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
 				// update user_password in database
-				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `user_password` = '".$newHash."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_password` = '".$newHash."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
 				return TRUE;
 			} else {
 				unset($ID);
@@ -961,7 +939,7 @@
 		function check_if_user_exists($mysqli, $name, $email) {
 			include('../includes/config.inc.php');
 
-			$stmt = $mysqli->prepare("SELECT 1 FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_name = LOWER(?) LIMIT 1");
+			$stmt = $mysqli->prepare("SELECT 1 FROM ".$db['prefix']."user WHERE user_name = LOWER(?) LIMIT 1");
 			$stmt->bind_param("s", $name);
 			$stmt->execute();
 			$result = $stmt->get_result();
@@ -970,7 +948,7 @@
 				return false; // user name already exists
 			}
 
-			$stmt = $mysqli->prepare("SELECT 1 FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_email = LOWER(?) LIMIT 1");
+			$stmt = $mysqli->prepare("SELECT 1 FROM ".$db['prefix']."user WHERE user_email = LOWER(?) LIMIT 1");
 			$stmt->bind_param("s", $email);
 			$stmt->execute();
 			$result = $stmt->get_result();
@@ -1162,7 +1140,7 @@
 
 			if(!empty($name)) {
 				// save user_key for user in database
-				mgb_sql_connect($mysqli, "UPDATE `".mgb_sql_prefix($db['prefix'])."user` SET `user_key` = '".$key_pw."' WHERE `user_name` = '".$name."' LIMIT 1", "Error while generating key/password.", 0);
+				mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."user` SET `user_key` = '".$key_pw."' WHERE `user_name` = '".$name."' LIMIT 1", "Error while generating key/password.", 0);
 			} else {
 				return $key_pw;
 			}
@@ -1173,7 +1151,7 @@
 	if(!function_exists("check_session")) {
 		function check_session($mysqli, $sessid, $sessionkey, $sessionip, $timeout) {
 			require("../includes/config.inc.php");
-			$result = mgb_sql_connect($mysqli, "SELECT user_key, logged_in FROM ".mgb_sql_prefix($db['prefix'])."user WHERE ID=".mgb_sql_int($sessid)." LIMIT 1", "Error while loading user information.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT user_key, logged_in FROM ".$db['prefix']."user WHERE ID=".$sessid." LIMIT 1", "Error while loading user information.", 1);
 			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			$count_ok = 0;
@@ -1187,7 +1165,7 @@
 			}
 
 			if(time() < ($user['logged_in'] + $timeout)) {
-				mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `logged_in` = '".time()."' WHERE ID=".mgb_sql_int($sessid)." LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `logged_in` = '".time()."' WHERE ID=".$sessid." LIMIT 1", "Error while updating user information.", 0);
 				$count_ok++;
 			}
 
@@ -1204,7 +1182,7 @@
 		function check_rights($mysqli, $site, $sessid) {
 			require "../includes/config.inc.php";
 
-			$result = mgb_sql_connect($mysqli, "SELECT user_level, r_settings, r_settings_database, r_activate, r_deactivate, r_delete, r_edit, r_spam, r_edit_smilies, r_banlists FROM ".mgb_sql_prefix($db['prefix'])."user WHERE ID=".mgb_sql_int($sessid), "Error while checking user rights.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT user_level, r_settings, r_settings_database, r_activate, r_deactivate, r_delete, r_edit, r_spam, r_edit_smilies, r_banlists FROM ".$db['prefix']."user WHERE ID=".$sessid, "Error while checking user rights.", 1);
 			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			switch ($user['user_level']) {
@@ -1284,15 +1262,6 @@
 				$result = "error with php function curl";
 				return $result;
 			}
-		}
-	}
-
-	// replace template placeholders
-	if(!function_exists("template")) {
-		function template($placeholder, $data, $content) {
-			if(empty($data)) { $data = ""; }
-			$content = preg_replace("/\{".$placeholder."\}/", $data, $content);
-			return $content;
 		}
 	}
 	
@@ -2323,25 +2292,14 @@
 	
 	if(!function_exists("mgb_anonymize_ipv6")) {
 		function mgb_anonymize_ipv6($ipv6) {
-			// IPv6-Adresse normalisieren (gekürzte Form auflösen)
-			$normalized = inet_pton($ipv6);
-			if ($normalized === false) {
-				return $ipv6; // Ungültige IP, zurückgeben wie sie ist
+			$bin = inet_pton($ipv6);
+			if ($bin === false) { // invalid IP
+				return null;
 			}
-			// Normalisierte IP in Hex-String umwandeln
-			$unpacked = unpack('H*', $normalized);
-			$hex = $unpacked[1];
-			// In 8 Blöcke à 4 Zeichen aufteilen
-			$parts = str_split($hex, 4);
-			// Erste 4 Blöcke beibehalten, Rest mit zufälligen Hex-Werten ersetzen
-			$anonymized_parts = array_slice($parts, 0, 4);
-			for ($i = 4; $i < 8; $i++) {
-				$anonymized_parts[] = 'xxxx'; // oder zufällige Hex-Werte wie '1234'
-			}
-			// Zurück in Hex-String umwandeln
-			$anonymized_hex = implode('', $anonymized_parts);
-			// Zurück in die lesbare IPv6-Notation umwandeln
-			$anonymized = inet_ntop(pack('H*', $anonymized_hex));
+
+			$bin = substr($bin, 0, 6) . str_repeat("\0", 10); // anonymize last 80 bits
+
+			$anonymized = inet_ntop($bin);
 			return $anonymized;
 		}
 	}
@@ -2360,12 +2318,36 @@
 		}
 	}
 	
+	// MGB_RENDER_TEXT
+	// INFO: formats output for index.php
+	// CREATED: 26.01.2026	
+	if(!function_exists('mgb_render_text')) {
+		function mgb_render_text($raw, $bbcode, $smilies, $mysqli) {
+		$text = htmlspecialchars($raw, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		if($bbcode === 1) {
+			$text = bbcode_format($mysqli, $text, "");
+		} elseif($bbcode === 0) {
+			$text = bbcode_delete($mysqli, $text, "");
+		}
+		if($smilies === 1) {
+			$text = set_smilies($mysqli, $text);
+		} elseif($smilies === 0) {
+			$text = delete_smilies($mysqli, $text);
+		}
+		return nl2br($text);
+		}
+	}
+	
 	// MGB_FORMAT
 	// INFO: formats output
 	// CREATED: 23.01.2026
 	if(!function_exists("mgb_format")) {
 		function mgb_format($string) {
-			return nl2br(htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+			if(!empty($string)) {
+				return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+			} else {
+				return $string;
+			}
 		}
 	}
 	
@@ -2374,7 +2356,11 @@
 	// CREATED: 23.01.2026
 	if(!function_exists("mgb_formatForm")) {
 		function mgb_formatForm($string) {
-			return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+			if(!empty($string)) {
+				return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+			} else {
+				return $string;
+			}
 		}
 	}
 ?>

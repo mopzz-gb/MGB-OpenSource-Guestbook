@@ -59,44 +59,54 @@
 	</tr>
 	<tr>
 		<td class="edit_l" align="left">
-		<span>{LANG_ICQ}</span>
+		<span>{LANG_MASTODON}</span>
 		</td>
 		<td class="edit_r">
-		<input class="textbox" type="text" name="icq" size="30" value="{ENTRY_ICQ}">
+		<input class="textbox" type="text" name="social_mastodon" size="30" value="{ENTRY_MASTODON}">
 		</td>
 	</tr>
 	<tr>
 		<td class="edit_l" align="left">
-		<span>{LANG_AIM}</span>
+		<span>{LANG_BLUESKY}</span>
 		</td>
 		<td class="edit_r">
-		<input class="textbox" type="text" name="aim" size="30" value="{ENTRY_AIM}">
+		<input class="textbox" type="text" name="social_bluesky" size="30" value="{ENTRY_BLUESKY}">
+		</td>
+	</tr>
+	<!--
+	<tr>
+		<td class="edit_l" align="left">
+		<span>{LANG_W}</span>
+		</td>
+		<td class="edit_r">
+		<input class="textbox" type="text" name="social_w" size="30" value="{ENTRY_W}">
 		</td>
 	</tr>
 	<tr>
 		<td class="edit_l" align="left">
-		<span>{LANG_MSN}</span>
+		<span>{LANG_EU_VOICE}</span>
 		</td>
 		<td class="edit_r">
-		<input class="textbox" type="text" name="msn" size="30" value="{ENTRY_MSN}">
+		<input class="textbox" type="text" name="social_eu_voice" size="30" value="{ENTRY_EU_VOICE}">
 		</td>
 	</tr>
 	<tr>
 		<td class="edit_l" align="left">
-		<span>{LANG_FB}</span>
+		<span>{LANG_EU_VIDEO}</span>
 		</td>
 		<td class="edit_r">
-		<input class="textbox" type="text" name="fb" size="30" value="{ENTRY_FB}">
+		<input class="textbox" type="text" name="social_eu_video" size="30" value="{ENTRY_EU_VIDEO}">
 		</td>
 	</tr>
 	<tr>
 		<td class="edit_l" align="left">
-		<span>{LANG_TWITTER}</span>
+		<span>{LANG_MONNETT}</span>
 		</td>
 		<td class="edit_r">
-		<input class="textbox" type="text" name="twitter" size="30" value="{ENTRY_TWITTER}">
+		<input class="textbox" type="text" name="social_monnett" size="30" value="{ENTRY_MONNETT}">
 		</td>
 	</tr>
+	-->
 	<tr>
 		<td class="edit_l" align="left">
 		<span>{LANG_HP}</span>

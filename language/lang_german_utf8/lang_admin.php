@@ -692,11 +692,12 @@
 	$lang['name'] = "Name:";
 	$lang['city'] = "Wohnort:";
 	$lang['email'] = "E-Mail:";
-	$lang['icq'] = "ICQ:";
-	$lang['aim'] = "AIM:";
-	$lang['msn'] = "MSN:";
-	$lang['fb'] = "Facebook:";
-	$lang['twitter'] = "Twitter:";
+	$lang['mastodon'] = "Mastodon:";
+	$lang['bluesky'] = "Bluesky:";
+	$lang['w'] = "W:";
+	$lang['eu_voice'] = "EU Voice:";
+	$lang['eu_video'] = "EU Video";
+	$lang['monnett'] = "Monnett:";
 	$lang['hp'] = "Homepage:";
 	$lang['message'] = "Eintrag:";
 	$lang['user_notification'] = "Benachrichtigung bei Freischaltung oder Kommentar:";

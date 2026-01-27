@@ -101,21 +101,9 @@
 					$empty_needed_value = 18;
 				}
 
-				if($_POST['akismet_plugin'] == 1) {
-					if(empty($_POST['akismet_api'])) {
-						$empty_needed_value = 23;
-					}
-				}
-
 				if($_POST['captcha_method'] == 2) {
 					if(!file_exists(MGB_ROOT."plugins/recaptcha/recaptchalib.php") OR empty($_POST['recaptcha_pub_key']) OR empty($_POST['recaptcha_private_key'])) {
 						$empty_needed_value = 35;
-					}
-				}
-
-				if($_POST['captcha_method'] == 3) {
-					if(!file_exists(MGB_ROOT."plugins/ayah/ayah.php") OR empty($_POST['ayah_pub_key']) OR empty($_POST['ayah_score_key'])) {
-						$empty_needed_value = 44;
 					}
 				}
 
@@ -202,9 +190,6 @@
 						`recaptcha_pub_key` = '".$_POST['recaptcha_pub_key']."',
 						`recaptcha_private_key` = '".$_POST['recaptcha_private_key']."',
 						`recaptcha_style` = '".$_POST['recaptcha_style']."',
-						`akismet_plugin` = '".$_POST['akismet_plugin']."',
-						`akismet_api` = '".$_POST['akismet_api']."',
-						`akismet_mark_as_spam` = '".$_POST['akismet_mark_as_spam']."',
 						`time_lock` = '".$_POST['time_lock']."',
 						`time_lock_value` = '".$_POST['time_lock_value']."',
 						`time_lock_maxtime` = '".$_POST['time_lock_maxtime']."',
@@ -226,9 +211,7 @@
 						`sfs_email_required` = '".$_POST['sfs_email_required']."',
 						`sfs_ip_required` = '".$_POST['sfs_ip_required']."',
 						`sfs_mark_as_spam` = '".$_POST['sfs_mark_as_spam']."',
-						`sfs_api_key` = '".$_POST['sfs_api_key']."',
-						`ayah_pub_key` = '".$_POST['ayah_pub_key']."',
-						`ayah_score_key` = '".$_POST['ayah_score_key']."'";
+						`sfs_api_key` = '".$_POST['sfs_api_key']."'";
 
 					if(mgb_sql_connect($mysqli, $sql, "Error while saving security settings.", 0)) {
 						$saved_settings_successfull = 1;
@@ -484,18 +467,6 @@
 				$selected_captcha_double_hash_0 = " selected";
 			} else {
 				$selected_captcha_double_hash_1 = " selected";
-			}
-			
-			if($settings['akismet_plugin'] == 0) {
-				$selected_akismet_plugin_0 = " selected";
-			} else {
-				$selected_akismet_plugin_1 = " selected";
-			}
-			
-			if($settings['akismet_mark_as_spam'] == 0) {
-				$selected_akismet_mark_as_spam_0 = " selected";
-			} else {
-				$selected_akismet_mark_as_spam_1 = " selected";
 			}
 			
 			if($settings['time_lock'] == 0) {

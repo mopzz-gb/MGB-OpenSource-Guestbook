@@ -1,0 +1,1 @@
+<a href="{ENTRY_BLUESKY}" target="_blank"><img class="icon" src="images/iconsets/{ICONSET_PATH}/bluesky.png" alt="{BLUESKY}" title="{BLUESKY}"></a><img src="images/iconsets/{ICONSET_PATH}/bluesky.png" alt="" title="" height="16" width="16">
