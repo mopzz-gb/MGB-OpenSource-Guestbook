@@ -205,10 +205,10 @@
 					$date = date("d"."/"."m"."/"."Y");
 					$time = date("H".":"."i");
 
-					$url_to_gb = "https://".$settings['h_domain'].$settings['gb_path']."index.php";
+					$url_to_gb = mgb_isHttps()."://".$settings['h_domain'].$settings['gb_path']."index.php";
 
-					$lang['sendmail_user_notification_title'] = format_mail(repl_uml($lang['sendmail_user_notification_title'], $charset), $name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
-					$settings['sendmail_user_notification_text'] = format_mail(repl_uml($settings['sendmail_user_notification_text'], $charset), $name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+					$lang['sendmail_user_notification_title'] = format_mail($lang['sendmail_user_notification_title'], $name, $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+					$settings['sendmail_user_notification_text'] = format_mail($settings['sendmail_user_notification_text'], $name, $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 
 					$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 					$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";

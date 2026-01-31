@@ -61,10 +61,11 @@ UPDATE: http://www.m-gb.org/wiki/doku.php/erstellung_eigener_templates (ONLY GER
 
 
 ---------------------------------------------------------------------------------
-Forum: 		| https://forum.m-gb.org/     					|
-Wiki:		| https://github.com/mopzz-gb/MGB-OpenSource-Guestbook/wiki  	|
+Forum: 		| https://forum.m-gb.org/					|
+Wiki:		| https://github.com/mopzz-gb/MGB-OpenSource-Guestbook/wiki	|
 Bugreport:	| https://github.com/mopzz-gb/MGB-OpenSource-Guestbook/issues	|
 GitHub		| https://github.com/mopzz-gb/MGB-OpenSource-Guestbook		|
+SourceForge	| https://sourceforge.net/projects/mopzz-gb/			|
 ---------------------------------------------------------------------------------
 
 

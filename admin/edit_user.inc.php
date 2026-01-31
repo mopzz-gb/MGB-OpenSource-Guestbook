@@ -102,6 +102,7 @@
 							// an admin can't revoke his own rights or delete himself
 							if($_SESSION['lock'] == 1) { // user is admin
 								$_POST['user_is_active'] = 1;
+								$_POST['user_level'] = 0;
 								$_POST['r_settings'] = 1;
 								$_POST['r_settings_database'] = 1;
 								$_POST['r_activate'] = 1;
@@ -111,8 +112,12 @@
 								$_POST['r_spam'] = 1;
 								$_POST['r_edit_smilies'] = 1;
 								$_POST['r_banlists'] = 1;
+								$_POST['r_telemetry'] = 1;
 							}
 
+							// make sure $_GET['id'] is safe
+							$id = (int)$_GET['id'];
+							
 							// check password
 							if(login_ok($mysqli, $_SESSION['user_name'], $_SESSION['user_ID'], $_POST['old_password'])) {
 								if(empty($errorcode)) {
@@ -131,7 +136,8 @@
 										`r_edit` = '".$_POST['r_edit']."',
 										`r_spam` = '".$_POST['r_spam']."',
 										`r_edit_smilies` = '".$_POST['r_edit_smilies']."',
-										`r_banlists` = '".$_POST['r_banlists']."'
+										`r_banlists` = '".$_POST['r_banlists']."',
+										`r_telemetry` = '".$_POST['r_telemetry']."'
 										WHERE ID=".$id." LIMIT 1";
 
 									if (mgb_sql_connect($mysqli, $sql, "Error while editing user.", 0)) {
@@ -150,7 +156,7 @@
 
 					if(!isset($_POST['sent_edit_user']) OR !empty($errorcode)) {
 						if(!empty($errorcode)) {
-							$errormessage = mgb_errormessage($errorcode, MGB_ROOT."language/".$settings['language_path'], "adminpanel");
+							$errormessage = mgb_errormessage($errorcode, $settings['language_path'], "adminpanel");
 							if($errorcode == 16) {
 								$errormessage = mgb_template_replace(['PASSWORD_MIN_LENGTH' => $settings['password_min_length']], $errormessage);
 							}
@@ -178,6 +184,7 @@
 						$r_spam = $user['r_spam'];
 						$r_edit_smilies = $user['r_edit_smilies'];
 						$r_banlists = $user['r_banlists'];
+						$r_telemetry = $user['r_telemetry'];
 
 						if($_SESSION['user_ID'] == $userID) {
 							$_SESSION['lock'] = 1;
@@ -200,6 +207,7 @@
 						if ($r_spam == 0) { $selected_r_spam_0 = " selected"; $selected_r_spam_1 = NULL; } else { $selected_r_spam_0 = NULL; $selected_r_spam_1 = " selected"; }
 						if ($r_edit_smilies == 0) { $selected_r_edit_smilies_0 = " selected"; $selected_r_edit_smilies_1 = NULL; } else { $selected_r_edit_smilies_0 = NULL; $selected_r_edit_smilies_1 = " selected"; }
 						if ($r_banlists == 0) { $selected_r_banlists_0 = " selected"; $selected_r_banlists_1 = NULL; } else { $selected_r_banlists_0 = NULL; $selected_r_banlists_1 = " selected"; }
+						if ($r_telemetry == 0) { $selected_r_telemetry_0 = " selected"; $selected_r_telemetry_1 = NULL; } else { $selected_r_telemetry_0 = NULL; $selected_r_telemetry_1 = " selected"; }
 
 						$page_edit_user_single = mgb_template_replace([
 							'TEMPLATE_ERRORMESSAGE' => $content_errormessage,
@@ -234,6 +242,8 @@
 							'SELECTED_R_EDIT_SMILIES_1' 		=> $selected_r_edit_smilies_1,
 							'SELECTED_R_BANLISTS_0' 			=> $selected_r_banlists_0,
 							'SELECTED_R_BANLISTS_1' 			=> $selected_r_banlists_1,
+							'SELECTED_R_TELEMETRY_0' 			=> $selected_r_telemetry_0,
+							'SELECTED_R_TELEMETRY_1' 			=> $selected_r_telemetry_1,
 							'FORM_ACTION' 						=> "admin.php?action=editusers&amp;mode=edit&amp;id=".$userID.$sid
 						], $page_edit_user_single);
 
@@ -290,6 +300,7 @@
 							`r_spam`,
 							`r_edit_smilies`,
 							`r_banlists`,
+							`r_telemetry`,
 							`logged_out`
 						) VALUES (
 							'".$_POST['name']."',
@@ -306,6 +317,7 @@
 							'".$_POST['r_spam']."',
 							'".$_POST['r_edit_smilies']."',
 							'".$_POST['r_banlists']."',
+							'".$_POST['r_telemetry']."',
 							'".$_POST['logged_out']."'
 						);";
 
@@ -342,7 +354,7 @@
 
 				if(!isset($_POST['sent_edit_user_adduser']) OR isset($errorcode)) {
 					if(!empty($errorcode)) {
-						$errormessage = mgb_errormessage($errorcode, MGB_ROOT."language/".$settings['language_path'], "adminpanel");
+						$errormessage = mgb_errormessage($errorcode, $settings['language_path'], "adminpanel");
 					} else {
 						$content_errormessage = "";
 						$errormessage = "";
@@ -370,8 +382,9 @@
 					$r_spam = isset($_POST['r_spam']) ? (int)$_POST['r_spam'] : 0;
 					$r_edit_smilies = isset($_POST['r_edit_smilies']) ? (int)$_POST['r_edit_smilies'] : 0;
 					$r_banlists = isset($_POST['r_banlists']) ? (int)$_POST['r_banlists'] : 0;
-					$name = isset($_POST['name']) ? (int)$_POST['name'] : "";
-					$email = isset($_POST['email']) ? (int)$_POST['email'] : "";					
+					$r_telemetry = isset($_POST['r_telemetry']) ? (int)$_POST['r_telemetry'] : 0;
+					$name = isset($_POST['name']) ? $_POST['name'] : "";
+					$email = isset($_POST['email']) ? $_POST['email'] : "";					
 					
 					if ($user_level == 0) { $selected_r_admin = " selected"; $selected_r_moderator = NULL; } else { $selected_r_admin = NULL; $selected_r_moderator = " selected"; }
 					if ($user_is_active == 0) { $selected_user_is_active_0 = " selected"; $selected_user_is_active_1 = NULL; } else { $selected_user_is_active_0 = NULL; $selected_user_is_active_1 = " selected"; }
@@ -384,6 +397,7 @@
 					if ($r_spam == 0) { $selected_r_spam_0 = " selected"; $selected_r_spam_1 = NULL; } else { $selected_r_spam_0 = NULL; $selected_r_spam_1 = " selected"; }
 					if ($r_edit_smilies == 0) { $selected_r_edit_smilies_0 = " selected"; $selected_r_edit_smilies_1 = NULL; } else { $selected_r_edit_smilies_0 = NULL; $selected_r_edit_smilies_1 = " selected"; }
 					if ($r_banlists == 0) { $selected_r_banlists_0 = " selected"; $selected_r_banlists_1 = NULL; } else { $selected_r_banlists_0 = NULL; $selected_r_banlists_1 = " selected"; }
+					if ($r_telemetry == 0) { $selected_r_telemetry_0 = " selected"; $selected_r_telemetry_1 = NULL; } else { $selected_r_telemetry_0 = NULL; $selected_r_telemetry_1 = " selected"; }
 
 					$page_edit_user_adduser = mgb_template_replace([
 						'EDIT_USER_NAME' 					=> $name,
@@ -410,6 +424,8 @@
 						'SELECTED_R_EDIT_SMILIES_1' 		=> $selected_r_edit_smilies_1,
 						'SELECTED_R_BANLISTS_0' 			=> $selected_r_banlists_0,
 						'SELECTED_R_BANLISTS_1' 			=> $selected_r_banlists_1,
+						'SELECTED_R_TELEMETRY_0' 			=> $selected_r_telemetry_0,
+						'SELECTED_R_TELEMETRY_1' 			=> $selected_r_telemetry_1,
 						'EDIT_USER_NEW_PASSWORD_1' 			=> $save_pw,
 						'EDIT_USER_NEW_PASSWORD_2' 			=> $save_pw,
 						'FORM_ACTION' 						=> "admin.php?action=editusers&amp;mode=adduser".$sid

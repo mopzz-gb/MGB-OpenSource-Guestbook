@@ -1,3 +1,15 @@
+[0.7.1]
+
+ [NEW] Full PHP8 compatiblity
+ [NEW] The guestbook now sends anonymous usage statistics to m-gb.org. Opt-in of course
+ [NEW] System-log. Logs all important activities around the guestbook. You can see for example if someone is constantly trying to Login into your admin Panel
+ [NEW] IPs are now being stored anonymized if the entry is accepted by you as an admin
+ [NEW] New social networks have been added. Decentralised Mastodon and Bluesky
+ [UPD] Facebook, Ayah, Akismet, ICQ, MSN, AIM have been removed. Some of them as they no longer exist, others because of ... reasons
+ [UPD] New links to Mastodon and Github have been added in the admin Navigation
+ [UPD] Huge improvement to banlists. What took 10-20 seconds before to update them from the spam log (when there are many entries), takes now miliseconds.
+ [UPD] many PHP code improvements and bugfixes
+
 [0.7.0.4]
 
  [NEW] PHP8 compatibility
@@ -14,7 +26,7 @@
  [NEW] Added referer check for formulars. No more direct acces of newentry.php and email.php by spambots
  [NEW] Added spam check against www.stopforumspam.com
  [NEW] Check if username of admin contains only characters and numbers
- [NEW] Added informal french translation (thx to jürgen schäfer)
+ [NEW] Added informal french translation (thx to jÃ¼rgen schÃ¤fer)
  [DEL] mgbBootstrap Theme: no longer part of MGB
  
  
@@ -47,7 +59,7 @@
  [UPD] Reworked upgrade.php with better upgrade functionality.
  [UPD] New captcha backgrounds.
  [UPD] Updated English, Dutch, French, Schweizerdeutsch and German language files.
- [UPD] MGB Version number is now longer shown on login to admin panel.
+ [UPD] MGB Version number is no longer shown on login to admin panel.
  [UPD] Changed the css files of mgbModern. A "main.css" is included in every style now that contains the main settings of the template. All "style.css" do only include colours by now.
  [UPD] New "Facebook" and "Twitter" fields for new entries.
  [FIX] An unique url is added to each captcha which should make sure that it is always newly generated and not loaded out of the cache.
@@ -144,7 +156,7 @@
 
 [ 0.6.7 ]
 
- [NEW] New language: Turkish (by Mustafa Dündar)
+ [NEW] New language: Turkish (by Mustafa D ndar)
  [NEW] New language: Schweizerdeutsch (by Walti Zubler)
  [NEW] Some new template styles by Shadowdance: Aubergine, Bordeaux, Flieder, Metal, Moos
  [UPD] French and english language file improved
@@ -171,11 +183,11 @@
 [ 0.6.5 ]
 
  [NEW] Akismet Support. BIG THX to Gerard Vandeninden! :)
- [NEW] New captcha that asks the user to solve a mathematical formula -> new font used by the captcha „Acidic“ © by „Surface Type“
+ [NEW] New captcha that asks the user to solve a mathematical formula -> new font used by the captcha  Acidic    by  Surface Type 
  [UPD] Scrolling function enhanced. If there are more than three pages you will have the possibility to go directly to the last/first page
  [UPD] Improved the method how languages will be included into the guestbook. Now they should appear in alphabetical order.
- [NEW] New language: French (translated by Jürgen Schäfer)
- [UPD] English language improved (by Jürgen Schäfer)
+ [NEW] New language: French (translated by J rgen Sch fer)
+ [UPD] English language improved (by J rgen Sch fer)
  [UPD] Dutch language improved (by Gerard Vandeninden)
  [NEW] Passwordbox in installation is now a password type
  [UPD] NO LONGER SUPPORT FOR latin9 languages. -> too much problems with umlauts and special chars. utf-8 only by now.
@@ -187,7 +199,7 @@
 
  [ Bugtracker ]
  
- [FIX] [40] Missing placeholders for „What is that?“ und Captcha-Link to Wikipedia
+ [FIX] [40] Missing placeholders for  What is that?  und Captcha-Link to Wikipedia
  [FIX] [41] Placeholder for copyright and footer adjusted
  [FIX] [42] When updating from 0.6.1 to 0.6.4 there was an error and the guestbook crashed -> reworked the whole upgrade functionality
 

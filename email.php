@@ -143,8 +143,10 @@
 				if ($result && $result->num_rows > 0) {
 					$ip = $result->fetch_assoc();				
 					if($_SERVER['REMOTE_ADDR'] !== $ip['banned_ip']) {
-					$sql = "INSERT INTO ".$db['prefix']."banlist_ips (banned_ip, matches, timestamp) VALUES (".$_SERVER['REMOTE_ADDR'].", 1, ".time().")";
-					mgb_sql_connect($mysqli, $sql, "Error while updating banlist_ips", 0, null, null);
+						$match = $ip['matches']++;
+						$sql = "UPDATE `".$db['prefix']."banlist_ips` SET `matches` = '".$match."' WHERE `ID` = ".$ip['ID']; 						
+						mgb_sql_connect($mysqli, $sql, "Error while updating banlist_ips", 0, null, null);
+						$type = 1; // blocked by ip banlist
 					}
 				}
 				
@@ -183,8 +185,9 @@
 					if ($result && $result->num_rows > 0) {
 						$ip = $result->fetch_assoc();		
 						if($_SERVER['REMOTE_ADDR'] !== $ip['banned_ip']) {
-						$sql = "INSERT INTO ".$db['prefix']."banlist_ips (banned_ip, matches, timestamp) VALUES (".$_SERVER['REMOTE_ADDR'].", 1, ".time().")";
-						mgb_sql_connect($mysqli, $sql, "Error while updating banlist_ips", 0, null, null);
+							$match = $ip['matches']++;
+							$sql = "UPDATE `".$db['prefix']."banlist_ips` SET `matches` = '".$match."' WHERE `ID` = ".$ip['ID']; 	
+							mgb_sql_connect($mysqli, $sql, "Error while updating banlist_ips", 0, null, null);
 						}
 					}
 
@@ -214,7 +217,7 @@
 		$sendemail_name = $settings['admin_name'];
 	}
 
-	if(!empty($_POST['sent'])) {
+	if(!empty($_POST['send_mail_button']) && $_POST['send_mail_button'] == $lang['send']) {
 		// get information about formular elements
 		if(empty($_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']])) { $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']] = ""; }
 		$_POST['name'] = $_POST[$_SESSION['FORM_ELEMENT_NAME']];
@@ -234,7 +237,9 @@
 		if($settings['check_against_anti_spam_sites'] == 1) {
 			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) == 1) {
 				$errorcode = 19; // user was blocked by www.stopforumspam.com
+				mgb_trigger_sys_log($mysqli, 4006, $_POST['name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry by stopforumspam denied)
 			}
+			$type = 14; // blocked by stopforumspam
 		}
 
 		$_POST['email'] = $_POST['email'];
@@ -248,19 +253,20 @@
 				if(empty($_SESSION['keystroke_ban_time'])) {
 					if(!mgb_get_keystrokes($settings['keystroke_max_cps'], $settings['keystroke_ban_time'], $settings['dynamic_fieldnames'], $settings['debug_mode'])) {
 						$errorcode = 17; // too fast typing, possible spam robot?
-						$type = 11;
+						$type = 11; // blocked by keystroke
 					}
 				} else {
 					$keystroke_ban_time_rest = $_SESSION['keystroke_ban_time'] - time();
 					if($keystroke_ban_time_rest >= 1) {
 						$errorcode = 18; // user is already banned for too fast typing
+						$type = 11; // blocked by keystroke
 					} else {
 						if(!mgb_get_keystrokes($settings['keystroke_max_cps'], $settings['keystroke_ban_time'], $settings['dynamic_fieldnames'], $settings['debug_mode'])) {
 							$errorcode = 17; // too fast typing, possible spam robot?
 							$type = 11; // blocked by keystroke
 						}
 					}
-				}
+				}				
 			}
 
 			// check if captcha is correct
@@ -269,11 +275,13 @@
 					if($_SESSION['CAPTCHA_CODE'] != $_POST['captcha']) {
 						$errorcode = 7;  // captcha wrong or not set
 						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
+						$type = 9; // captcha wrong
 					}
 				} elseif($settings['captcha_method'] == 1) { // mathematical captcha
 					if($_SESSION['CAPTCHA_SUM'] != $_POST['captcha']) {
 						$errorcode = 7; // captcha wrong or not set
 						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
+						$type = 9; // captcha wrong
 					}
 				} elseif($settings['captcha_method'] == 2) { // reCaptchav2
 					$response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$settings['recaptcha_private_key']."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']);
@@ -281,7 +289,8 @@
         			if(intval($responseKeys["success"]) !== 1) {
 						$errorcode = 7; // captcha wrong or not set
 						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
-        			}
+						$type = 9; // captcha wrong
+        			}				
 				}
 
 				if((!empty($settings['banlist_log']) AND $errorcode == 7) AND (!empty($_POST['captcha']) OR !empty($_POST['recaptcha_response_field']))) {
@@ -301,7 +310,7 @@
 						$site_name,
 						time()
 					];
-					$types = "ssssssiss";
+					$types = "sssssiss";
 					mgb_sql_connect($mysqli, $sql, "Error while saving data into spam_log.", 0, $params, $types);
 				}
 			}
@@ -327,15 +336,15 @@
 					$sql = "INSERT INTO ".$db['prefix']."spam_log (
 						ip,	name, email, user_agent, message, type,	site, timestamp
 					) VALUES (
-						?, ?, ?, ?, ?, ?, ?, ?, ?
+						?, ?, ?, ?, ?, ?, ?, ?
 					)";
 
 					$params = [
 						$_SERVER['REMOTE_ADDR'],
-						$_POST['name'],
+						trim($_POST['name']),
 						$_POST['email'],
 						$_SERVER['HTTP_USER_AGENT'],
-						$_POST['message'],
+						trim($_POST['message']),
 						$type,
 						$site_name,
 						time()
@@ -350,13 +359,13 @@
 						$settings['spam_mail'],
 						$settings['admin_gbemail'],
 						$_SERVER['REMOTE_ADDR'],
-						$_POST['name'],
+						trim($_POST['name']),
 						$_POST['email'],
 						$_POST['hp'],
 						$_SERVER['HTTP_USER_AGENT'],
 						'',
 						'',
-						$_POST['message'],
+						trim($_POST['message']),
 						$site_name,
 						$type,
 						$settings['mailer_method']);
@@ -366,27 +375,19 @@
 			// check necessary fields
 			if(empty($_POST['message'])) { $errorcode = 1; }
 			if(empty($_POST['email'])) { $errorcode = 2; }
-			if(empty($_POST['name'])) { $errorcode = 3; }
-
-			if(!empty($settings['akismet_plugin']) AND $_POST['user_accept_akismet_service'] != 1) { $errorcode = 11; } // akismet agreement hasn't been accepted
+			if(empty($_POST['name'])) { $errorcode = 3; }			
 
 			if(empty($errorcode)) {
 				// delete bbcode
 				$_POST['name'] = bbcode_delete($_POST['name']);
-				$_POST['message'] = bbcode_delete($_POST['message']);
-
-				$_POST['message'] = nl2br($_POST['message']);
-				$t1 = chr(10);
-				$t2 = chr(13);
-				$_POST['message'] = str_replace($t1,'', $_POST['message']);
-				$_POST['message'] = str_replace($t2,'', $_POST['message']);
+				$_POST['message'] = bbcode_delete($_POST['message']);				
 
 				$name = $_POST['name'];
 				$email = $_POST['email'];
 				$message = $_POST['message'];
-				$url_to_gb = "http://".$settings['h_domain'].$settings['gb_path']."email.php?id=admin";
+				$url_to_gb = mgb_isHttps()."://".$settings['h_domain'].$settings['gb_path']."email.php?id=admin";
 
-				$date = date("d"."/"."m"."/"."Y");
+				$date = date("d"."."."m"."."."Y");
 				$time = date("H".":"."i");
 
 				if($settings['mailer_method'] == 0) { // use php's integrated mail() function to send e-mails
@@ -396,8 +397,8 @@
 					$mail_header .= "X-Mailer: PHP/".phpversion();
 
 					$mail_send = @mail($sendemail_email,
-					format_mail(repl_uml($lang['email_caption'], $charset), $name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
-					format_mail(repl_uml($settings['sendmail_contactmail_text'], $charset), $name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+					format_mail($lang['email_caption'], trim($name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+					format_mail($settings['sendmail_contactmail_text'], trim($name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
 					$mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
@@ -407,15 +408,15 @@
 					/* use PHPMailer\PHPMailer\PHPMailer;
 					use PHPMailer\PHPMailer\SMTP;
 				
-					require 'plugins/phpmailer/src/Exception.php';
-					require 'plugins/phpmailer/src/PHPMailer.php';
-					require 'plugins/phpmailer/src/SMTP.php';
+					require_once 'plugins/phpmailer/src/Exception.php';
+					require_once 'plugins/phpmailer/src/PHPMailer.php';
+					require_once 'plugins/phpmailer/src/SMTP.php';
 					
-					$mail = new PHPMailer();
+					$mail = new PHPMailer(); */
 					
 					$mail_send = mgb_phpmailer($sendemail_email, $email, $name, $settings['h_domain'],
-					format_mail(repl_uml($lang['email_caption'], $charset), $name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
-					format_mail(repl_uml($settings['sendmail_contactmail_text'], $charset), $name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""), $settings['debug_mode'], "user", $language_short, $charset); */
+					format_mail($lang['email_caption'], trim($name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+					format_mail($settings['sendmail_contactmail_text'], trim($name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""), $settings['debug_mode'], "user", $language_short, $charset);
 					if($mail_send[0] == 0) {
 						$sendemail_successfull = 0;
 						$errormessage_mail = $mail_send[1];
@@ -434,16 +435,16 @@
 							$mail_header .= "X-Mailer: PHP/".phpversion();
 
 							$mail_send_copy = @mail($email,
-							format_mail(repl_uml($lang['email_caption_copy'], $charset), $sendemail_name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
-							format_mail(repl_uml($settings['sendmail_contactmail_text_copy'], $charset), $sendemail_name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+								format_mail($lang['email_caption_copy'], trim($sendemail_name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+								format_mail($settings['sendmail_contactmail_text_copy'], trim($sendemail_name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
 							$mail_header);
 							if(!$mail_send_copy) {
 								$errorcode = 9;
 							}
 						} else {
-							/* $mail_send_copy = mgb_phpmailer($email, $sendemail_email, $name, $settings['h_domain'],
-							format_mail(repl_uml($lang['email_caption_copy'], $charset), $sendemail_name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
-							format_mail(repl_uml($settings['sendmail_contactmail_text_copy'], $charset), $sendemail_name, $date, $time, xhtmlbr2nl($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""), $settings['debug_mode'], "user", $language_short, $charset); */
+							$mail_send_copy = mgb_phpmailer($email, $sendemail_email, $name, $settings['h_domain'],
+								format_mail($lang['email_caption_copy'], trim($sendemail_name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+								format_mail($settings['sendmail_contactmail_text_copy'], trim($sendemail_name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""), $settings['debug_mode'], "user", $language_short, $charset);
 							if($mail_send_copy[0] == 0) {
 								$errormessage_mail = $mail_send_copy[1];
 								$errorcode = 9;
@@ -457,7 +458,7 @@
 					$_SESSION = array();
 
 					// refresh site
-					if(!isset($settings['refresh_time']) || $settings['refresh_time'] === 0) {
+					if(empty($settings['refresh_time'])) {
 						$settings['refresh_time'] = 5;
 					}
 					$refresh = "<meta http-equiv=\"refresh\" content=\"".$settings['refresh_time']."; URL=index.php{PARAMLANG_A}\">";
@@ -469,7 +470,7 @@
 			} else {
 				// create errormessage if needed
 				if(!empty($errorcode)) {
-					$errormessage = mgb_errormessage($errorcode, MGB_ROOT."language/".$settings['language_path'], "user");
+					$errormessage = mgb_errormessage($errorcode, $settings['language_path'], "user");
 				}
 
 				// do not refresh site
@@ -588,8 +589,7 @@
 			'COPYRIGHT_DATE' 						=> date("Y"), 
 			'ICONSET_PATH' 							=> $settings['iconset_path'], 
 			'TEMPLATE_PATH' 						=> "templates/".$settings['template_path'], 
-			'TEMPLATE_STYLE_PATH' 					=> $settings['template_style_path'], 
-			'TEMPLATE_USER_ACCEPT_AKISMET_SERVICE' 	=> $user_accept_akismet_service
+			'TEMPLATE_STYLE_PATH' 					=> $settings['template_style_path']			
 		], $page_email_body);
 
 		if(empty($_POST['user_sendcopytome'])) {
@@ -600,9 +600,9 @@
 
 		// generate errormessage if needed
 		if(!empty($errorcode) AND empty($errormessage_mail)) {
-			$errormessage = mgb_errormessage($errorcode, MGB_ROOT."language/".$settings['language_path'], "user");
+			$errormessage = mgb_errormessage($errorcode, $settings['language_path'], "user");
 		} elseif(!empty($errorcode) AND !empty($errormessage_mail)) {
-			$errormessage = mgb_errormessage($errorcode, MGB_ROOT."language/".$settings['language_path'], "user")."<br>".$errormessage_mail;
+			$errormessage = mgb_errormessage($errorcode, $settings['language_path'], "user")."<br>".$errormessage_mail;
 		}
 
 		// fill template with language and text strings

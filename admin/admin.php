@@ -72,8 +72,8 @@
 	}
 
 	if(!empty($_POST['language_path'])) {
-		require_once (cleanstr(MGB_ROOT."language/".$_POST['language_path'])."/lang_admin.php");
-		require_once (cleanstr(MGB_ROOT."language/".$_POST['language_path'])."/settings.php");
+		require_once (MGB_ROOT."language/".$_POST['language_path']."/lang_admin.php");
+		require_once (MGB_ROOT."language/".$_POST['language_path']."/settings.php");
 	} else {
 		require_once (MGB_ROOT."language/".$settings['language_path']."/lang_admin.php");
 		require_once (MGB_ROOT."language/".$settings['language_path']."/settings.php");

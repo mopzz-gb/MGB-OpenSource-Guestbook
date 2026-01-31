@@ -161,35 +161,37 @@
 		}
 	}
 
-	if(!empty($_POST['send']) AND $_POST['send'] === $lang['send']) {
+	if(!empty($_POST['send']) && $_POST['send'] === $lang['send']) {
 		// get information about formular elements
-		if(empty($_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']])) { $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']] = ""; } 
-		$_POST['name'] = $_POST[$_SESSION['FORM_ELEMENT_NAME']];
-		$_POST['city'] = $_POST[$_SESSION['FORM_ELEMENT_CITY']];
-		$_POST['hp'] = $_POST[$_SESSION['FORM_ELEMENT_HP']];
-		$_POST['social_mastodon'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MASTODON']];
-		$_POST['social_bluesky'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_BLUESKY']];
-		// $_POST['social_w'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_W']];
-		// $_POST['social_eu_voice'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VOICE']];
-		// $_POST['social_eu_video'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VIDEO']];
-		// $_POST['social_monnett'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MONNETT']];
-		$_POST['email'] = $_POST[$_SESSION['FORM_ELEMENT_EMAIL']];
-		$_POST['captcha'] = $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']];
+		if(empty($_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']])) { $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']] = ""; }		
+		if(!empty($_POST[$_SESSION['FORM_ELEMENT_NAME']])) { $_POST['name'] = $_POST[$_SESSION['FORM_ELEMENT_NAME']]; }
+		if(!empty($_POST[$_SESSION['FORM_ELEMENT_CITY']])) { $_POST['city'] = $_POST[$_SESSION['FORM_ELEMENT_CITY']]; }
+		if(!empty($_POST[$_SESSION['FORM_ELEMENT_EMAIL']])) { $_POST['email'] = $_POST[$_SESSION['FORM_ELEMENT_EMAIL']]; }
+		if(!empty($_POST[$_SESSION['FORM_ELEMENT_HP']])) { $_POST['hp'] = $_POST[$_SESSION['FORM_ELEMENT_HP']]; }
+		if(!empty($_POST[$_SESSION['FORM_ELEMENT_MASTODON']])) { $_POST['social_mastodon'] = $_POST[$_SESSION['FORM_ELEMENT_MASTODON']]; }
+		if(!empty($_POST[$_SESSION['FORM_ELEMENT_BLUESKY']])) { $_POST['social_bluesky'] = $_POST[$_SESSION['FORM_ELEMENT_BLUESKY']]; }
+		// if(isset($_POST[$_SESSION['FORM_ELEMENT_W']])) { $_POST['social_w'] = $_POST[$_SESSION['FORM_ELEMENT_W']]; }
+		// if(isset($_POST[$_SESSION['FORM_ELEMENT_EU_VOICE']])) { $_POST['social_eu_voice'] = $_POST[$_SESSION['FORM_ELEMENT_EU_VOICE']]; }
+		// if(isset($_POST[$_SESSION['FORM_ELEMENT_EU_VIDEO']])) { $_POST['social_eu_video'] = $_POST[$_SESSION['FORM_ELEMENT_EU_VIDEO']]; }
+		// if(isset($_POST[$_SESSION['FORM_ELEMENT_MONNETT']])) { $_POST['social_monnett'] = $_POST[$_SESSION['FORM_ELEMENT_MONNETT']]; }
+		$_POST['captcha'] = $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']];		
 
 		// ANTI-SPAM #1
 		// ============
 		// check www.stopforumspam.com if user is known for intense spamming
-		if($settings['check_against_anti_spam_sites'] === 1 ) {
+		if($settings['check_against_anti_spam_sites'] === 1 && !empty($_POST['name']) && !empty($_POST['email'])) {
 			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) === 1) {
 				if($settings['sfs_mark_as_spam'] === 1) {
 					$mark_as_spam = 1; // accept the entry, but mark it as spam
 					$noemail = 1;
 					mgb_trigger_sys_log($mysqli, 3007, $_POST['name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry accepted but marked as spam)
+					$type = 14; // blocked by stopforumspam
 				} else {
 					$errorcode = 19; // user was blocked by www.stopforumspam.com
 					mgb_trigger_sys_log($mysqli, 3008, $_POST['name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry by stopforumspam denied)
+					$type = 14; // blocked by stopforumspam
 				}
-			}
+			}			
 		}
 
 		// delete html, php code and white spaces
@@ -267,11 +269,11 @@
 				)";
 				$params = [
 					$_SERVER['REMOTE_ADDR'],
-					$_POST['name'] ?? '',
+					trim($_POST['name']) ?? '',
 					$_POST['email'] ?? '',
 					$_SERVER['HTTP_USER_AGENT'],
 					$_POST['hp'] ?? '',
-					$_POST['message'] ?? '',
+					trim($_POST['message']) ?? '',
 					$type,
 					$site_name,
 					time()
@@ -284,13 +286,7 @@
 		if(!empty($_POST['social_mastodon'])) {
 			if(!check_mastodon($_POST['social_mastodon'])) { $errorcode = 5; } // mastodon link is not valid
 		}
-
-		if(!empty($_POST['fb'])) {
-			$_POST['fb'] = strtolower($_POST['fb']); // convert capital letters to small letters
-			$_POST['fb'] = preg_replace("/https:\/\/www.facebook.com\//", "", $_POST['fb']); // extract facebook url
-			if(!check_fb_name($_POST['fb'])) { $errorcode = 15; } // facebook name is not valid
-		}
-
+		
 		// check ip, email and domain with banlists
 		if((!empty($_POST['name']) AND !empty($_POST['email']) AND !empty($_POST['message'])) AND ($errorcode != 7) AND ($mark_as_spam != 1) AND (!$settings['banlist_ips'] === 1 OR $settings['banlist_emails'] === 1 OR $settings['banlist_domains'] === 1)) {
 			$check_banlists = mgb_check_banlists(
@@ -323,11 +319,11 @@
 
 				$params = [
 					$_SERVER['REMOTE_ADDR'],
-					$_POST['name'] ?? '',
+					trim($_POST['name']) ?? '',
 					$_POST['email'] ?? '',
 					$_SERVER['HTTP_USER_AGENT'],
 					$_POST['hp'] ?? '',
-					$_POST['message'] ?? '',
+					trim($_POST['message']) ?? '',
 					$type,
 					$site_name,
 					time()
@@ -342,13 +338,13 @@
 					$settings['spam_mail'],
 					$settings['admin_gbemail'],
 					$_SERVER['REMOTE_ADDR'],
-					$_POST['name'],
+					trim($_POST['name']),
 					$_POST['email'],
 					$_POST['hp'] ?? '',
 					$_SERVER['HTTP_USER_AGENT'],
 					'',
 					'',
-					$_POST['message'],
+					trim($_POST['message']),
 					$site_name,
 					$type,
 					$settings['mailer_method'],
@@ -362,15 +358,13 @@
 			if($settings['require_email'] === 1) {
 				$errorcode = 2; // email is required
 			}
-		} else {
-			// if(!mgb_check_mail($_POST['email'])) { $errorcode = 4; } else { $entry_email = $_POST['email']; } // email's not valid
+		} else {			
 			$entry_email = mgb_check_mail($_POST['email']) ? $_POST['email'] : ($errorcode = 4); // email's not valid
 		}
 
 		if(empty($_POST['name'])) { $errorcode = 3; } // name is required
 
-		if(empty($errorcode)) { // everything's ok, let's format and save the entry
-			$_POST['email_name'] = $_POST['name'];
+		if(empty($errorcode)) { // everything's ok, let's format and save the entry			
 			// delete bbcode except from message
 			if(isset($_POST['name'])) { $entry_name = bbcode_delete($_POST['name']); }
 			if(isset($_POST['city'])) { $entry_city = bbcode_delete($_POST['city']); }			
@@ -379,9 +373,12 @@
 				if($entry_hp === "http://" || "https://") { 
 					$entry_hp = "";
 				}
-			}						
+			}
 			
-
+			// trim values for email
+			$_POST['email_name'] = trim($_POST['name']);
+			$_POST['email_message'] = trim($_POST['message']);
+			
 			// check if "moderated gb" and "user email notification" is on
 			if($settings['moderated'] === 1 OR $mark_as_spam === 1) {
 				$checked = 0;
@@ -446,30 +443,30 @@
 			}
 
 			// send an email to admin
-			if(($settings['sendmail_admin'] === 1) AND ($noemail === 0)) {
+			if(($settings['sendmail_admin'] == 1) AND ($noemail == 0)) {
 				$date = date("d"."/"."m"."/"."Y");
 				$time = date("H".":"."i");
 
-				$url_to_gb = "http://".$settings['h_domain'].$settings['gb_path']."admin/admin.php";
+				$url_to_gb = mgb_isHttps()."://".$settings['h_domain'].$settings['gb_path']."admin/admin.php";
 
-				$lang['sendmail_admin_title'] = format_mail(repl_uml($lang['sendmail_admin_title'], $charset), $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
-				$settings['sendmail_admin_text'] = format_mail(repl_uml($settings['sendmail_admin_text'], $charset), $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				$lang['sendmail_admin_title'] = format_mail($lang['sendmail_admin_title'], $_POST['email_name'], $date, $time, $_POST['email_message'], $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				$settings['sendmail_admin_text'] = format_mail($settings['sendmail_admin_text'], $_POST['email_name'], $date, $time, $_POST['email_message'], $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 
 				$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 				$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
 				$mail_header .= "Reply-To: ".$settings['admin_gbemail']."\r\n";
 				$mail_header .= "X-Mailer: PHP/".phpversion();
 
-				if($settings['mailer_method'] === 0) {
+				if($settings['mailer_method'] == 0) {
 					$mail_send = @mail($settings['admin_email'], $lang['sendmail_admin_title'], $settings['sendmail_admin_text'], $mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
 					} else {
 						$sendemail_successfull = 0;
 					}
-				} elseif($settings['mailer_method'] === 1 AND file_exists("plugins/phpmailer/class.phpmailer.php")) {
-					/* $mail_send = mgb_phpmailer($settings['admin_email'], $settings['admin_email'], $_POST['email_name'], $settings['h_domain'], $lang['sendmail_admin_title'], $settings['sendmail_admin_text'], $settings['debug_mode'], "user", $language_short, $charset); */
-					if($mail_send[0] === 0) {
+				} elseif($settings['mailer_method'] == 1 AND file_exists("plugins/phpmailer/class.phpmailer.php")) {
+					$mail_send = mgb_phpmailer($settings['admin_email'], $settings['admin_email'], $_POST['email_name'], $settings['h_domain'], $lang['sendmail_admin_title'], $settings['sendmail_admin_text'], $settings['debug_mode'], "user", $language_short, $charset);
+					if($mail_send[0] == 0) {
 						$sendemail_successfull = 0;
 						// $errormessage = $mail_send[1];
 					} else {
@@ -479,17 +476,17 @@
 			}
 
 			// send an email to user
-			if($settings['sendmail_user'] === 1 AND !empty($_POST['email']) AND ($noemail === 0)) {
+			if($settings['sendmail_user'] == 1 AND !empty($_POST['email']) AND ($noemail == 0)) {
 				$date = date("d"."/"."m"."/"."Y");
 				$time = date("H".":"."i");
 
-				$url_to_gb = "http://".$settings['h_domain'].$settings['gb_path']."index.php?lang=".$_GET['lang'];
+				$url_to_gb = mgb_isHttps()."://".$settings['h_domain'].$settings['gb_path']."index.php?lang=".$_GET['lang'];
 
-				$lang['sendmail_user_title'] = format_mail(repl_uml($lang['sendmail_user_title'], $charset), $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
-				if($settings['moderated'] === 0) {
-				  $settings['sendmail_user_text'] = format_mail(repl_uml($settings['sendmail_user_text'], $charset), $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				$lang['sendmail_user_title'] = format_mail($lang['sendmail_user_title'], trim($_POST['email_name']), $date, $time, trim($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				if($settings['moderated'] == 0) {
+				  $settings['sendmail_user_text'] = format_mail($settings['sendmail_user_text'], trim($_POST['email_name']), $date, $time, trim($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 				} else {
-				  $settings['sendmail_user_text'] = format_mail(repl_uml($settings['sendmail_user_text_moderated'], $charset), $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				  $settings['sendmail_user_text'] = format_mail($settings['sendmail_user_text_moderated'], trim($_POST['email_name']), $date, $time, trim($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 				}
 
 				$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
@@ -497,22 +494,22 @@
 				$mail_header .= "Reply-To: ".$settings['admin_gbemail']."\r\n";
 				$mail_header .= "X-Mailer: PHP/".phpversion();
 
-				if($settings['mailer_method'] === 0) {
+				if($settings['mailer_method'] == 0) {
 					$mail_send = @mail($_POST['email'], $lang['sendmail_user_title'], $settings['sendmail_user_text'], $mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, 3006, $_POST['email_name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 3006, trim($_POST['email_name']), $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					} else {
 						$sendemail_successfull = 0;
 					}
-				} elseif($settings['mailer_method'] === 1 AND file_exists("plugins/phpmailer/class.phpmailer.php")) {
-					/* $mail_send = mgb_phpmailer($_POST['email'], $settings['admin_email'], $_POST['email_name'], $settings['h_domain'], $lang['sendmail_user_title'], $settings['sendmail_user_text'], $settings['debug_mode'], "user", $language_short, $charset); */
-					if($mail_send[0] === 0) {
+				} elseif($settings['mailer_method'] == 1 AND file_exists("plugins/phpmailer/class.phpmailer.php")) {
+					$mail_send = mgb_phpmailer($_POST['email'], $settings['admin_email'], trim($_POST['email_name']), $settings['h_domain'], $lang['sendmail_user_title'], trim($settings['sendmail_user_text']), $settings['debug_mode'], "user", $language_short, $charset);
+					if($mail_send[0] == 0) {
 						$sendemail_successfull = 0;
 						// $errormessage = $mail_send[1];
 					} else {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, 3006, $_POST['email_name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 3006, trim($_POST['email_name']), $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 				}
 			}
@@ -553,23 +550,17 @@
 		// maybe preview button has been pushed instead?
 		if(!empty($_POST['preview']) AND $_POST['preview'] === $lang['preview'] AND !empty($_POST['message'])) {
 			// get information about formular elements
-			$_POST['name'] = $_POST[$_SESSION['FORM_ELEMENT_NAME']];
-			$_POST['city'] = $_POST[$_SESSION['FORM_ELEMENT_CITY']];
-			$_POST['email'] = $_POST[$_SESSION['FORM_ELEMENT_EMAIL']];
-			$_POST['hp'] = $_POST[$_SESSION['FORM_ELEMENT_HP']];
-			$_POST['social_mastodon'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MASTODON']];
-			$_POST['social_bluesky'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_BLUESKY']];
-			$_POST['social_w'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_W']];
-			$_POST['social_eu_voice'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VOICE']];
-			$_POST['social_eu_video'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VIDEO']];
-			$_POST['social_monnett'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MONNETT']];
-			$_POST['captcha'] = $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']];
-
-			$preview_message = nl2br($_POST['message']);
-			$t1 = chr(10);
-			$t2 = chr(13);
-			$preview_message = str_ireplace($t1, '', $preview_message);
-			$preview_message = str_ireplace($t2, '', $preview_message);
+			if(isset($_POST['name'])) { $_POST['name'] = $_POST[$_SESSION['FORM_ELEMENT_NAME']]; }
+			if(isset($_POST['city'])) { $_POST['city'] = $_POST[$_SESSION['FORM_ELEMENT_CITY']]; }
+			if(isset($_POST['email'])) { $_POST['email'] = $_POST[$_SESSION['FORM_ELEMENT_EMAIL']]; }
+			if(isset($_POST['hp'])) { $_POST['hp'] = $_POST[$_SESSION['FORM_ELEMENT_HP']]; }
+			if(isset($_POST['social_mastodon'])) { $_POST['social_mastodon'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MASTODON']]; }
+			if(isset($_POST['social_bluesky'])) { $_POST['social_bluesky'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_BLUESKY']]; }
+			// if(isset($_POST['social_w'])) { $_POST['social_w'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_W']]; }
+			// if(isset($_POST['social_eu_voice'])) { $_POST['social_eu_voice'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VOICE']]; }
+			// if(isset($_POST['social_eu_video'])) { $_POST['social_eu_video'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_EU_VIDEO']]; }
+			// if(isset($_POST['social_monnett'])) { $_POST['social_monnett'] = $_POST[$_SESSION['FORM_ELEMENT_SOCIAL_MONNETT']]; }
+			if(isset($_POST['captcha'])) { $_POST['captcha'] = $_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']]; }			
 
 			if(!$settings['wordwrap'] === 0) {
 				$preview_message = textWrap($preview_message, $settings['wordwrap']);
@@ -772,17 +763,10 @@
 		}
 	} else {
 		$user_show_email = "";
-	}
-
-	// insert template if akismet is acitvated
-	if(file_exists(MGB_ROOT."plugins/akismet/akismet.class.php") AND (!empty($settings['akismet_plugin']))) {
-		$content_newentry_user_accept_akismet_service = mgb_template_replace(['LANG_USER_ACCEPT_AKISMET_SERVICE' => $lang['user_accept_akismet_service']], $content_newentry_user_accept_akismet_service);
-		$user_accept_akismet_service = $content_newentry_user_accept_akismet_service;
-	} else {
-		$user_accept_akismet_service = "";
-	}
+	}	
 
 	// fill template with captcha
+	if(empty($captcha_generated)) { $captcha_generated = ""; }
 	if(($settings['captcha'] === 1) AND ($captcha_generated != 1)) {
 		generate_captcha($settings['captcha_method'], $settings['captcha_length'], $settings['captcha_max_length'], $settings['captcha_salt'], $settings['captcha_hash_method'], $settings['captcha_double_hash']);
 		$captcha_generated = 1;
@@ -819,8 +803,7 @@
 			'TEMPLATE_SMILEYS' 						=> $content_newentry_smileys,
 			'TEMPLATE_BBCODES' 						=> $bbcodes,
 			'TEMPLATE_USER_NOTIFICATION' 			=> $user_notification,
-			'TEMPLATE_USER_SHOW_EMAIL' 				=> $user_show_email,
-			'TEMPLATE_USER_ACCEPT_AKISMET_SERVICE' 	=> $user_accept_akismet_service,
+			'TEMPLATE_USER_SHOW_EMAIL' 				=> $user_show_email,			
 			'TEMPLATE_CAPTCHA'						=> $content_captcha,
 			'CAPTCHA_UNIQUE_ID' 					=> $captcha_unique_id,
 			'TEMPLATE_COPYRIGHT' 					=> $content_copyright,
@@ -901,10 +884,34 @@
 			// $_POST[$_SESSION['FORM_ELEMENT_MONNETT']] = "";
 			// $_POST[$_SESSION['FORM_ELEMENT_MESSAGE']] = "";
 			$_POST[$_SESSION['FORM_ELEMENT_CAPTCHA']] = "";
-		}
+		} else {
+			
+		}		
 		
-		if(empty($_POST['message'])) { $_POST['message'] = ""; }
+		$form_elements = [
+			'NAME', 'CITY', 'EMAIL', 'HP', 'MASTODON', 'BLUESKY',
+			// 'W', 'EU_VOICE', 'EU_VIDEO', 'MONNETT', 
+			// andere Elemente, die optional sind
+			'CAPTCHA'
+		];
 
+		$replace = [];
+
+		foreach ($form_elements as $el) {
+			// POST-Werte: prüfen, ob der entsprechende SESSION-Key existiert
+			if (isset($_SESSION['FORM_ELEMENT_' . $el])) {
+				$key = $_SESSION['FORM_ELEMENT_' . $el];
+				$replace['POST_' . $el] = $_POST[$key] ?? ''; // falls POST nicht gesetzt, leere Zeichenkette
+				$replace['FORM_ELEMENT_' . $el] = $key;
+			}
+		}
+
+		// Nachricht separat, falls sie immer existiert
+		$replace['POST_MESSAGE'] = $_POST['message'] ?? '';
+
+		$page_newentry_body = mgb_template_replace($replace, $page_newentry_body);
+
+		/*
 		$page_newentry_body = mgb_template_replace([
 			'POST_NAME' 	=> $_POST[$_SESSION['FORM_ELEMENT_NAME']],
 			'POST_CITY' 	=> $_POST[$_SESSION['FORM_ELEMENT_CITY']],
@@ -931,6 +938,7 @@
 			// 'FORM_ELEMENT_MESSAGE' 	=> $_SESSION['FORM_ELEMENT_MESSAGE'],
 			'FORM_ELEMENT_CAPTCHA' 	=> $_SESSION['FORM_ELEMENT_CAPTCHA']
 		], $page_newentry_body);
+		*/
 
 		// fill template with general data
 		$page_newentry_body = mgb_template_replace(['FORM_ACTION' => "newentry.php{PARAMLANG_A}"], $page_newentry_body);
@@ -980,8 +988,8 @@
 			'MGB_VERSION' 		=> $settings['version'],
 			'COPYRIGHT_DATE' 	=> date("Y"),
 			'ICONSET_PATH' 		=> $settings['iconset_path'],
-			'PARAMLANG_A' 		=> "?lang=".cleanstr($_GET['lang']),
-			'PARAMLANG_B' 		=> "&amp;lang=".cleanstr($_GET['lang']),
+			'PARAMLANG_A' 		=> "?lang=".$_GET['lang'],
+			'PARAMLANG_B' 		=> "&amp;lang=".$_GET['lang'],
 			'REFRESH_TIME'		=> $settings['refresh_time']
 		], $page_newentry_body);
 

@@ -71,8 +71,7 @@
 							<td class="sendemail_user_box_r" align="left">
 							<span>{LANG_EMAIL_SENDCOPYTOME}</span>
 							</td>
-						</tr>
-						{TEMPLATE_USER_ACCEPT_AKISMET_SERVICE}
+						</tr>						
 					</table>
 				</td>
 			</tr>

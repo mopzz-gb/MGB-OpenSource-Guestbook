@@ -120,6 +120,14 @@
 		</td>
 	</tr>
 	<tr>
+		<td class="edit_user_l" align="left">
+		<span>{LANG_R_TELEMETRY}</span>
+		</td>
+		<td class="edit_user_r">
+		<select class="option" name="r_telemetry" size="1"{DISABLED}><option{SELECTED_R_TELEMETRY_0} value="0">{LANG_NO}</option><option{SELECTED_R_TELEMETRY_1} value="1">{LANG_YES}</option></select>
+		</td>
+	</tr>
+	<tr>
 		<td colspan="2" class="edit_user_overall">
 		<center><span class="edit_caption">{LANG_EDIT_USER_CAPTION_PASSWORD}</span></center>
 		</td>

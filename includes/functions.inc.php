@@ -1206,6 +1206,8 @@
 						return TRUE;
 					} elseif($site == "settings_database" AND $user['r_settings_database'] == 1) {
 						return TRUE;
+					} elseif($site == "settings_telemetry" AND $user['r_telemetry'] == 1) {
+						return TRUE;
 					} elseif($site == "activate" AND $user['r_activate'] == 1) {
 						return TRUE;
 					} elseif($site == "deactivate" AND $user['r_deactivate'] == 1) {
@@ -1659,7 +1661,7 @@
 	// MGB_PHPMAILER
 	// CREATED: 09.09.2013, 23:16
 	// DESCR: SENDS MAILS OVER PHPMAILER
-	/* if(!function_exists("mgb_phpmailer")) {
+	if(!function_exists("mgb_phpmailer")) {
 		function mgb_phpmailer($email, $reply_email, $name, $sender, $caption, $mailtext, $debug, $area, $language_short, $charset) {
 			if($area == "user") {
 				include 'includes/config.inc.php';
@@ -1758,7 +1760,7 @@
 				return $error;
 			}
 		}
-	} */
+	}
 
 	// MGB_GET_KEYSTROKES by R.W. modified by mopzz
 	// CREATED: 11.09.2013, 17:52

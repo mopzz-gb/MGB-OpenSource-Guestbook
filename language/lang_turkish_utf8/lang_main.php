@@ -110,14 +110,14 @@
 	$lang['errormessage'][7] = "Güvenlik kodu yanlýþ veya girilmedi!";
 	$lang['errormessage'][8] = "Bu Kullanýcý e-Posta almak istemiyor!";
 	$lang['errormessage'][9] = "E-Posta giderken bir hata oluþtu!";
-	$lang['errormessage'][10] = "Spam-protection: The entry form was sent too fast. Please wait {TIME_LOCK_REST} more seconds. Thank you.";
+	$lang['errormessage'][10] = "Spam koruması: Giriş formu çok hızlı gönderildi. Lütfen {TIME_LOCK_REST} saniye daha bekleyin. Teşekkür ederiz.";
 	$lang['errormessage'][11] = "The Akismet data privacy agreement was not accepted. It MUST be accepted to save the entry.";
-	$lang['errormessage'][12] = "This email is forbidden for new entries.";
+	$lang['errormessage'][12] = "Bu e-posta adresi yeni girişler için yasaktır.";
 	$lang['errormessage'][13] = "This domain range is forbidden for new entries.";
 	$lang['errormessage'][14] = "This ip address is forbidden for new entries.";
 	$lang['errormessage'][15] = "is no valid facebook name.";
 	$lang['errormessage'][16] = "is no valid twitter name.";
-	$lang['errormessage'][17] = "You typed too fast! Are you a spamrobot? You have been banned for {KEYSTROKE_BAN_TIME} seconds. If this is a mistake, please report it to the Administrator.";
+	$lang['errormessage'][17] = "Çok hızlı yazdınız! Spam robotu musunuz? {KEYSTROKE_BAN_TIME} saniye boyunca yasaklandınız. Bu bir hata ise, lütfen Yöneticiye bildirin.";
 	$lang['errormessage'][18] = "You have been banned for too fast typing. Please wait {KEYSTROKE_BAN_TIME_REST} seconds before you can send the form again.";
 
 	// BBCODES

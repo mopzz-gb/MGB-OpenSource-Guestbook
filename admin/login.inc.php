@@ -115,7 +115,7 @@
 	}
 
 	if(!empty($errorcode)) {
-		$errormessage = mgb_errormessage($errorcode, MGB_ROOT."language/".$settings['language_path'], "adminpanel");
+		$errormessage = mgb_errormessage($errorcode, $settings['language_path'], "adminpanel");
 	} else {
 		$content_errormessage = "";
 	}
