@@ -79,22 +79,10 @@
 	    	include($filename);
 	    	exit();
 		}
-	}
-	
-	// get mysql client info
-	$str = mysqli_get_client_info();
-	if (preg_match_all("([0-9.]+)", $str, $matches)) $zahlen = $matches[0];
-	
-	if(empty($version)) { $version = ""; }
-
-	for($i = 0; $i < count($zahlen); $i++) {
-		$version.= $zahlen[$i];
-	}
-
-	$mysql_client = substr($version, 0, 6);
+	}	
 	
 	// send the ping (fallback method if the admin isn't active anymore)
-	mgb_send_telemetry($settings['telemetry'], $settings['telemetry_last_ping'], $settings['version'], $mysql_client, $db['prefix'], $settings['telemetry_install_id'], $settings['telemetry_ping'], $mysqli, 604800); // 1 week = 604800 seconds
+	mgb_send_telemetry($settings['telemetry'], $settings['telemetry_last_ping'], $settings['version'], $mysql_server, $db['prefix'], $settings['telemetry_install_id'], $settings['telemetry_ping'], $mysqli, 604800); // 1 week = 604800 seconds
 
 	// set timezone
 	if(function_exists("date_default_timezone_set")) {

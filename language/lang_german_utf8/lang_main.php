@@ -26,7 +26,7 @@
 	$lang = array();
 
 	// INDEX.PHP
-	$lang['install_directory_exists'] = "Das Installationsverzeichnis wurde noch nicht gelöscht.<br>Zu Deiner eigenen Sicherheit solltest Du das jetzt tun!<br>Vergiss nach einem Update aber nicht die <a href=\"install/upgrade.php\" title=\"Upgrade\">upgrade.php</a> auszuführen!<br>Bei Problemen mit Umlauten kann die <a href=\"install/convert_ansi.php\" title=\"Convert\">convert_ansi.php</a> helfen.";
+	$lang['install_directory_exists'] = "Das Installationsverzeichnis wurde noch nicht gelöscht.<br>Zu Deiner eigenen Sicherheit solltest Du das jetzt tun!<br>Vergiss nach einem Update aber nicht die <a href=\"install/upgrade.php\" title=\"Upgrade\">upgrade.php</a> auszuführen!";
 	$lang['new_entry'] = "Eintragen";
 	$lang['new_entry_descr'] = "Hier kannst Du einen neuen Gästebucheintrag verfassen";
 	$lang['contact'] = "Kontakt";

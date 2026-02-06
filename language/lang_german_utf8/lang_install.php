@@ -80,8 +80,11 @@
 	$lang['admin_name'] = "Name:";
 	$lang['admin_username'] = "Benutzername:";
 	$lang['admin_password'] = "Passwort:";
+	$lang['admin_password_repeat'] = "Passwort wiederholen:";
 	$lang['admin_email'] = "eMail:";
 	$lang['admin_gbemail'] = "Gästebuch eMail:";
+	
+	$lang['allow_telemetry'] = "Anonyme Nutzungsdaten<br>erlauben.<br><br>Erfasst wird:<br><br>- MGB Version<br>- PHP Version<br>- SQL Version<br>- Anonyme Install ID<br>- Aktivitätsping";
 
 	$lang['post_admin_name'] = "Webmaster";
 	$lang['post_admin_username'] = "admin";
@@ -93,6 +96,7 @@
 	$lang['error_4_step2'] = "Es befindet sich bereits eine Installation mit dem angegebenen Präfix in der Datenbank. Bitte wähle einen anderen Präfix.";
 	$lang['error_5_step2'] = "Der angegebene Präfix enthält Sonderzeichen und ist somit ungültig. Erlaubt ist nur ein Unterstrich (_).";
 	$lang['error_6_step2'] = "Der angegebene Benutzername enthält Sonderzeichen und ist somit ungültig. Erlaubt sind lediglich Klein- und Großbuchstaben, sowie Zahlen.";
+	$lang['error_7_step2'] = "Die beiden Admin-Passwörter stimmen nicht überein.";
 
 	$lang['to_administration'] = "Zur Administration";
 	$lang['to_guestbook'] = "Zum Gästebuch";

@@ -128,13 +128,32 @@
 		}
 	}
 	
+	// 05.02.2026 :: MGB_GET_TABLES_BY_PREFIX
+	// FINDS OUT WHICH TABLES OF MGB EXIST IN DATABASE
+	if(!function_exists("mgb_get_tables_by_prefix")) {
+		function mgb_get_tables_by_prefix(mysqli $mysqli, string $db_prefix): array {
+			$tables = [];
+
+			$result = $mysqli->query(
+				"SHOW TABLES LIKE '".$mysqli->real_escape_string($db_prefix)."%'"
+			);
+
+			while ($row = $result->fetch_array()) {
+				$tables[] = $row[0]; // Tabellenname
+			}
+
+			return $tables;
+		}
+	}
+
+	
 	// 21.06.2013 :: MGB_GET_SQL_STRUCTURE
 	// GETS STRUCTURE OF SQL TABLES TO CREATE BACKUPS
 	if(!function_exists("mgb_get_sql_structure")) {
-		function mgb_get_sql_structure($mysqli, $db_prefix, $tablename, $mode) {
+		function mgb_get_sql_structure(mysqli $mysqli, string $tablename, int $mode) {
 			if($mode == 1) {
 				// get structure of table and build output
-				$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix.$tablename);
+				$result = $mysqli->query("SHOW COLUMNS FROM `".$tablename."`");
 				if(mysqli_num_rows($result) > 0) {
 					while($row = mysqli_fetch_assoc($result)) {
 						$fieldnames[] = $row['Field'];
@@ -148,7 +167,7 @@
 				
 				if(empty($sql_dump)) { $sql_dump = ""; }
 				
-				$sql_dump.= "CREATE TABLE IF NOT EXISTS `".$db_prefix.$tablename."` (\n";
+				$sql_dump.= "CREATE TABLE IF NOT EXISTS `".$tablename."` (\n";
 				for($i = 0; $i < count($fieldnames); $i++) {
 					$sql_dump.= "`".$fieldnames[$i]."` ".$fieldtypes[$i];
 					if($fieldnull[$i] == "NO") {
@@ -169,17 +188,17 @@
 						$sql_dump.= " ,\n";
 					}
 				}
-				$sql_dump.= ") DEFAULT CHARSET=utf8 ;\n\n";
+				$sql_dump.= ") DEFAULT CHARSET=utf8mb4 ;\n\n";
 			} elseif($mode == 2) {
 				// get content of table and build output
-				$result = $mysqli->query("SHOW COLUMNS FROM ".$db_prefix.$tablename);
+				$result = $mysqli->query("SHOW COLUMNS FROM `".$tablename."`");
 				if(mysqli_num_rows($result) >= 1) {
 					while($row = mysqli_fetch_assoc($result)) {
 						$fieldnames[] = $row['Field'];
 					}
 
 					$sql = "SELECT ";
-					$sql_dump = "INSERT INTO `".$db_prefix.$tablename."` (`";
+					$sql_dump = "INSERT INTO `".$tablename."` (`";
 
 					for($i = 0; $i < count($fieldnames); $i++) {
 						$counter = count($fieldnames) - 1;
@@ -192,7 +211,7 @@
 						}
 					}
 
-					$sql .= " FROM ".$db_prefix.$tablename;
+					$sql .= " FROM ".$tablename;
 
 					$data = $mysqli->query($sql);
 					if(mysqli_num_rows($data) >= 1) {
@@ -243,75 +262,59 @@
 	// CREATED: 25.01.2026
 	// INFO: DOES A FULL BACKUP BEFORE UPGRADE
 	if(!function_exists('mgb_backup_database')) {
-		function mgb_backup_database($mysqli, $dbprefix, $version, $hostname, $dbname) {
+		function mgb_backup_database($mysqli, $dbprefix, $version, $hostname, $dbname, $reason) {
+			if($reason == 1) {
+				$reason_expl = "Backup after a freh install ----------------------------;\n\n";
+				$filename = "full.sql";
+			} elseif ($reason == 2) {
+				$reason_expl = "Backup before upgrade ----------------------------------;\n\n";
+				$filename = "full-upgrade.sql";
+			}
+			
 			$sql_dump = "-- MGB OpenSource Guestbook SQL Dump\n";
 			$sql_dump.= "-- Version: ".$version."\n";
 			$sql_dump.= "-- https://www.m-gb.org/\n";
 			$sql_dump.= "--\n";
 			$sql_dump.= "-- Host: ".$hostname."\n";
-			$sql_dump.= "-- Database: ".$dbname."\n";
-			$sql_dump.= "-- Tables: banlist_domains, banlist_emails, banlist_ips, entries, settings, smilies, spam, spam_log, user\n";
+			$sql_dump.= "-- Database: ".$dbname."\n";			
 			$sql_dump.= "-- --------------------------------------------------------;\n\n";
-			$sql_dump.= "-- Reason for backup: Upgrading database to a newer version;\n\n";
+			$sql_dump.= "-- ".$reason_expl;
 			$sql_dump.= "-- --------------------------------------------------------;\n\n";
+			
+			$tables = mgb_get_tables_by_prefix($mysqli, $dbprefix);
 
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "banlist_domains", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "banlist_domains", 2);
+			foreach ($tables as $table) {
+				// Struktur
+				$sql_dump.= mgb_get_sql_structure($mysqli, $table, 1);
 
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "banlist_emails", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "banlist_emails", 2);
-
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "banlist_ips", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "banlist_ips", 2);
-
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "entries", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "entries", 2);
-
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "settings", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "settings", 2);
-
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "smilies", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "smilies", 2);
-
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "spam", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "spam", 2);
-
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "spam_log", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "spam_log", 2);
-
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "sys_log", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "sys_log", 2);
-
-			// get structure of sql table
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "user", 1);
-			$sql_dump.= mgb_get_sql_structure($mysqli, $dbprefix, "user", 2);
+				// Daten
+				$sql_dump.= mgb_get_sql_structure($mysqli, $table, 2);
+			}
 
 			$sql_dump.= "-- END OF FILE --";
 
-			$backup_filename = time()."-".$dbprefix."full-upgrade.sql";
+			$backup_filename = time()."-".$dbprefix.$filename;
 			
-			echo "\t\t<span style='
+			if($reason == 2) {
+				echo "\t\t<span style='
 				font-family: verdana, arial, helvetica, sans-serif;
 				font-size: 12px;
 				font-weight: bold;'>Database backup ...</span>\n";
-
-			if(!empty($backup_filename)) {
-				if(file_exists("../save") AND is_dir("../save") AND is_writable("../save")) {					
-					if(mgb_write_export_file("../save/".$backup_filename, $sql_dump) == TRUE) {						
-						echo "\t\t<span style='
-							font-family: verdana, arial, helvetica, sans-serif;
-							font-size: 12px;
-							font-weight: bold;
-							color: green;'>OK!<br><br></span>\n";						
+				if(!empty($backup_filename)) {
+					if(file_exists("../save") AND is_dir("../save") AND is_writable("../save")) {					
+						if(mgb_write_export_file("../save/".$backup_filename, $sql_dump) == TRUE) {						
+							echo "\t\t<span style='
+								font-family: verdana, arial, helvetica, sans-serif;
+								font-size: 12px;
+								font-weight: bold;
+								color: green;'>OK!<br><br></span>\n";						
+						} else {
+							echo "\t\t<span style='
+								font-family: verdana, arial, helvetica, sans-serif;
+								font-size: 12px;
+								font-weight: bold;
+								color: red;'>ERROR!<br><br></span>\n";
+						}
 					} else {
 						echo "\t\t<span style='
 							font-family: verdana, arial, helvetica, sans-serif;
@@ -319,12 +322,6 @@
 							font-weight: bold;
 							color: red;'>ERROR!<br><br></span>\n";
 					}
-				} else {
-					echo "\t\t<span style='
-						font-family: verdana, arial, helvetica, sans-serif;
-						font-size: 12px;
-						font-weight: bold;
-						color: red;'>ERROR!<br><br></span>\n";
 				}
 			}
 		}

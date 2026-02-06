@@ -336,7 +336,7 @@
 		<span>{LANG_EDIT_EXPL_SEARCH_ENGINES}</span>
 		</td>
 		<td class="settings_r">
-		<input class="textbox" name="search_engines" maxlength="255" size="12" value="{EDIT_SEARCH_ENGINES}">
+		<textarea name="search_engines" rows="5" cols="25">{EDIT_SEARCH_ENGINES}</textarea>
 		</td>
 	</tr>
 </table>

@@ -17,18 +17,23 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-	=====================
-	load_settings.inc.php
-	=====================
+	=======
+	066.php
+	=======
 	*/
 
-	// load settings from database
-	$sql = "SELECT * FROM ".$db['prefix']."settings";
-	$result = mgb_sql_connect($mysqli, $sql, "Error while loading settings from database.", 1, null, null);
-	
-	if (!$result || $result->num_rows !== 1) {
-		die('Critical error: Problem with database.');
-	}
-	
-	$settings = $result->fetch_assoc();
+
+	return [
+		'version'		=>	'0.6.6',
+		'description'	=>	'Added possibility to mark entries as spam',
+		'sql'			=>	[
+			function(mysqli $mysqli, array $db) {			
+					return "ALTER TABLE `".$db['prefix']."entries` ADD `isspam` TINYINT( 1 ) NOT NULL AFTER `checked`";
+			},
+			
+			function(mysqli $mysqli, array $db) {
+					return "ALTER TABLE `".$db['prefix']."user` ADD `r_spam` TINYINT( 1 ) NOT NULL AFTER `r_edit`";
+			}
+		]
+	];
 ?>

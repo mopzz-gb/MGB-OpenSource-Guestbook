@@ -73,6 +73,7 @@
 			
 			// initiate variables
 			$selected_gravatar_show_0 = "";
+			$selected_gravatar_show_1 = "";
 			$selected_gravatar_rating_0 = "";
 			$selected_gravatar_rating_1 = "";
 			$selected_gravatar_rating_2 = "";

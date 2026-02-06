@@ -98,7 +98,7 @@
 	$content_footer = mgb_load_template("admin", "default/general_admin", "footer", $settings['debug_mode']);
 
 	if(isset($_SESSION['user_key'])) {
-		if(!check_session($mysqli, $_SESSION['user_ID'], $_SESSION['user_key'], $_SESSION['user_ip'], $settings['session_timeout'])) {
+		if(!check_session($mysqli, $_SESSION['user_ID'], $_SESSION['user_key'], $_SESSION['user_ip'], $settings['session_timeout'], $settings['debug_mode'])) {
 			session_unset();
 			session_destroy();
 			$_SESSION = array();
@@ -132,7 +132,7 @@
 		}
 		
 		// send the ping
-		mgb_send_telemetry($settings['telemetry'], $settings['telemetry_last_ping'], $settings['version'], $mysql_client, $db['prefix'], $settings['telemetry_install_id'], $settings['telemetry_ping'], $mysqli, 86400); // 1 day = 86400 seconds
+		mgb_send_telemetry($settings['telemetry'], $settings['telemetry_last_ping'], $settings['version'], $mysql_server, $db['prefix'], $settings['telemetry_install_id'], $settings['telemetry_ping'], $mysqli, 86400); // 1 day = 86400 seconds
 
 		$login_status_text = "<b>PHP</b>: ".phpversion()."&nbsp;| <b>MySQL Client</b>: ".$mysql_client."&nbsp;| <b>MySQL Server</b>: ".$mysql_server."&nbsp;|&nbsp;".$lang['logged_in']."&nbsp;|&nbsp;<a class='admin' href='admin.php?action=logout' title='{LANG_LOGOUT}'>{LANG_LOGOUT}</a>&nbsp;";
 		$login_status_img = "<img src='templates/default/images/logout.png' height='16' width='16' title='{LANG_LOGOUT}' alt='{LANG_LOGOUT}'>";
@@ -416,6 +416,8 @@
 		$page_admin = mgb_template_replace(["TEMPLATE_MESSAGE" => ""], $page_admin);
 	}
 
+	if(empty($total)) { $total = 0; }
+	
 	if(isset($_GET['action']) AND ($_GET['action'] == 'spam')) {
 		$page_admin = mgb_template_replace([
 			'TEMPLATE_DROPBOX_NORMAL' 	=> '',

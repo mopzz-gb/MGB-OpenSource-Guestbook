@@ -75,21 +75,24 @@ td.install_errormessage	{
 	
 table.data {
 	border: 1px solid #EBF3FC;
-	background-color: #DAE8FA; }
+	background-color: #DAE8FA;
+	width: 400px; }
 	
 td.data_overall {
 	border: 1px solid #EBF3FC;
 	text-align: center;
-	height: 30px; }
+	height: 30px;
+	width: 400px; }
 	
 td.data_l {
 	border: 1px solid #EBF3FC;
-	text-align: left; }
+	text-align: left;
+	width: 150px; }
 	
 td.data_r {
 	border: 1px solid #EBF3FC;
 	text-align: center;
-	width: 200px; }
+	width: 250px; }
 		
 
 /* inputs / buttons / selects*/
@@ -107,7 +110,7 @@ select.install_option_long {
 	background-color: #EFEFEF;
 	color: #000000;
 	border: 1px solid #7F7F7F;
-	width: 200px; }
+	width: 95%; }
 	
 input.install_textbox {
 	font-family: verdana, arial, helvetica, sans-serif;
@@ -115,7 +118,7 @@ input.install_textbox {
 	background-color: #EFEFEF;
 	color: #000000;
 	border: 1px solid #7F7F7F;
-	width: 150px; }
+	width: 95%; }
 
 
 /* divs */

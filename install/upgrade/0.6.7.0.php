@@ -17,18 +17,22 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-	=====================
-	load_settings.inc.php
-	=====================
+	=======
+	067.php
+	=======
 	*/
+	
+	return [
+		'version'		=>	'0.6.7',
+		'description'	=>	'Added time lock',
+		'sql'			=>	[
 
-	// load settings from database
-	$sql = "SELECT * FROM ".$db['prefix']."settings";
-	$result = mgb_sql_connect($mysqli, $sql, "Error while loading settings from database.", 1, null, null);
-	
-	if (!$result || $result->num_rows !== 1) {
-		die('Critical error: Problem with database.');
-	}
-	
-	$settings = $result->fetch_assoc();
+			function(mysqli $mysqli, array $db) {			
+					return "ALTER TABLE `".$db['prefix']."settings`
+						ADD `time_lock` INT( 1 ) NOT NULL AFTER `captcha_method`,
+						ADD `time_lock_value` INT( 3 ) DEFAULT '30' NOT NULL AFTER `time_lock`,
+						ADD `time_lock_maxtime` INT DEFAULT '300' NOT NULL AFTER `time_lock_value`;";
+			}			
+		]
+	];
 ?>

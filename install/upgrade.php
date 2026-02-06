@@ -69,288 +69,30 @@
 		require_once ("includes/load_settings.inc.php");
 		
 		// do a full backup
-		mgb_backup_database($mysqli, $db['prefix'], $settings['version'], $db['hostname'], $db['dbname']);
+		mgb_backup_database($mysqli, $db['prefix'], $settings['version'], $db['hostname'], $db['dbname'], 2);
 
 		// update database
 		if(!isset($success)) { $success = 0; }
 
 		if((isset($_POST['update_necessary']) AND $_POST['update_necessary'] == 1) OR (isset($_POST['ignore']) AND $_POST['ignore'] == 1)) {
-			if(!isset($_POST['upgrade_information'])) {
-				$upgrade_file = preg_replace("/\./", "", $settings['version']); //replace "." with "" so the upgrade files can be found and loaded by the script
-				if(!file_exists("upgrade/".$upgrade_file.".php")) {
-					if($upgrade_file == "07_beta_3" OR $upgrade_file == "07_beta_2" OR $upgrade_file == "07_beta_1") {
-						include "upgrade/0695.php";
-					} else {
-						$missing_file = 1;
-					}
-				} else {
-					include "upgrade/".$upgrade_file.".php";
-				}
-			} else {
-				include "upgrade/".$_POST['upgrade_information'].".php";
-			}
-
-			// an error occured while loading update file. stop the script here.
-			if(!empty($missing_file)) {
-				echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">UPGRADE DATA <i>".$upgrade_file.".php</i> NOT FOUND! PLEASE VISIT <a href='https://forum.m-gb.org/'>forum.m-gb.org</a> FOR MORE INFORMATION.</span>\n";
-				echo "\t</body>\n";
-				echo "</html>\n";
-				die();
-			}
-			
-			// modify mysql error reporting
-			// mysqli_report(MYSQLI_REPORT_ERROR);
-			mysqli_report(MYSQLI_REPORT_OFF);
-
-			// establish sql connection			
-			$link = mysqli_connect($db['hostname'], $db['username'], $db['password'], $db['dbname']) or die ("(upgrade.php) Error: ".mysqli_error($link));
-			mysqli_set_charset($link, 'utf8');
-			
+				
 			// define variables
 			$success = 0;
 			$count = 0;
-
-			for($i = 1; $i <= count($sql); $i++) {
-				$sqlcommand = $sql[$i];
-				$stmt = mysqli_prepare($link, $sqlcommand);
-
-				// check if NO INSERTS is checked
-				if(!empty($_POST['no_inserts'])) {
-					if($sqlisinsert[$i] === 1) {
-						echo "\t\t<span style='
-							font-family: verdana, arial, helvetica, sans-serif;
-							font-size: 12px;
-							font-weight: bold;'>{$sqldescription[$i]}</span>\n";
-						echo "\t\t<span style='
-							font-family: verdana, arial, helvetica, sans-serif;
-							font-size: 12px; #
-							font-weight: bold;
-							color: maroon;'>INSERT denied.</span>\n";
-						echo "\t\t<span style='
-							font-family: verdana, arial, helvetica, sans-serif;
-							font-size: 12px;
-							font-weight: bold;
-							color: green;'>OK!<br><br></span>\n";
-						$success++;
-						$count++;
-					} else {
-						if ($stmt && mysqli_stmt_execute($stmt)) {
-
-							echo "\t\t<span style='
-							font-family: verdana, arial, helvetica, sans-serif;
-							font-size: 12px;
-							font-weight: bold;'>{$sqldescription[$i]}</span>\n";
-							echo "\t\t<span style='
-							font-family: verdana, arial, helvetica, sans-serif;
-							font-size: 12px;
-							font-weight: bold;
-							color: green;'>OK!<br><br></span>\n";
-							$success++;
-							$count++;
-
-						} else {
-
-							$errno = $stmt ? mysqli_stmt_errno($stmt) : mysqli_errno($link);
-							$error = $stmt ? mysqli_stmt_error($stmt) : mysqli_error($link);
-
-							echo "<span style='
-									font-family: verdana, arial, helvetica, sans-serif;
-									font-size: 12px;
-									font-weight: bold;>{$sqldescription[$i]}</span>";
-
-							switch ($errno) {
-								case 1060:
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:maroon'>{$sqldescription[$i]}: DUPLICATE COLUMN, no changes were applied.</span>";
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:green'> OK!<br><br></span>";
-									$success++;
-									break;
-
-								case 1050:
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:maroon'>{$sqldescription[$i]}: DUPLICATE TABLE, no changes were applied.</span>";
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:green'> OK!<br><br></span>";
-									$success++;
-									break;
-								
-								case 1054:
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:maroon'>{$sqldescription[$i]}: MISSING COLUMN, no changes were applied.</span>";
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:red'> ERROR!<br><br></span>";
-									break;
-
-								case 1062:
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:maroon'>{$sqldescription[$i]}: DUPLICATE TABLE, no changes were applied.</span>";
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:green'> OK!<br><br></span>";
-									$success++;
-									break;
-								
-								case 1091:
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:maroon'>{$sqldescription[$i]}: COLUMN DOESN'T EXIST, no changes were applied.</span>";
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:green'> OK!<br><br></span>";
-									$success++;
-									break;
-
-								default:
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:red'>{$sqldescription[$i]}: ERROR</span>";
-									echo "<span>{$errno} : {$error}</span><br><br>";
-							}
-
-							$count++;
-						}
-					}
-				} else {
-					if ($stmt && mysqli_stmt_execute($stmt)) {
-
-						echo "\t\t<span style='
-						font-family: verdana, arial, helvetica, sans-serif;
-						font-size: 12px;
-						font-weight: bold;'>{$sqldescription[$i]}</span>\n";
-						echo "\t\t<span style='
-						font-family: verdana, arial, helvetica, sans-serif;
-						font-size: 12px;
-						font-weight: bold;
-						color: green;'>OK!<br><br></span>\n";
-						$success++;
-						$count++;
-
-					} else {
-
-						$errno = $stmt ? mysqli_stmt_errno($stmt) : mysqli_errno($link);
-						$error = $stmt ? mysqli_stmt_error($stmt) : mysqli_error($link);
-
-						echo "<span style='
-								font-family: verdana, arial, helvetica, sans-serif;
-								font-size: 12px;
-								font-weight: bold;>{$sqldescription[$i]}</span>";
-
-						switch ($errno) {
-							case 1060:
-								echo "<span style='
-									font-family: verdana, arial, helvetica, sans-serif;
-									font-size: 12px;
-									font-weight: bold;
-									color:maroon'>{$sqldescription[$i]}: DUPLICATE COLUMN, no changes were applied.</span>";
-								echo "<span style='
-									font-family: verdana, arial, helvetica, sans-serif;
-									font-size: 12px;
-									font-weight: bold;
-									color:green'> OK!<br><br></span>";
-								$success++;
-								break;
-
-							case 1050:
-								echo "<span style='
-									font-family: verdana, arial, helvetica, sans-serif;
-									font-size: 12px;
-									font-weight: bold;
-									color:maroon'>{$sqldescription[$i]}: DUPLICATE TABLE, no changes were applied.</span>";
-								echo "<span style='
-									font-family: verdana, arial, helvetica, sans-serif;
-									font-size: 12px;
-									font-weight: bold;
-									color:green'> OK!<br><br></span>";
-								$success++;
-								break;
-							
-							case 1054:
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:maroon'>{$sqldescription[$i]}: MISSING COLUMN, no changes were applied.</span>";
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:red'> ERROR!<br><br></span>";
-									break;
-
-							case 1062:
-								echo "<span style='
-									font-family: verdana, arial, helvetica, sans-serif;
-									font-size: 12px;
-									font-weight: bold;
-									color:maroon'>{$sqldescription[$i]}: DUPLICATE TABLE, no changes were applied.</span>";
-								echo "<span style='
-									font-family: verdana, arial, helvetica, sans-serif;
-									font-size: 12px;
-									font-weight: bold;
-									color:green'> OK!<br><br></span>";
-								$success++;
-								break;
-							
-							case 1091:
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:maroon'>{$sqldescription[$i]}: COLUMN DOESN'T EXIST, no changes were applied.</span>";
-									echo "<span style='
-										font-family: verdana, arial, helvetica, sans-serif;
-										font-size: 12px;
-										font-weight: bold;
-										color:green'> OK!<br><br></span>";
-									$success++;
-									break;
-
-							default:
-								echo "<span style='
-									font-family: verdana, arial, helvetica, sans-serif;
-									font-size: 12px;
-									font-weight: bold;
-									color:red'>{$sqldescription[$i]}: ERROR!</span>";
-								echo "<span>{$errno} : {$error}</span><br><br>";
-						}
-						$count++;
-					}
-				}
+			
+			// first do some really old stuff if necessary
+			if (version_compare($settings['version'], '0.6.4', '<')) {
+				include "upgrade/other/0.6.4.php";
 			}
 			
-			// migrate old databases to newer ones
-			$sql = array();			
-			include('upgrade/migrate_text.php');
+			// now do the majority of the work
+			include('upgrade_runner.php');
+
+			// do possible INSERTS			
+			include('upgrade/other/inserts.php');
+						
+			// and last but not least migrate old databases to newer ones if necessary			
+			include('migrate_text.php');
 
 			if($count != 0) {
 				if($count === $success) {

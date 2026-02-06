@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 	if(isset($_SESSION['install_language'])) {
 		require_once (MGB_ROOT."language/".$_SESSION['install_language']."/lang_install.php");
 		require_once (MGB_ROOT."language/".$_SESSION['install_language']."/settings.php");
+		$lang_install = $lang;
 
 		// set timezone
 		if(function_exists("date_default_timezone_set")) {
@@ -87,7 +88,7 @@
 			], $page_body);
 		} elseif(!empty($_POST['step']) AND $_POST['step'] == 1) {
 			if(isset($_POST['eula_agreement']) AND $_POST['eula_agreement'] == 1) {
-				switch(version_compare('7.0.0', phpversion())) {
+				switch(version_compare('8.0.0', phpversion())) {
 					case -1: $img_php = "<img src=\"template/images/ok.png\" alt=\"OK\">";
 						break;
 					case 0: $img_php = "<img src=\"template/images/ok.png\" alt=\"OK\">";
@@ -213,75 +214,78 @@
 			}
 		} elseif(!empty($_POST['step']) AND $_POST['step'] == 2) {
 			$page_body = mgb_template_replace([
-				'TEMPLATE_STEPS' 		=> $content_install_step2,
-				'LANG_EXPL_STEP2' 		=> $lang['expl_step2'],
-				'LANG_DB_TITLE' 		=> $lang['db_title'],
-				'LANG_DB_HOSTNAME' 		=> $lang['db_hostname'],
-				'LANG_DB_DBNAME' 		=> $lang['db_dbname'],
-				'LANG_DB_USERNAME' 		=> $lang['db_username'],
-				'LANG_DB_PASSWORD' 		=> $lang['db_password'],
-				'LANG_DB_PREFIX' 		=> $lang['db_prefix'],
-				'LANG_ADMIN_TITLE' 		=> $lang['admin_title'],
-				'LANG_ADMIN_NAME' 		=> $lang['admin_name'],
-				'LANG_ADMIN_USERNAME' 	=> $lang['admin_username'],
-				'LANG_ADMIN_PASSWORD' 	=> $lang['admin_password'],
-				'LANG_ADMIN_EMAIL' 		=> $lang['admin_email'],
-				'LANG_ADMIN_GBEMAIL' 	=> $lang['admin_gbemail']
+				'TEMPLATE_STEPS' 				=> $content_install_step2,
+				'LANG_EXPL_STEP2' 				=> $lang['expl_step2'],
+				'LANG_DB_TITLE' 				=> $lang['db_title'],
+				'LANG_DB_HOSTNAME' 				=> $lang['db_hostname'],
+				'LANG_DB_DBNAME' 				=> $lang['db_dbname'],
+				'LANG_DB_USERNAME' 				=> $lang['db_username'],
+				'LANG_DB_PASSWORD' 				=> $lang['db_password'],
+				'LANG_DB_PREFIX' 				=> $lang['db_prefix'],
+				'LANG_ADMIN_TITLE' 				=> $lang['admin_title'],
+				'LANG_ADMIN_NAME' 				=> $lang['admin_name'],
+				'LANG_ADMIN_USERNAME' 			=> $lang['admin_username'],
+				'LANG_ADMIN_PASSWORD' 			=> $lang['admin_password'],
+				'LANG_ADMIN_PASSWORD_REPEAT'	=> $lang['admin_password_repeat'],
+				'LANG_ADMIN_EMAIL' 				=> $lang['admin_email'],
+				'LANG_ADMIN_GBEMAIL' 			=> $lang['admin_gbemail'],
+				'LANG_ALLOW_TELEMETRY'			=> $lang['allow_telemetry'],
+				'LANG_YES'						=> $lang['yes']
 			], $page_body);
 
 			if(!isset($_POST['sent'])) {
 				$page_body = mgb_template_replace([
-					'POST_DB_HOSTNAME' 		=> $_SERVER["SERVER_NAME"],
-					'POST_DB_DBNAME' 		=> "",
-					'POST_DB_USERNAME' 		=> "",
-					'POST_DB_PASSWORD' 		=> "",
-					'POST_DB_PREFIX' 		=> "mgb_",
-					'POST_ADMIN_NAME' 		=> $lang['post_admin_name'],
-					'POST_ADMIN_USERNAME' 	=> $lang['post_admin_username'],
-					'POST_ADMIN_PASSWORD' 	=> "",
-					'POST_ADMIN_EMAIL' 		=> "",
-					'POST_ADMIN_GBEMAIL' 	=> "noreply@".$_SERVER["SERVER_NAME"],
-					'TEMPLATE_WARNINGS' 	=> "",
-					'VALUE_STEP' 			=> 2,
-					'VALUE_SENT'			=> 1
+					'POST_DB_HOSTNAME' 				=> $_SERVER["SERVER_NAME"],
+					'POST_DB_DBNAME' 				=> "",
+					'POST_DB_USERNAME' 				=> "",
+					'POST_DB_PASSWORD' 				=> "",
+					'POST_DB_PREFIX' 				=> "mgb_",
+					'POST_ADMIN_NAME' 				=> $lang['post_admin_name'],
+					'POST_ADMIN_USERNAME' 			=> $lang['post_admin_username'],
+					'POST_ADMIN_PASSWORD' 			=> "",
+					'POST_ADMIN_PASSWORD_REPEAT' 	=> "",
+					'POST_ADMIN_EMAIL' 				=> "",
+					'POST_ADMIN_GBEMAIL' 			=> "noreply@".$_SERVER["SERVER_NAME"],
+					'{CHECKED}'						=> "",
+					'TEMPLATE_WARNINGS' 			=> "",
+					'VALUE_STEP' 					=> 2,
+					'VALUE_SENT'					=> 1
 				], $page_body);
-			} elseif(isset($_POST['sent']) AND ($_POST['sent'] == 1)) {
-				$_POST['db_hostname'] 		= cleanstr($_POST['db_hostname']);
-				$_POST['db_dbname'] 		= cleanstr($_POST['db_dbname']);
-				$_POST['db_username'] 		= cleanstr($_POST['db_username']);
-				$_POST['db_password'] 		= cleanstr($_POST['db_password']);
-				$_POST['db_prefix'] 		= cleanstr($_POST['db_prefix']);
-				$_POST['admin_name'] 		= cleanstr($_POST['admin_name']);
-				$_POST['admin_username'] 	= cleanstr($_POST['admin_username']);
-				$_POST['admin_password'] 	= cleanstr($_POST['admin_password']);
-				$_POST['admin_email'] 		= cleanstr($_POST['admin_email']);
-				$_POST['admin_gbemail'] 	= cleanstr($_POST['admin_gbemail']);
+			} elseif(isset($_POST['sent']) AND ($_POST['sent'] == 1)) {				
+				$telemetry_checked = "";
+				if(empty($_POST['allow_telemetry'])) {
+					$telemetry_checked = "";
+				} else {
+					$telemetry_checked = " checked='checked'";
+				}
 
 				$page_body = mgb_template_replace([
-					'POST_DB_HOSTNAME' 		=> $_POST['db_hostname'],
-					'POST_DB_DBNAME' 		=> $_POST['db_dbname'],
-					'POST_DB_USERNAME' 		=> $_POST['db_username'],
-					'POST_DB_PASSWORD' 		=> $_POST['db_password'],
-					'POST_DB_PREFIX' 		=> $_POST['db_prefix'],
-					'POST_ADMIN_NAME' 		=> $_POST['admin_name'],
-					'POST_ADMIN_USERNAME' 	=> $_POST['admin_username'],
-					'POST_ADMIN_PASSWORD' 	=> $_POST['admin_password'],
-					'POST_ADMIN_EMAIL' 		=> $_POST['admin_email'],
-					'POST_ADMIN_GBEMAIL' 	=> $_POST['admin_gbemail']
+					'POST_DB_HOSTNAME' 				=> $_POST['db_hostname'],
+					'POST_DB_DBNAME' 				=> $_POST['db_dbname'],
+					'POST_DB_USERNAME' 				=> $_POST['db_username'],
+					'POST_DB_PASSWORD' 				=> $_POST['db_password'],
+					'POST_DB_PREFIX' 				=> $_POST['db_prefix'],
+					'POST_ADMIN_NAME' 				=> $_POST['admin_name'],
+					'POST_ADMIN_USERNAME' 			=> $_POST['admin_username'],
+					'POST_ADMIN_EMAIL' 				=> $_POST['admin_email'],
+					'POST_ADMIN_GBEMAIL' 			=> $_POST['admin_gbemail'],
+					'CHECKED'						=> $telemetry_checked
 				], $page_body);
 
-				if(!empty($_POST['db_hostname']) AND !empty($_POST['db_dbname']) AND !empty($_POST['db_username']) AND !empty($_POST['db_prefix']) AND !empty($_POST['admin_name']) AND !empty($_POST['admin_username']) AND !empty($_POST['admin_password']) AND !empty($_POST['admin_email']) AND !empty($_POST['admin_gbemail'])) {
+				if(!empty($_POST['db_hostname']) AND !empty($_POST['db_dbname']) AND !empty($_POST['db_username']) AND !empty($_POST['db_prefix']) AND !empty($_POST['admin_name']) AND !empty($_POST['admin_username']) AND !empty($_POST['admin_password']) AND !empty($_POST['admin_password_repeat']) AND !empty($_POST['admin_email']) AND !empty($_POST['admin_gbemail'])) {
 					// put Posts into Session
-					$_SESSION['db_hostname'] 	= $_POST['db_hostname'];
-					$_SESSION['db_dbname'] 		= $_POST['db_dbname'];
-					$_SESSION['db_username'] 	= $_POST['db_username'];
-					$_SESSION['db_password'] 	= $_POST['db_password'];
-					$_SESSION['db_prefix'] 		= $_POST['db_prefix'];
-					$_SESSION['admin_name'] 	= $_POST['admin_name'];
-					$_SESSION['admin_username'] = $_POST['admin_username'];
-					$_SESSION['admin_password'] = $_POST['admin_password'];
-					$_SESSION['admin_email'] 	= $_POST['admin_email'];
-					$_SESSION['admin_gbemail'] 	= $_POST['admin_gbemail'];
+					$_SESSION['db_hostname'] 			= $_POST['db_hostname'];
+					$_SESSION['db_dbname'] 				= $_POST['db_dbname'];
+					$_SESSION['db_username'] 			= $_POST['db_username'];
+					$_SESSION['db_password'] 			= $_POST['db_password'];
+					$_SESSION['db_prefix'] 				= $_POST['db_prefix'];
+					$_SESSION['admin_name'] 			= $_POST['admin_name'];
+					$_SESSION['admin_username'] 		= $_POST['admin_username'];
+					$_SESSION['admin_password'] 		= $_POST['admin_password'];
+					$_SESSION['admin_password_repeat'] 	= $_POST['admin_password_repeat'];
+					$_SESSION['admin_email'] 			= $_POST['admin_email'];
+					$_SESSION['admin_gbemail'] 			= $_POST['admin_gbemail'];
+					$_SESSION['allow_telemetry'] 		= $_POST['allow_telemetry'];
 
 					// modify mysql error reporting
 					mysqli_report(MYSQLI_REPORT_ERROR);
@@ -305,17 +309,27 @@
 							if(check_mail($_POST['admin_email']) AND check_mail($_POST['admin_gbemail'])) {
 								if(check_prefix($_POST['db_prefix'])) {
 									if(check_username($_POST['admin_username'])) {
-										$page_body = mgb_template_replace([
-											'TEMPLATE_WARNINGS' => $content_install_warnings,
-											'ERROR' 			=> "",
-											'NO_ERROR' 			=> "<span class=\"install_no_error\">-&nbsp;".$lang['no_error']."</span><br>",
-											'VALUE_STEP' 		=> 3,
-											'VALUE_SENT' 		=> 2
+										if($_POST['admin_password'] === $_POST['admin_password_repeat']) {
+											$page_body = mgb_template_replace([
+												'TEMPLATE_WARNINGS' => $content_install_warnings,
+												'ERROR' 			=> "",
+												'NO_ERROR' 			=> "<span class=\"install_no_error\">-&nbsp;".$lang['no_error']."</span><br>", // everything's ok!
+												'VALUE_STEP' 		=> 3,
+												'VALUE_SENT' 		=> 2
+											], $page_body);
+										} else {
+											$page_body = mgb_template_replace([
+												'TEMPLATE_WARNINGS' => $content_install_warnings,
+												'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_7_step2']."</span><br>", // Passwords don't match
+												'NO_ERROR' 			=> "",
+												'VALUE_STEP' 		=> 2,
+												'VALUE_SENT' 		=> 1
 										], $page_body);
+										}
 									} else {
 										$page_body = mgb_template_replace([
 											'TEMPLATE_WARNINGS' => $content_install_warnings,
-											'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_6_step2']."</span><br>",
+											'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_6_step2']."</span><br>", // username not ok
 											'NO_ERROR' 			=> "",
 											'VALUE_STEP' 		=> 2,
 											'VALUE_SENT' 		=> 1
@@ -324,7 +338,7 @@
 								} else {
 									$page_body = mgb_template_replace([
 										'TEMPLATE_WARNINGS' 	=> $content_install_warnings,
-										'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_5_step2']."</span><br>",
+										'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_5_step2']."</span><br>", // prefix contains invalid characters
 										'NO_ERROR' 			=> "",
 										'VALUE_STEP' 		=> 2,
 										'VALUE_SENT' 		=> 1
@@ -333,7 +347,7 @@
 							} else {
 								$page_body = mgb_template_replace([
 									'TEMPLATE_WARNINGS' 	=> $content_install_warnings,
-									'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_2_step2']."</span><br>",
+									'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_2_step2']."</span><br>", // invalid emails
 									'NO_ERROR' 			=> "",
 									'VALUE_STEP' 		=> 2,
 									'VALUE_SENT' 		=> 1
@@ -342,7 +356,7 @@
 						} else {
 							$page_body = mgb_template_replace([
 								'TEMPLATE_WARNINGS' 	=> $content_install_warnings,
-								'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_4_step2']."</span><br>",
+								'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_4_step2']."</span><br>", // prefix already used
 								'NO_ERROR' 			=> "",
 								'VALUE_STEP' 		=> 2,
 								'VALUE_SENT' 		=> 1
@@ -351,7 +365,7 @@
 					} else {
 						$page_body = mgb_template_replace([
 							'TEMPLATE_WARNINGS' 	=> $content_install_warnings,
-							'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_3_step2']."</span><br>",
+							'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_3_step2']."</span><br>", // database connection could not be established
 							'NO_ERROR' 			=> "",
 							'VALUE_STEP' 		=> 2,
 							'VALUE_SENT' 		=> 1
@@ -360,7 +374,7 @@
 				} else {
 					$page_body = mgb_template_replace([
 						'TEMPLATE_WARNINGS' 	=> $content_install_warnings,
-						'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_1_step2']."</span><br>",
+						'ERROR' 			=> "<span class=\"install_error_critical\">-&nbsp;".$lang['error_1_step2']."</span><br>", // some fields are empty
 						'NO_ERROR' 			=> "",
 						'VALUE_STEP' 		=> 2,
 						'VALUE_SENT' 		=> 1
@@ -411,11 +425,11 @@
 			$to = count($sql) + 1;
 
 			if($success == $to) {
+				$lang = $lang_install;
 				$page_body = mgb_template_replace([
 					'TEMPLATE_STEPS' 			=> $content_install_step3,
 					'LANG_EXPL_STEP3' 			=> $lang['expl_step3'], 
 					'LANG_TO_ADMINISTRATION'	=> $lang['to_administration'], 
-					'LANG_IMPORT' 				=> $lang['import'], 
 					'LANG_TO_GUESTBOOK' 		=> $lang['to_guestbook']
 				], $page_body);
 
@@ -424,65 +438,8 @@
 
 				sleep(1); // wait one second
 
-				$sql_dump = "-- MGB OpenSource Guestbook SQL Dump\n";
-				$sql_dump.= "-- Version: ".MGB_VERSION."\n";
-				$sql_dump.= "-- http://www.m-gb.org/\n";
-				$sql_dump.= "--\n";
-				$sql_dump.= "-- Host: ".$_SESSION['db_hostname']."\n";
-				$sql_dump.= "-- Database: ".$_SESSION['db_dbname']."\n";
-				$sql_dump.= "-- Tables: banlist_domains, banlist_emails, banlist_ips, entries, settings, smilies, spam, spam_log, user\n";
-				$sql_dump.= "-- Type of backup: first backup after a fresh install\n";
-				$sql_dump.= "-- ---------------------------------------;\n\n";
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "banlist_domains", 1); // mode 1 = structure
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "banlist_domains", 2); // mode 2 = values
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "banlist_emails", 1);
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "banlist_emails", 2);
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "banlist_ips", 1);
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "banlist_ips", 2);
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "entries", 1);
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "entries", 2);
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "settings", 1);
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "settings", 2);
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "smilies", 1);
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "smilies", 2);
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "spam", 1);
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "spam", 2);
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "spam_log", 1);
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "spam_log", 2);
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "sys_log", 1);
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "sys_log", 2);
-
-				// get structure of sql table
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "user", 1);
-				$sql_dump.= mgb_get_sql_structure($mysqli, $_SESSION['db_prefix'], "user", 2);
-
-				$sql_dump.= "-- END OF FILE --";
-
-				$backup_filename = "-".$_SESSION['db_prefix']."full.sql";
-
-				if(!empty($backup_filename)) {
-					if(file_exists(MGB_ROOT.'save') AND is_dir(MGB_ROOT.'save') AND is_writable(MGB_ROOT.'save')) {
-						mgb_write_export_file(MGB_ROOT.'save/'.time().$backup_filename, $sql_dump);
-					}
-				}
+				// do a full backup
+				mgb_backup_database($mysqli, $_SESSION['db_prefix'], MGB_VERSION, $_SESSION['db_hostname'], $_SESSION['db_dbname'], 1);
 			}
 
 			// destroy session

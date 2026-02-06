@@ -48,12 +48,24 @@
 		<td class="data_r"><input class="install_textbox" type="password" name="admin_password" size="30" value="{POST_ADMIN_PASSWORD}"></td>
 	</tr>
 	<tr>
+		<td class="data_l"><span class="install_general_bold">{LANG_ADMIN_PASSWORD_REPEAT}</span></td>
+		<td class="data_r"><input class="install_textbox" type="password" name="admin_password_repeat" size="30" value="{POST_ADMIN_PASSWORD_REPEAT}"></td>
+	</tr>
+	<tr>
 		<td class="data_l"><span class="install_general_bold">{LANG_ADMIN_EMAIL}</span></td>
 		<td class="data_r"><input class="install_textbox" type="text" name="admin_email" size="30" value="{POST_ADMIN_EMAIL}"></td>
 	</tr>
 	<tr>
 		<td class="data_l"><span class="install_general_bold">{LANG_ADMIN_GBEMAIL}</span></td>
 		<td class="data_r"><input class="install_textbox" type="text" name="admin_gbemail" size="30" value="{POST_ADMIN_GBEMAIL}"></td>
+	</tr>
+	<tr>		
+		<td class="data_l">
+			<span class="install_general_bold">{LANG_ALLOW_TELEMETRY}</span>
+		</td>
+		<td class="data_r">
+			<input type="checkbox" name="allow_telemetry" value="1"{CHECKED}><span class="install_general_bold"> {LANG_YES}</span>
+		</td>
 	</tr>
 </table>
 <br>

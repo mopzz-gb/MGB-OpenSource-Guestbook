@@ -1149,27 +1149,51 @@
 
 	// check session
 	if(!function_exists("check_session")) {
-		function check_session($mysqli, $sessid, $sessionkey, $sessionip, $timeout) {
+		function check_session($mysqli, $sessid, $sessionkey, $sessionip, $timeout, $debug_mode) {
 			require("../includes/config.inc.php");
-			$result = mgb_sql_connect($mysqli, "SELECT user_key, logged_in FROM ".$db['prefix']."user WHERE ID=".$sessid." LIMIT 1", "Error while loading user information.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT user_key, logged_in FROM ".$db['prefix']."user WHERE ID=".$sessid." LIMIT 1", "Error while loading user information.", 1, null, null);
 			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			$count_ok = 0;
 
+			if(!empty($debug_mode)) {
+				echo "<pre>";
+				echo "REMOTE_ADDR: ".$_SERVER['REMOTE_ADDR']."<br>";
+				echo "\$sessionip: ".$sessionip."<br>";
+				echo "</pre>";
+			}
 			if($_SERVER['REMOTE_ADDR'] == $sessionip) {
 				$count_ok++;
 			}
 
+			if(!empty($debug_mode)) {
+				echo "<pre>";
+				echo "user_key: ".$user['user_key']."<br>";
+				echo "\$sessionkey: ".$sessionkey."<br>";
+				echo "</pre>";
+			}
 			if($user['user_key'] == $sessionkey) {
 				$count_ok++;
 			}
 
+			if(!empty($debug_mode)) {
+				echo "<pre>";
+				echo "time: ".time()."<br>";
+				echo "logged_in: ".$user['logged_in']."<br>";
+				echo "timeout: ".$timeout."<br>";
+				echo "</pre>";
+			}
 			if(time() < ($user['logged_in'] + $timeout)) {
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `logged_in` = '".time()."' WHERE ID=".$sessid." LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `logged_in` = '".time()."' WHERE ID=".$sessid." LIMIT 1", "Error while updating user information.", 0, null, null);
 				$count_ok++;
 			}
 
 			if($count_ok == 3) {
+				if(!empty($debug_mode)) {
+					echo "<pre>";
+					echo "count_ok: ".$count_ok."<br><br>";
+					echo "</pre>";
+				}
 				return TRUE;
 			} else {
 				return FALSE;
@@ -2251,7 +2275,7 @@
 	// CREATED: 15.01.2026
 	
 	if(!function_exists("mgb_send_telemetry")) {
-		function mgb_send_telemetry($telemetry_enabled, $telemetry_last_ping, $mgb_version, $mysql_client, $db_prefix, $install_id, $ping_address, $mysqli, $last_seen) {
+		function mgb_send_telemetry($telemetry_enabled, $telemetry_last_ping, $mgb_version, $mysql_server, $db_prefix, $install_id, $ping_address, $mysqli, $last_seen) {
 			if (empty($telemetry_enabled)) {
 			return;
 			}
@@ -2264,7 +2288,7 @@
 				'software'   => 'MGB',
 				'version'    => $mgb_version,
 				'php'        => phpversion(),
-				'db'         => $mysql_client,
+				'db'         => $mysql_server,
 				'install_id' => $install_id,
 				'timestamp'  => time()
 			];

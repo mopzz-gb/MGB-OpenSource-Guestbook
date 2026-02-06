@@ -40,6 +40,12 @@
 
 			// set number of site to "1" if it is "0"
 			if(!isset($_GET['p'])) { $_GET['p'] = 1; }
+			
+			if (isset($_GET['id']) AND isset($_GET['spam_action'])) {
+				if ($_GET['spam_action'] == "delete" ) {
+					mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."sys_log` WHERE ID = ".$_GET['id']." LIMIT 1", "Error while deleting entry.", 0, null, null);
+				}
+			}
 
 			// get total number of entries
 			if((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 1000) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 1000)) {
@@ -146,7 +152,7 @@
 			}
 
 			// fill entry template with content
-			require ("../includes/functions.inc.php");
+			require_once ("../includes/functions.inc.php");
 
 			if(!isset($entry)) {
 				$entry = NULL;

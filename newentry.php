@@ -522,7 +522,7 @@
 			$_SESSION = array();
 
 			// refresh site
-			if(!isset($settings['refresh_time'])) {
+			if(empty($settings['refresh_time'])) {
 				$settings['refresh_time'] = 5;
 			}
 			$refresh = "<meta http-equiv='refresh' content='".$settings['refresh_time']."; URL=index.php{PARAMLANG_A}'>";
@@ -670,7 +670,7 @@
 	// Add smilies if activated
 	if($settings['smileys'] === 1) {
 		$sql = "SELECT * FROM ".$db['prefix']."smilies ORDER BY ID ".$settings['smileys_order'];
-		$result = mgb_sql_connect($mysqli, $sql, "Error while loading smilies.", 1);
+		$result = mgb_sql_connect($mysqli, $sql, "Error while loading smilies.", 1, null, null);
 
 		for($i = 0; $i < mysqli_num_rows($result); $i++) {
 			$smilies[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
@@ -678,30 +678,32 @@
 
 		if(empty($smilies)) {
 			$smilies = "";
-		}
+			$smilies_replace = "";
+		} else {
 
-		$smiley_counter = 0;
-		$smiley_counter_2 = 0;
-		$smilies_replace = "";
+			$smiley_counter = 0;
+			$smiley_counter_2 = 0;
+			$smilies_replace = "";
 
-		for($i = 0; $i < count($smilies); $i++) {
-			$smiley_counter++;
-			$smiley_counter_2++;
-			if(($smiley_counter === $settings['smileys_break']) AND ($smiley_counter_2 != count($smilies))) {
-				if(preg_match("/,/is", $smilies[$i]['replacement'], $treffer)) {
-					$repl = explode(", ", $smilies[$i]['replacement']);
-					$smilies[$i]['replacement'] = $repl[0];
+			for($i = 0; $i < count($smilies); $i++) {
+				$smiley_counter++;
+				$smiley_counter_2++;
+				if(($smiley_counter === $settings['smileys_break']) AND ($smiley_counter_2 != count($smilies))) {
+					if(preg_match("/,/is", $smilies[$i]['replacement'], $treffer)) {
+						$repl = explode(", ", $smilies[$i]['replacement']);
+						$smilies[$i]['replacement'] = $repl[0];
+					}
+					$smilies_loop = "<a href='javascript&#058;AddSmiley(\"".$smilies[$i]['replacement']."\")'><img src='images/smilies/".$smilies[$i]['path']."' class='smilies' width='".$smilies[$i]['width']."' height='".$smilies[$i]['height']."' alt='".$smilies[$i]['replacement']."' title='".$smilies[$i]['replacement']."'></a><br>&nbsp;";
+					$smiley_counter = 0;
+				} else {
+					if(preg_match("/,/is", $smilies[$i]['replacement'], $treffer)) {
+						$repl = explode(", ", $smilies[$i]['replacement']);
+						$smilies[$i]['replacement'] = $repl[0];
+					}
+					$smilies_loop = "<a href='javascript&#058;AddSmiley(\"".$smilies[$i]['replacement']."\")'><img src='images/smilies/".$smilies[$i]['path']."' class='smilies' width='".$smilies[$i]['width']."' height='".$smilies[$i]['height']."' alt='".$smilies[$i]['replacement']."' title='".$smilies[$i]['replacement']."'></a>&nbsp;";
 				}
-				$smilies_loop = "<a href='javascript&#058;AddSmiley(\"".$smilies[$i]['replacement']."\")'><img src='images/smilies/".$smilies[$i]['path']."' class='smilies' width='".$smilies[$i]['width']."' height='".$smilies[$i]['height']."' alt='".$smilies[$i]['replacement']."' title='".$smilies[$i]['replacement']."'></a><br>&nbsp;";
-				$smiley_counter = 0;
-			} else {
-				if(preg_match("/,/is", $smilies[$i]['replacement'], $treffer)) {
-					$repl = explode(", ", $smilies[$i]['replacement']);
-					$smilies[$i]['replacement'] = $repl[0];
-				}
-				$smilies_loop = "<a href='javascript&#058;AddSmiley(\"".$smilies[$i]['replacement']."\")'><img src='images/smilies/".$smilies[$i]['path']."' class='smilies' width='".$smilies[$i]['width']."' height='".$smilies[$i]['height']."' alt='".$smilies[$i]['replacement']."' title='".$smilies[$i]['replacement']."'></a>&nbsp;";
+				$smilies_replace .= $smilies_loop;
 			}
-			$smilies_replace .= $smilies_loop;
 		}
 
 		$content_newentry_smileys = mgb_template_replace(['SMILIES' => $smilies_replace], $content_newentry_smileys);

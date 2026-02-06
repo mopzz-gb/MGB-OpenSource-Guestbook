@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - http://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,18 +17,19 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-	=====================
-	load_settings.inc.php
-	=====================
+	========
+	0694.php
+	========
 	*/
+	
+	return [
+		'version'		=>	'0.6.9.4',
+		'description'	=>	'Add timezone field',
+		'sql'			=>	[
 
-	// load settings from database
-	$sql = "SELECT * FROM ".$db['prefix']."settings";
-	$result = mgb_sql_connect($mysqli, $sql, "Error while loading settings from database.", 1, null, null);
-	
-	if (!$result || $result->num_rows !== 1) {
-		die('Critical error: Problem with database.');
-	}
-	
-	$settings = $result->fetch_assoc();
+			function(mysqli $mysqli, array $db) {			
+					return "ALTER TABLE `".$db['prefix']."settings` ADD `timezone` VARCHAR( 255 ) NOT NULL DEFAULT 'Europe/Berlin' AFTER `h_description`";
+			}
+		]
+	];	
 ?>

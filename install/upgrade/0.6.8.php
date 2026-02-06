@@ -1,6 +1,6 @@
 <?php
 	/*
-	MGB 0.7.x - OpenSource PHP and MySql Guestbook
+	MGB 0.6.x - OpenSource PHP and MySql Guestbook
 	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
@@ -17,18 +17,30 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-	=====================
-	load_settings.inc.php
-	=====================
+	=======
+	068.php
+	=======
 	*/
-
-	// load settings from database
-	$sql = "SELECT * FROM ".$db['prefix']."settings";
-	$result = mgb_sql_connect($mysqli, $sql, "Error while loading settings from database.", 1, null, null);
 	
-	if (!$result || $result->num_rows !== 1) {
-		die('Critical error: Problem with database.');
-	}
-	
-	$settings = $result->fetch_assoc();
+	return [
+		'version'		=>	'0.6.8',
+		'description'	=>	'Added possibility to manage emoticons in the admin menu',
+		'sql'			=>	[
+			
+			function(mysqli $mysqli, array $db) {
+					return "CREATE TABLE ".$db['prefix']."smilies (
+						`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+						`path` VARCHAR( 255 ) NOT NULL ,
+						`replacement` VARCHAR( 255 ) NOT NULL ,
+						`height` TINYINT( 4 ) NOT NULL ,
+						`width` TINYINT( 4 ) NOT NULL
+						);";
+			},			
+			
+			function(mysqli $mysqli, array $db) {		
+					return "ALTER TABLE `".$db['prefix']."user` ADD `r_edit_smilies` TINYINT( 1 ) NOT NULL AFTER `r_spam`";
+			}
+		]
+	];
 ?>
+

@@ -33,8 +33,8 @@
 	if(isset($_GET['action']) AND ($_GET['action'] == "logout")) {
 		// logout
 		if(isset($_SESSION['user_ID'])) {
-			mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `logged_out` = '1' WHERE ID=".mgb_sql_int($_SESSION['user_ID'])." LIMIT 1", "Error while logging out.", 0);
-			mgb_trigger_sys_log($mysqli, 1002, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], mgb_sql_prefix($db['prefix'])); // write the syslog
+			mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `logged_out` = '1' WHERE ID=".$_SESSION['user_ID']." LIMIT 1", "Error while logging out.", 0);
+			mgb_trigger_sys_log($mysqli, 1002, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 			session_unset();
 			session_destroy();
 			$_SESSION = array();
@@ -51,7 +51,7 @@
 					if(!isset($_SESSION['user_key'])) {
 						generate_key_and_pw(MGB_ROOT, $mysqli, $_POST['username'], 16, "adminpanel");
 
-						$result = mgb_sql_connect($mysqli, "SELECT ID, user_name, user_key, user_ip, user_is_active, logged_out FROM ".mgb_sql_prefix($db['prefix'])."user WHERE user_name='".$_POST['username']."'", "Error while logging in.", 1);
+						$result = mgb_sql_connect($mysqli, "SELECT ID, user_name, user_key, user_ip, user_is_active, logged_out FROM ".$db['prefix']."user WHERE user_name='".$_POST['username']."'", "Error while logging in.", 1, null, null);
 						$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 						$_SESSION['user_ID'] = $user['ID'];
@@ -75,7 +75,7 @@
 								$refresh = "<meta http-equiv=\"refresh\" content=\"2; URL=admin.php".$sid."\">";
 							}
 
-							mgb_sql_connect($mysqli, "UPDATE ".mgb_sql_prefix($db['prefix'])."user SET `logged_in` = '".time()."', `logged_out` = '0' WHERE ID=".mgb_sql_prefix($user['ID'])." LIMIT 1", "Error while logging in.", 0);
+							mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `logged_in` = '".time()."', `logged_out` = '0' WHERE ID=".$user['ID']." LIMIT 1", "Error while logging in.", 0, null, null);
 						} else {
 							session_unset();
 							session_destroy();
