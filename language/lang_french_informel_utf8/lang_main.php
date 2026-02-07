@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,17 +18,17 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	======================
-	lang_main.php - French
+	lang_main.php - German
 	======================
-
-	Français informel (toi)
-	This languagefile was translated by Jürgen Schäfer ==> juergen.schaefer(at)minetoshsoft.com
 	*/
 
+	// initiate array $lang
+	$lang = array();
+
 	// INDEX.PHP
-	$lang['install_directory_exists'] = "Le dossier d'installation n'a pas encore été supprimé.<br>Pour ta propre sécurité, fais-le maintenant, s'il te plaît!<br>Mais, n'oublie pas d'exécuter le fichier <a href=\"install/upgrade.php\" title=\"Upgrade\">upgrade.php</a> après une mise à jour!<br>Si tu as des problèmes avec des «Umlauts», l'exécution du fichier <a href=\"install/convert_ansi.php\" title=\"Convert\">convert_ansi.php</a> peut t'aider.";
+	$lang['install_directory_exists'] = "Le dossier d\'installation n\'a pas encore été supprimé.<br>Pour ta propre sécurité, fais-le maintenant, s\'il te plaît!<br>Mais, n\'oublie pas d\'exécuter le fichier <a href=\"install/upgrade.php\" title=\"Upgrade\">upgrade.php</a> après une mise à jour!<br>Si tu as des problèmes avec des «Umlauts», l\'exécution du fichier <a href=\"install/convert_ansi.php\" title=\"Convert\">convert_ansi.php</a> peut t\'aider.";
 	$lang['new_entry'] = "Nouvelle contribution";
-	$lang['new_entry_descr'] = "Ici tu peux écrire une nouvelle entrée pour le livre d'hôtes";
+	$lang['new_entry_descr'] = "Ici tu peux écrire une nouvelle entrée pour le livre d\'hôtes";
 	$lang['contact'] = "Contact";
 	$lang['contact_descr'] = "Ici tu peux contacter l’administrateur";
 	$lang['adminpanel'] = "Administration";
@@ -60,30 +60,31 @@
 	$lang['new_entry_name'] = "Ton nom:";
 	$lang['new_entry_city'] = "Ville:";
 	$lang['new_entry_email'] = "E-Mail:";
-	$lang['new_entry_icq'] = "ICQ:";
-	$lang['new_entry_aim'] = "AIM:";
-	$lang['new_entry_msn'] = "MSN:";
-	$lang['new_entry_fb'] = "Facebook:";
-	$lang['new_entry_twitter'] = "Twitter:";
+	$lang['mastodon'] = "Mastodon:";
+	$lang['bluesky'] = "Bluesky:";
+	$lang['w'] = "W:";
+	$lang['eu_voice'] = "Voix EU:";
+	$lang['eu_video'] = "Vidéo EU";
+	$lang['monnett'] = "Monnett:";
 	$lang['new_entry_hp'] = "Site Internet:";
 	$lang['new_entry_message'] = "Ton message:";
-	$lang['necessary_fields'] = "[ Les champs obligatoires sont marqués d'un astérisque (*) ]";
-	$lang['user_notification'] = "M’avertir par e-Mail, quand l'entrée est activée, ou quand un commentaire a été déposé.";
-	$lang['user_show_email'] = "Autoriser les autres utilisateurs à m'écrire un e-Mail à partir du formulaire de contact. Pour éviter les spams, mon adresse E-Mail n’est pas affichée.";
-	$lang['user_accept_akismet_service'] = "Cette entrée sera vérifiée par 'Akismet' pour la recherche de spam. Je suis conscient du fait qu'avec l'envoi de mon entrée, des données personnelles sont aussi envoyées sur un serveur situé aux Etats-Unis, et je l'accepte.";
+	$lang['necessary_fields'] = "[ Les champs obligatoires sont marqués d\'un astérisque (*) ]";
+	$lang['user_notification'] = "M’avertir par e-Mail, quand l\'entrée est activée, ou quand un commentaire a été déposé.";
+	$lang['user_show_email'] = "Autoriser les autres utilisateurs à m\'écrire un e-Mail à partir du formulaire de contact. Pour éviter les spams, mon adresse E-Mail n’est pas affichée.";
+	$lang['user_accept_akismet_service'] = "Cette entrée sera vérifiée par \'Akismet\' pour la recherche de spam. Je suis conscient du fait qu\'avec l\'envoi de mon entrée, des données personnelles sont aussi envoyées sur un serveur situé aux Etats-Unis, et je l\'accepte.";
 	$lang['send'] = "Envoyer";
 	$lang['preview'] = "Aperçu";
 	$lang['security_code'] = "Code de sécurité – Captcha";
 	$lang['captcha_refresh'] = "Générer un nouveau Captcha";
 	$lang['captcha_what_is_that'] = "Qu’est ce que c’est?";
 	$lang['captcha_wikipedia'] = "http://fr.wikipedia.org/wiki/Captcha";
-	$lang['captcha_tooltip'] = "L’envoi d’une nouvelle contribution nécessite l’entrée d'un code de sécurité pour empêcher les enregistrements automatiques. Entre toutes les lettres en MAJUSCULES, s’il te plaît. Si le code n’est pas lisible, laisse le champ vide et clique sur ''Envoyer''. Ensuite, un nouveau code sera généré. Tes entrées seront conservées. S’il n’y a pas de nouveau code, clique à droit et ensuite sur ''Actualiser'', s’il te plaît.";
+	$lang['captcha_tooltip'] = "L’envoi d’une nouvelle contribution nécessite l’entrée d\'un code de sécurité pour empêcher les enregistrements automatiques. Entre toutes les lettres en MAJUSCULES, s’il te plaît. Si le code n’est pas lisible, laisse le champ vide et clique sur \'\'Envoyer\'\'. Ensuite, un nouveau code sera généré. Tes entrées seront conservées. S’il n’y a pas de nouveau code, clique à droit et ensuite sur \'\'Actualiser\'\', s’il te plaît.";
 	$lang['back_to_mainpage'] = "Retour à la page principale";
 	$lang['back'] = "Retour";
 	$lang['entry_success_mod'] = "Ton entrée a été enregistrée avec succès.<br>Elle sera évaluée par l’administrateur, puis activée.";
 	$lang['entry_success'] = "Ton entrée a été enregistrée avec succès. Tu peux la regarder immédiatement.";
-	$lang['forwarding'] = "Tu vas être redirigé automatiquement dans 5 secondes. Sinon, clique sur ''Retour à la page principale'', s’il te plaît.";
-	$lang['sendmail_admin_title'] = "Nouvelle entrée dans le livre d’hôtes de '{NAME}'";
+	$lang['forwarding'] = "Tu vas être redirigé automatiquement dans 5 secondes. Sinon, clique sur \'\'Retour à la page principale\'\', s’il te plaît.";
+	$lang['sendmail_admin_title'] = "Nouvelle entrée dans le livre d’hôtes de \'{NAME}\'";
 	$lang['sendmail_user_title'] = "Ton entrée chez {DOMAIN}";
 
 	// EMAIL.PHP
@@ -92,53 +93,54 @@
 	$lang['email_message'] = "Ton message:";
 	$lang['email_sent_to'] = "Cet e-Mail est envoyé à:";
 	$lang['email_send'] = "Envoyer";
-	$lang['email_caption'] = "E-Mail de '{NAME}' par le livre d’hôtes de {DOMAIN}";
-	$lang['email_caption_copy'] = "E-Mail à '{NAME}' par le livre d’hôtes de {DOMAIN} – Copie du message";
+	$lang['email_caption'] = "E-Mail de \'{NAME}\' par le livre d’hôtes de {DOMAIN}";
+	$lang['email_caption_copy'] = "E-Mail à \'{NAME}\' par le livre d’hôtes de {DOMAIN} – Copie du message";
 	$lang['email_sender'] = "Expéditeur:";
 	$lang['email_receiver'] = "Destinataire:";
 	$lang['email_from'] = "via:";
 	$lang['email_sendcopytome'] = "Je voudrais recevoir une copie de cet e-Mail.";
 	$lang['email_success'] = "Ton e-Mail a été envoyé avec succès à l’utilisateur.";
-	$lang['email_fail'] = "L'envoi de l'e-Mail a échoué. Probablement, une erreur s'est produite au niveau du serveur mail.";
+	$lang['email_fail'] = "L\'envoi de l\'e-Mail a échoué. Probablement, une erreur s\'est produite au niveau du serveur mail.";
 
 	// ERRORMESSAGES
-	$lang['errormessage'][1] = "Entre un message, s'il te plaît!";
-	$lang['errormessage'][2] = "Entre une adresse e-Mail valide, s'il te plaît!";
-	$lang['errormessage'][3] = "Entre ton nom, s'il te plaît!";
+	$lang['errormessage'][1] = "Entre un message, s\'il te plaît!";
+	$lang['errormessage'][2] = "Entre une adresse e-Mail valide, s\'il te plaît!";
+	$lang['errormessage'][3] = "Entre ton nom, s\'il te plaît!";
 	$lang['errormessage'][4] = "n’est pas une adresse <br>e-Mail valide!";
 	$lang['errormessage'][5] = "n’est pas un numéro <br>ICQ valide!";
 	$lang['errormessage'][6] = "La barrière IP interdit une autre entrée!";
 	$lang['errormessage'][7] = "Le code de sécurité n’a pas été saisi ou il est incorrect!";
 	$lang['errormessage'][8] = "Cet utilisateur ne veut pas recevoir d’e-Mails!";
-	$lang['errormessage'][9] = "Une erreur s'est produite lors de l'envoi de l'e-Mail!";
-	$lang['errormessage'][10] = "Protection anti-spam : L'entrée a été envoyée trop rapidement. Attends encore {TIME_LOCK_REST} secondes. Merci.";
-	$lang['errormessage'][11] = "La clause Akismet concernant les données privées (The Akismet data privacy agreement) n'a pas été acceptée. Il FAUT l’accepter pour enregistrer l'entrée.";
+	$lang['errormessage'][9] = "Une erreur s\'est produite lors de l\'envoi de l\'e-Mail!";
+	$lang['errormessage'][10] = "Protection anti-spam : L\'entrée a été envoyée trop rapidement. Attends encore {TIME_LOCK_REST} secondes. Merci.";
+	$lang['errormessage'][11] = "La clause Akismet concernant les données privées (The Akismet data privacy agreement) n\'a pas été acceptée. Il FAUT l’accepter pour enregistrer l\'entrée.";
 	$lang['errormessage'][12] = "Cette adresse e-Mail est interdite pour les entrées.";
 	$lang['errormessage'][13] = "Ce domaine est interdite pour les entrées.";
 	$lang['errormessage'][14] = "Cette adresse IP est interdite pour les entrées.";
-	$lang['errormessage'][15] = "n'est pas un nom Facebook valide. Attention: Les Umlauts et/ou les caractères spéciaux ne sont pas permis! Par exemple: '&auml;' devient 'a'.";
-	$lang['errormessage'][16] = "n'est pas un nom Twitter valide. Attention: Les Umlauts et/ou les caractères spéciaux ne sont pas permis! Par exemple: '&auml;' devient 'a'.";
-	$lang['errormessage'][17] = "La saisie très rapide répétée de caractères indique que tu es un robot spam. Tu es bloqué pour une période de {KEYSTROKE_BAN_TIME} secondes. Si c'est une erreur, tu peux contacter l'administrateur.";
-	$lang['errormessage'][18] = "Tu es bloqué à cause d'une saisie de caractères trop rapide. Tu es soupçonné d'être un robot spam. Attends encore {KEYSTROKE_BAN_TIME_REST} secondes, s'il te plait.";
+	$lang['errormessage'][15] = "n\'est pas un nom Facebook valide. Attention: Les Umlauts et/ou les caractères spéciaux ne sont pas permis! Par exemple: \'&auml;\' devient \'a\'.";
+	$lang['errormessage'][16] = "n\'est pas un nom Twitter valide. Attention: Les Umlauts et/ou les caractères spéciaux ne sont pas permis! Par exemple: \'&auml;\' devient \'a\'.";
+	$lang['errormessage'][17] = "La saisie très rapide répétée de caractères indique que tu es un robot spam. Tu es bloqué pour une période de {KEYSTROKE_BAN_TIME} secondes. Si c\'est une erreur, tu peux contacter l\'administrateur.";
+	$lang['errormessage'][18] = "Tu es bloqué à cause d\'une saisie de caractères trop rapide. Tu es soupçonné d\'être un robot spam. Attends encore {KEYSTROKE_BAN_TIME_REST} secondes, s\'il te plait.";
+	$lang['errormessage'][19] = "Les accès directs ne sont pas autorisés.";
 
 	// BBCODES
-	$lang['bbcodes'] = "BBCodes:";
+ 	$lang['bbcodes'] = "BBCodes:";
 	$lang['bbcode_bold'] = "Gras";
 	$lang['bbcode_help_bold'] = "Afficher le texte en gras";
 	$lang['bbcode_italic'] = "Italique";
 	$lang['bbcode_help_italic'] = "Afficher le texte en italique";
 	$lang['bbcode_url'] = "Lien";
-	$lang['bbcode_help_url'] = "Insère un lien. Possibilités: [url]http://www.test.fr/[/url] ou [url=http://www.test.fr/]Test[/url] ou [url=http://www.test.fr/][img]adresse d'image[/img][/url]";
+	$lang['bbcode_help_url'] = "Insère un lien. Possibilités: [url]http://www.test.fr/[/url] ou [url=http://www.test.fr/]Test[/url] ou [url=http://www.test.fr/][img]adresse d\'image[/img][/url]";
 	$lang['bbcode_img'] = "Image";
-	$lang['bbcode_help_img'] = "Insère une image. Possibilités: [img]adresse d'image[/img] ou [img=Largeur,Hauteur]adresse d'image[/img]";
-	$lang['bbcode_flash'] = "Flash";
+	$lang['bbcode_help_img'] = "Insère une image. Possibilités: [img]adresse d\'image[/img] ou [img=Largeur,Hauteur]adresse d\'image[/img]";
+ 	$lang['bbcode_flash'] = "Flash";
 	$lang['bbcode_help_flash'] = "Insère une vidéo Flash. -> [flash=Largeur,Hauteur]URL[/flash]";
 	$lang['bbcode_quote'] = "Citation";
-	$lang['bbcode_help_quote'] = "Insère une citation. Possibilités: [quote]citation[/quote] ou [quote=Nom de l'auteur de la citation]citation[/quote]";
+	$lang['bbcode_help_quote'] = "Insère une citation. Possibilités: [quote]citation[/quote] ou [quote=Nom de l\'auteur de la citation]citation[/quote]";
 	$lang['bbcode_textsize'] = "Taille de police";
 	$lang['bbcode_extrasmall'] = "Minuscule";
 	$lang['bbcode_small'] = "Petit";
-	$lang['bbcode_default'] = "Standard";
+ 	$lang['bbcode_default'] = "Standard";
 	$lang['bbcode_big'] = "Grand;";
 	$lang['bbcode_extrabig'] = "Géant";
 	$lang['bbcode_textcolor'] = "Couleur de police";
