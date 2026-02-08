@@ -1,1 +1,0 @@
-<span>&nbsp;{LANG_FROM}&nbsp;<b>{ENTRY_CITY}</b></span>

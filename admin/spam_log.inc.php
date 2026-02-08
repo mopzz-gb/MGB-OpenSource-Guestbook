@@ -112,13 +112,13 @@
 				$script_time = $script_time_end - $script_time_start;
 				
 				if($entry_counter > 0) {
-					$template_message.= $lang['updated_ips'];
+					$template_message.= $lang['updated_ips']."<br>";
 					$template_message = mgb_template_replace([
 						'COUNTER' 	=> $entry_counter,
 						'TIME' 		=> round($script_time, 3)
 					], $template_message);
 				} else {					
-					$template_message = $lang['spam_all_ips_on_ip_list'];
+					$template_message.= $lang['spam_all_ips_on_ip_list']."<br>";
 				}
 
 				if($_POST['dropbox'] == 4) {
@@ -178,13 +178,13 @@
 				$script_time = $script_time_end - $script_time_start;
 				
 				if($entry_counter > 0) {
-					$template_message.= $lang['updated_emails'];
+					$template_message.= $lang['updated_emails']."<br>";
 					$template_message = mgb_template_replace([
 						'COUNTER' 	=> $entry_counter,
 						'TIME' 		=> round($script_time, 3)
 					], $template_message);
 				} else {					
-					$template_message = $lang['spam_all_emails_on_email_list'];
+					$template_message.= $lang['spam_all_emails_on_email_list']."<br>";
 				}
 
 				if($_POST['dropbox'] == 4) {
@@ -260,13 +260,13 @@
 				$script_time = $script_time_end - $script_time_start;
 				
 				if($entry_counter > 0) {
-					$template_message.= $lang['updated_domains'];
+					$template_message.= $lang['updated_domains']."<br>";
 					$template_message = mgb_template_replace([
 						'COUNTER' 	=> $entry_counter,
 						'TIME' 		=> round($script_time, 3)
 					], $template_message);
 				} else {					
-					$template_message = $lang['spam_all_domains_on_domain_list'];
+					$template_message.= $lang['spam_all_domains_on_domain_list']."<br>";
 				}
 
 				if($_POST['dropbox'] == 4) {

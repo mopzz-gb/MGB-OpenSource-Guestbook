@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -47,30 +47,39 @@
 				}
 			}
 
-			// get total number of entries
-			if((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 1000) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 1000)) {
-				$show_type = " WHERE type=1000";
-				$show_url = "&amp;show_type=1000";
-			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 6) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 3)) {
-				$show_type = " WHERE type=3";
-				$show_url = "&amp;show_type=3";
-			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 7) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 4)) {
-				$show_type = " WHERE type=4";
-				$show_url = "&amp;show_type=4";
-			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 8) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 11)) {
-				$show_type = " WHERE type=11";
-				$show_url = "&amp;show_type=11";
-			} elseif((!empty($_POST['dropbox']) AND $_POST['dropbox'] == 9) OR (!empty($_GET['show_type']) AND $_GET['show_type'] == 9)) {
-				$show_type = " WHERE type=9";
-				$show_url = "&amp;show_type=9";
+			$groups = [
+				'13' => [1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1030, 1031, 2001, 2002],
+				'14' => [3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 4002, 4003, 4004, 4005, 4006],
+				'15' => [1025, 1027, 1028, 1029],
+				'16' => [1026, 4001]
+			];
+			
+			if(empty($_GET['show_type'])) { $_GET['show_type'] = ""; }
+			if(empty($_POST['dropbox'])) { $_POST['dropbox'] = ""; }
+			
+			if(!empty($_GET['show_type']) && $_GET['show_type'] === 12) {
+				$show_type = "";
+			} elseif(!empty($_POST['dropbox']) && $_POST['dropbox'] === 12) {
+				$show_type = "";
+			} else {
+				if(!empty($groups[$_GET['show_type']])) {			
+					$types = $groups[$_GET['show_type']];
+					$show_type = " WHERE type IN (".implode(',', array_map('intval', $types)).")";
+					$show_url = "&amp;show_type=".$_GET['show_type'];
+				} elseif (!empty($groups[$_POST['dropbox']])) {
+					$types = $groups[$_POST['dropbox']];
+					$show_type = " WHERE type IN (".implode(',', array_map('intval', $types)).")";
+					$show_url = "&amp;show_type=".$_POST['dropbox'];
+				}
 			}
 			
+			// get total number of entries
 			if(empty($show_type)) { $show_type = ""; }
 			if(empty($show_url)) { $show_url = ""; }
 
 			// get total number of entries
-			$sql = "SELECT COUNT(ID) AS total FROM ".$db['prefix']."sys_log";
-			$results = mgb_sql_connect($mysqli, $sql, "Error while counting system log entries.", 1);
+			$sql = "SELECT COUNT(ID) AS total FROM ".$db['prefix']."sys_log".$show_type;
+			$results = mgb_sql_connect($mysqli, $sql, "Error while counting system log entries.", 1, null, null);
 			$row = $results->fetch_assoc();
 			$total = (int)$row['total'];
 
@@ -133,7 +142,7 @@
 			}
 
 			// load sys_log entries
-			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."sys_log".$show_type." ORDER BY timestamp DESC LIMIT $load_start, $load_end", "Error while loading system log entries.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."sys_log".$show_type." ORDER BY timestamp DESC LIMIT $load_start, $load_end", "Error while loading system log entries.", 1, null, null);
 			$counter = 0;
 
 			for($i = 0; $i < mysqli_num_rows($result); $i++) {

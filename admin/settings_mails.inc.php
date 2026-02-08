@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@
 						`smtp_password` = '".$_POST['smtp_password']."',
 						`smtp_auth` = '".$_POST['smtp_auth']."'";
 
-					if (mgb_sql_connect($mysqli, $sql, "Error while saving mails settings.", 0)) {
+					if (mgb_sql_connect($mysqli, $sql, "Error while saving mails settings.", 0, null, null)) {
 						$saved_settings_successfull = 1;
 						mgb_trigger_sys_log($mysqli, 1010, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}

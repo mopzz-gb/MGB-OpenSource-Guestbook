@@ -75,7 +75,7 @@
 						`admin_gbemail` = '".$admin_gbemail."',
 						`caching` = '".$_POST['caching']."'";
 
-					if (mgb_sql_connect($mysqli, $sql, "Error while saving general settings.", 0)) {
+					if (mgb_sql_connect($mysqli, $sql, "Error while saving general settings.", 0, null, null)) {
 						$saved_settings_successfull = 1;
 						mgb_trigger_sys_log($mysqli, 1003, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						mgb_erase_cache(MGB_ROOT."cache/");

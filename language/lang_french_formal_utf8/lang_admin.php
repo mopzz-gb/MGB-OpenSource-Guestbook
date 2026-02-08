@@ -289,26 +289,26 @@
 	$lang['recaptcha_style_3'] = "clair";
 
 	// DROPDOWNS
-	$lang['do_nothing'] = "Pas d\'action sélectionnée...";
-	$lang['delete_whole_spam'] = "Supprimer toutes les entrées spam";
-	$lang['mark_all_no_spam_deactivate'] = "- Marquer toutes les entrées comme \'pas un spam\', mais laisser les désactivées";
-	$lang['mark_all_no_spam_activate'] = "- Marquer toutes les entrées comme \'pas un spam\' et les activer";
-	$lang['mark_all_as_spam'] = "- Marquer toutes les entrées en tant que spam";
-	$lang['activate_all_entries'] = "- Activer toutes les entrées";
-	$lang['deactivate_all_entries'] = "- Désactiver toutes les entrées";
-	$lang['delete_all_entries'] = "- Supprimer toutes les entrées";
-	$lang['put_all_ips_on_banlist'] = "- Ajouter tous les IP nouveaux dans la liste de blocage";
-	$lang['put_all_emails_on_banlist'] = "- Ajouter tous les e-Mails nouveaux dans la liste de blocage";
-	$lang['put_all_domains_on_banlist'] = "- Ajouter tous les domaines nouveaux dans la liste de blocage";
-	$lang['put_all_on_banlists_and_delete_everything'] = "- Ajouter tous les nouveaux IP, e-Mails et domaines dans la liste de blocage et les supprimer ensuite";
-	$lang['show_banned_by_ip_only'] = "-- Montrer seulement les entrées, qui ont été bloquées par les IP";
-	$lang['show_banned_by_email_only'] = "-- Montrer seulement les entrées, qui ont été bloquées par les e-Mails";
-	$lang['show_banned_by_domain_only'] = "-- Montrer seulement les entrées, qui ont été bloquées par les domaines";
-	$lang['show_banned_by_keystroke_only'] = "-- Montrer seulement les entrées, qui ont été bloquées par le système de reconnaissance de la vitesse de saisie des caractères";
-	$lang['show_banned_by_captcha_only'] = "-- Montrer seulement les entrées, qui ont été bloquées par Captcha";
-	$lang['export_as_sql_dump'] = "--- Exporter comme SQL Dump";
-	$lang['export_as_csv'] = "--- Exporter comme CSV";
-	$lang['sneak_everything'] = "-> Dénoncer toutes les entrées !";
+	$lang['do_nothing'] = "➔ Pas d\'action sélectionnée...";
+	$lang['delete_whole_spam'] = "➔ Supprimer toutes les entrées spam";
+	$lang['mark_all_no_spam_deactivate'] = "➔ Marquer toutes les entrées comme \'pas un spam\', mais laisser les désactivées";
+	$lang['mark_all_no_spam_activate'] = "➔ Marquer toutes les entrées comme \'pas un spam\' et les activer";
+	$lang['mark_all_as_spam'] = "➔ Marquer toutes les entrées en tant que spam";
+	$lang['activate_all_entries'] = "➔ Activer toutes les entrées";
+	$lang['deactivate_all_entries'] = "➔ Désactiver toutes les entrées";
+	$lang['delete_all_entries'] = "➔ Supprimer toutes les entrées";
+	$lang['put_all_ips_on_banlist'] = "➔ Ajouter tous les IP nouveaux dans la liste de blocage";
+	$lang['put_all_emails_on_banlist'] = "➔ Ajouter tous les e-Mails nouveaux dans la liste de blocage";
+	$lang['put_all_domains_on_banlist'] = "➔ Ajouter tous les domaines nouveaux dans la liste de blocage";
+	$lang['put_all_on_banlists_and_delete_everything'] = "➔ Ajouter tous les nouveaux IP, e-Mails et domaines dans la liste de blocage et les supprimer ensuite";
+	$lang['show_banned_by_ip_only'] = "➔ Montrer seulement les entrées, qui ont été bloquées par les IP";
+	$lang['show_banned_by_email_only'] = "➔ Montrer seulement les entrées, qui ont été bloquées par les e-Mails";
+	$lang['show_banned_by_domain_only'] = "➔ Montrer seulement les entrées, qui ont été bloquées par les domaines";
+	$lang['show_banned_by_keystroke_only'] = "➔ Montrer seulement les entrées, qui ont été bloquées par le système de reconnaissance de la vitesse de saisie des caractères";
+	$lang['show_banned_by_captcha_only'] = "➔ Montrer seulement les entrées, qui ont été bloquées par Captcha";
+	$lang['export_as_sql_dump'] = "➔ Exporter comme SQL Dump";
+	$lang['export_as_csv'] = "➔ Exporter comme CSV";
+	$lang['sneak_everything'] = "➔ Dénoncer toutes les entrées !";
 
 	// CONFIRMS
 	$lang['confirm_general'] = "Voulez-vous vraiment exécuter les modifications?";

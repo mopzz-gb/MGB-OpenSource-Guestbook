@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -267,7 +267,7 @@
 							".$db['prefix']."spam_log,
 							".$db['prefix']."sys_log,
 							".$db['prefix']."user", 
-							"Error while deleting all tables of MGB OpenSource Guestbook.", 0) === TRUE) {
+							"Error while deleting all tables of MGB OpenSource Guestbook.", 0, null, null) === TRUE) {
 							$backup_file = file_get_contents(MGB_ROOT."save/".$_POST['database_backup_full']);
 							$backup_file = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $backup_file); // delete empty lines
 							$backup_file = mgb_template_replace(['DB_PREFIX' => $db['prefix']], $backup_file); // replace prefix
@@ -279,7 +279,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring all tables of MGB OpenSource Guestbook.", 0) === TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring all tables of MGB OpenSource Guestbook.", 0, null, null) === TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
@@ -292,7 +292,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring all tables of MGB OpenSource Guestbook.", 0) === TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring all tables of MGB OpenSource Guestbook.", 0, null, null) === TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
@@ -315,7 +315,7 @@
 				// entries
 				elseif(!empty($_POST['edit_restore_db_backup_entries'])) {
 					if(!empty($_POST['database_backup_entries'])) {
-						if(mgb_sql_connect($mysqli, "DROP TABLE IF EXISTS ".$db['prefix']."entries", "Error while deleting table ".$db['prefix']."entries.", 0) == TRUE) {
+						if(mgb_sql_connect($mysqli, "DROP TABLE IF EXISTS ".$db['prefix']."entries", "Error while deleting table ".$db['prefix']."entries.", 0, null, null) == TRUE) {
 							$script_time_start = microtime(true);
 							$backup_file = file_get_contents("../save/".$_POST['database_backup_entries']);
 							$backup_file = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $backup_file); // delete empty lines
@@ -328,7 +328,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."entries.", 0) == TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."entries.", 0, null, null) == TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
@@ -341,7 +341,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."entries.", 0) == TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."entries.", 0, null, null) == TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
@@ -364,7 +364,7 @@
 				// restore banlist_ips
 				elseif(!empty($_POST['edit_restore_db_backup_banlist_ips'])) {
 					if(!empty($_POST['database_backup_banlist_ips'])) {
-						if(mgb_sql_connect($mysqli, "DROP TABLE IF EXISTS ".$db['prefix']."banlist_ips", "Error while deleting table ".$db['prefix']."banlist_ips.", 0) == TRUE) {
+						if(mgb_sql_connect($mysqli, "DROP TABLE IF EXISTS ".$db['prefix']."banlist_ips", "Error while deleting table ".$db['prefix']."banlist_ips.", 0, null, null) == TRUE) {
 							$script_time_start = microtime(true);
 							$backup_file = file_get_contents("../save/".$_POST['database_backup_banlist_ips']);
 							$backup_file = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $backup_file); // delete empty lines
@@ -377,7 +377,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_ips.", 0) == TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_ips.", 0, null, null) == TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
@@ -390,7 +390,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_ips.", 0) == TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_ips.", 0, null, null) == TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
@@ -413,7 +413,7 @@
 				// restore banlist_emails
 				elseif(!empty($_POST['edit_restore_db_backup_banlist_emails'])) {
 					if(!empty($_POST['database_backup_banlist_emails'])) {
-						if(mgb_sql_connect($mysqli, "DROP TABLE IF EXISTS ".$db['prefix']."banlist_emails", "Error while deleting table ".$db['prefix']."banlist_emails.", 0) == TRUE) {
+						if(mgb_sql_connect($mysqli, "DROP TABLE IF EXISTS ".$db['prefix']."banlist_emails", "Error while deleting table ".$db['prefix']."banlist_emails.", 0, null, null) == TRUE) {
 							$script_time_start = microtime(true);
 							$backup_file = file_get_contents("../save/".$_POST['database_backup_banlist_emails']);
 							$backup_file = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $backup_file); // delete empty lines
@@ -426,7 +426,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_emails.", 0) == TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_emails.", 0, null, null) == TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
@@ -439,7 +439,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_emails.", 0) == TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_emails.", 0, null, null) == TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
@@ -462,7 +462,7 @@
 				// restore banlist_domains
 				elseif(!empty($_POST['edit_restore_db_backup_banlist_domains'])) {
 					if(!empty($_POST['database_backup_banlist_domains'])) {
-						if(mgb_sql_connect($mysqli, "DROP TABLE IF EXISTS ".$db['prefix']."banlist_domains", "Error while deleting table ".$db['prefix']."banlist_domains.", 0) == TRUE) {
+						if(mgb_sql_connect($mysqli, "DROP TABLE IF EXISTS ".$db['prefix']."banlist_domains", "Error while deleting table ".$db['prefix']."banlist_domains.", 0, null, null) == TRUE) {
 							$script_time_start = microtime(true);
 							$backup_file = file_get_contents("../save/".$_POST['database_backup_banlist_domains']);
 							$backup_file = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $backup_file); // delete empty lines
@@ -475,7 +475,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i].";<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_domains.", 0) == TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_domains.", 0, null, null) == TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;
@@ -488,7 +488,7 @@
 										$possible_comment = substr($backup_part[$i], '0', '2');
 										if($possible_comment != "--") {
 											if($settings['debug_mode'] == 1) { echo $i.": ".$backup_part[$i]."<br>"; }
-											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_domains.", 0) == TRUE) {
+											if(mgb_sql_connect($mysqli, $backup_part[$i], "Error while restoring table ".$db['prefix']."banlist_domains.", 0, null, null) == TRUE) {
 												$script_time_end = microtime(true);
 												mgb_trigger_sys_log($mysqli, 1030, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 												$script_time = $script_time_end - $script_time_start;

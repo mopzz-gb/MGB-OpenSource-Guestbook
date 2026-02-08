@@ -312,12 +312,17 @@
 	'show_banned_by_domain_only' 				=> "➔ Zeige nur Einträge die durch Domain geblockt wurden",
 	'show_banned_by_keystroke_only' 			=> "➔ Zeige nur Einträge die durch Tippgeschwindigkeitserkennung geblockt wurden",
 	'show_banned_by_captcha_only' 				=> "➔ Zeige nur Einträge die durch Captcha geblockt wurden",
+	'show_everything'							=> "➔ Zeige alle Einträge",
+	'show_admin_actions'						=> "➔ Zeige Aktivitäten in der Administration",
+	'show_block_actions'						=> "➔ Zeige Blockaktionen des Gästebuches",
+	'show_login_fails'							=> "➔ Zeige fehlgeschlagene Login-Versuche",
+	'show_sent_emails'							=> "➔ Zeige E-Mails die über das Gästebuch versendet wurden",
 	'export_as_sql_dump' 						=> "➔ Exportieren als SQL Dump",
 	'export_as_csv' 							=> "➔ Exportieren als CSV",
 	'sneak_everything' 							=> "➔ Alle Einträge petzen!",
 
 	// CONFIRMS
-	'confirm_general' 							=> "änderungen wirklich durchführen?",
+	'confirm_general' 							=> "Anderungen wirklich durchführen?",
 	'confirm_delete' 							=> "Eintrag wirklich löschen?",
 	'confirm_delete_spam' 						=> "Wirklich alle Spam-Einträge löschen?",
 	'confirm_add_to_permanent_ip_blocklist' 	=> "Wirklich zur IP-Blockliste hinzufügen?",
@@ -325,7 +330,7 @@
 	'confirm_add_to_permanent_domain_blocklist' => "Wirklich zur Domain-Blockliste hinzufügen?",
 	'confirm_restore_backup' 					=> "Das Backup wirklich wiederherstellen?",
 	'confirm_delete_backup' 					=> "Das Backup wirklich löschen?",
-	'confirm_changes_smiley' 					=> "Willst Du die änderungen an den bestehenden Smilies wirklich durchführen?",
+	'confirm_changes_smiley' 					=> "Willst Du die Änderungen an den bestehenden Smilies wirklich durchführen?",
 	'confirm_report_to_stopforumspam' 			=> "Willst Du diesen Eintrag wirklich an www.stopforumspam.com übermitteln?",
 	'confirm_report_spam' 						=> "Petzen!",
 

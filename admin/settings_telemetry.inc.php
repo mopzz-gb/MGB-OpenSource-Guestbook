@@ -49,7 +49,7 @@
 						`telemetry` = '".$_POST['telemetry']."',
 						`telemetry_ping` = '".$_POST['telemetry_ping']."'";
 
-					if (mgb_sql_connect($mysqli, $sql, "Error while saving telemetry settings.", 0)) {
+					if (mgb_sql_connect($mysqli, $sql, "Error while saving telemetry settings.", 0, null, null)) {
 						$saved_settings_successfull = 1;
 						mgb_trigger_sys_log($mysqli, 1031, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 						mgb_erase_cache("../cache/");

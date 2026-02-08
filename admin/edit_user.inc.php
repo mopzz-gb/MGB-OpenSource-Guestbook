@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@
 							}
 
 							if(empty($errorcode)) {
-								mgb_sql_connect($mysqli, "DELETE FROM ".$db['prefix']."user WHERE ID=".$_GET['id']." LIMIT 1", "Error while deleting user.", 0);
+								mgb_sql_connect($mysqli, "DELETE FROM ".$db['prefix']."user WHERE ID=".$_GET['id']." LIMIT 1", "Error while deleting user.", 0, null, null);
 								mgb_trigger_sys_log($mysqli, 1020, '', '', '', $_SESSION['user_name'], '', $_POST['name'], $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 							}
 						} else {
@@ -140,7 +140,7 @@
 										`r_telemetry` = '".$_POST['r_telemetry']."'
 										WHERE ID=".$id." LIMIT 1";
 
-									if (mgb_sql_connect($mysqli, $sql, "Error while editing user.", 0)) {
+									if (mgb_sql_connect($mysqli, $sql, "Error while editing user.", 0, null, null)) {
 										$saved_settings_successfull = 1;
 										mgb_trigger_sys_log($mysqli, 1019, '', '', '', $_SESSION['user_name'], '', $_POST['name'], $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 									}
@@ -165,7 +165,7 @@
 							$content_errormessage = "";
 						}
 
-						$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."user WHERE ID=".$_GET['id']." LIMIT 1", "Error while loading user.", 1);
+						$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."user WHERE ID=".$_GET['id']." LIMIT 1", "Error while loading user.", 1, null, null);
 						$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 						$page_edit_user_single = $content_edit_user_single;
@@ -331,8 +331,8 @@
 								$url = "http://".$settings['h_domain'].$settings['gb_path']."admin/admin.php";
 							}
 
-							$lang['sendmail_adduser_title'] = format_mail(repl_uml($lang['sendmail_adduser_title'], $charset), "", "", "", "", $settings['h_domain'], "", $_POST['name'], $_POST['new_password_1'], $url, "", "", "");
-							$lang['sendmail_adduser_text'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_adduser_text']), $charset), "", "", "", "", $settings['h_domain'], "", $_POST['name'], $_POST['new_password_1'], $url, "", "", "");
+							$lang['sendmail_adduser_title'] = format_mail($lang['sendmail_adduser_title'], "", "", "", "", $settings['h_domain'], "", $_POST['name'], $_POST['new_password_1'], $url, "", "", "");
+							$lang['sendmail_adduser_text'] = format_mail($lang['sendmail_adduser_text'], "", "", "", "", $settings['h_domain'], "", $_POST['name'], $_POST['new_password_1'], $url, "", "", "");
 
 							$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 							$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
@@ -440,7 +440,7 @@
 			}
 
 			if ($ok == 1) {
-				$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."user ORDER BY ID ASC", "Error while loading users.", 1);
+				$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."user ORDER BY ID ASC", "Error while loading users.", 1, null, null);
 
 				$counter = 0;
 

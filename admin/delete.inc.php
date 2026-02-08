@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -41,13 +41,13 @@
 			if(empty($_POST['dropbox'])) { $_POST['dropbox'] = ""; }
 
 			if(isset($_POST['dropbox']) AND $_POST['dropbox'] == 1) {
-				mgb_sql_connect($mysqli, "TRUNCATE TABLE `".$db['prefix']."entries`", "Error while deleting all entries.", 0);
+				mgb_sql_connect($mysqli, "TRUNCATE TABLE `".$db['prefix']."entries`", "Error while deleting all entries.", 0, null, null);
 				mgb_trigger_sys_log($mysqli, 1015, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deleted by user)
 				mgb_erase_cache("../cache/");
 			}
 
 			if(isset($_GET['id'])) {
-				mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."entries` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting a single entry.", 0);
+				mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."entries` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting a single entry.", 0, null, null);
 				mgb_trigger_sys_log($mysqli, 1015, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (1 or more entries deleted by user)
 				mgb_erase_cache("../cache/");
 			}
@@ -114,7 +114,7 @@
 			}
 
 			// load guestbook entries
-			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."entries WHERE isspam=0 ORDER BY ID DESC LIMIT ".$load_start.",".$load_end, "Error while loading guestbook entries.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT * FROM ".$db['prefix']."entries WHERE isspam=0 ORDER BY ID DESC LIMIT ".$load_start.",".$load_end, "Error while loading guestbook entries.", 1, null, null);
 
 			$counter = 0;
 			

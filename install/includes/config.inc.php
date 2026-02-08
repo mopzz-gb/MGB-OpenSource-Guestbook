@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2023 Juergen Grueneisl - https://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -23,9 +23,11 @@
 	if(!defined('MGB_VERSION')) {
 		define('MGB_VERSION', '0.7.1');
 	}
+	
 	if(!isset($mgb_version)) {
 		$mgb_version = "0.7.1";
 	}
+	
 	if(!defined('INSTALL')) {
 		define('INSTALL', TRUE);
 	}

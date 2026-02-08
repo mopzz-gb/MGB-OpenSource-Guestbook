@@ -66,8 +66,8 @@
 			$user_name = $user['user_name'];
 			$email = $user['user_email'];
 
-			$lang['sendmail_new_password_created_title'] = format_mail(repl_uml($lang['sendmail_new_password_created_title'], $charset), $user_name, "", time(), "", $settings['h_domain'], "", "", "", "", "", "", $new_password);
-			$lang['sendmail_new_password_created_text'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_new_password_created_text']), $charset), $user_name, "", time(), "", $settings['h_domain'], "", "", "", "", "", "", $new_password);
+			$lang['sendmail_new_password_created_title'] = format_mail($lang['sendmail_new_password_created_title'], $user_name, "", time(), "", $settings['h_domain'], "", "", "", "", "", "", $new_password);
+			$lang['sendmail_new_password_created_text'] = format_mail($lang['sendmail_new_password_created_text'], $user_name, "", time(), "", $settings['h_domain'], "", "", "", "", "", "", $new_password);
 
 			$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 			$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
@@ -120,8 +120,8 @@
 					$new_password_key = generate_key_and_pw(MGB_ROOT, $mysqli, "", 16, "adminpanel");
 					$url_to_gb = "https://".$settings['h_domain'].$settings['gb_path']."admin/lostpassword.php";
 
-					$lang['sendmail_new_password_title'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_new_password_title']), $charset), $user_name, "", time(), "", $settings['h_domain'], $url_to_gb, "", "", "", $new_password_key, $user_id, "");
-					$lang['sendmail_new_password_text'] = format_mail(repl_uml(xhtmlbr2nl($lang['sendmail_new_password_text']), $charset), $user_name, "", time(), "", $settings['h_domain'], $url_to_gb, "", "", "", $new_password_key, $user_id, "");
+					$lang['sendmail_new_password_title'] = format_mail($lang['sendmail_new_password_title'], $user_name, "", time(), "", $settings['h_domain'], $url_to_gb, "", "", "", $new_password_key, $user_id, "");
+					$lang['sendmail_new_password_text'] = format_mail($lang['sendmail_new_password_text'], $user_name, "", time(), "", $settings['h_domain'], $url_to_gb, "", "", "", $new_password_key, $user_id, "");
 
   					$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
   					$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";

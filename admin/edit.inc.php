@@ -151,8 +151,8 @@
 
 						$url_to_gb = "https://".$settings['h_domain'].$settings['gb_path']."index.php";
 
-						$lang['sendmail_user_comment_title'] = format_mail(repl_uml($lang['sendmail_user_comment_title'], $charset), $_POST['name'], $date, $time, xhtmlbr2nl($_POST['message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "", "");
-						$settings['sendmail_comment_text'] = format_mail(repl_uml($settings['sendmail_comment_text'], $charset), $_POST['name'], $date, $time, xhtmlbr2nl($_POST['message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "", "");
+						$lang['sendmail_user_comment_title'] = format_mail($lang['sendmail_user_comment_title'], $_POST['name'], $date, $time, $_POST['message'], $settings['h_domain'], $url_to_gb, "", "", "", "", "", "", "");
+						$settings['sendmail_comment_text'] = format_mail($settings['sendmail_comment_text'], $_POST['name'], $date, $time, $_POST['message'], $settings['h_domain'], $url_to_gb, "", "", "", "", "", "", "");
 
 						$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 						$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
@@ -234,7 +234,7 @@
 		if($ok == 1) {
 			// get total number of entries
 			$sql = "SELECT COUNT(ID) AS total FROM ".$db['prefix']."entries WHERE isspam=0";
-			$results = mgb_sql_connect($mysqli, $sql, "Error while counting entries.", 1);
+			$results = mgb_sql_connect($mysqli, $sql, "Error while counting entries.", 1, null, null);
 			$row = $results->fetch_assoc();
 			$total = (int)$row['total'];
 

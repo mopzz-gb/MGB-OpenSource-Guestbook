@@ -94,6 +94,7 @@
 	$content_dropbox_normal = mgb_load_template("admin", "default", "dropbox_normal", $settings['debug_mode']);
 	$content_dropbox_spam = mgb_load_template("admin", "default", "dropbox_spam", $settings['debug_mode']);
 	$content_dropbox_banlists = mgb_load_template("admin", "default", "dropbox_banlists", $settings['debug_mode']);
+	$content_dropbox_sys_log = mgb_load_template("admin", "default", "dropbox_sys_log", $settings['debug_mode']);
 	$content_copyright = mgb_load_template("admin", "default/general_admin", "copyright", $settings['debug_mode']);
 	$content_footer = mgb_load_template("admin", "default/general_admin", "footer", $settings['debug_mode']);
 
@@ -251,19 +252,23 @@
 
 	// get total number of spam entries
 	$sql = "SELECT COUNT(ID) as total FROM ".$db['prefix']."spam";
-	$results_spam = mgb_sql_connect($mysqli, $sql, "Error while getting information about spam entries in navigation.", 1);
+	$results_spam = mgb_sql_connect($mysqli, $sql, "Error while getting information about spam entries in navigation.", 1, null, null);
 	$sql = "SELECT COUNT(ID) as total FROM ".$db['prefix']."entries WHERE checked=0 and isspam=0";
-	$results_deactivated = mgb_sql_connect($mysqli, $sql, "Error while getting information about deactivated entries.", 1);
+	$results_deactivated = mgb_sql_connect($mysqli, $sql, "Error while getting information about deactivated entries.", 1, null, null);
 	$sql = "SELECT COUNT(ID) as total FROM ".$db['prefix']."spam_log";
-	$results_spam_log = mgb_sql_connect($mysqli, $sql, "Error while getting information about spam log in navigation.", 1);
+	$results_spam_log = mgb_sql_connect($mysqli, $sql, "Error while getting information about spam log in navigation.", 1, null, null);
+	$sql = "SELECT COUNT(ID) as total FROM ".$db['prefix']."sys_log";
+	$results_sys_log = mgb_sql_connect($mysqli, $sql, "Error while getting information about sys log in navigation.", 1, null, null);
 
 	$row_spam = $results_spam->fetch_assoc();
 	$row_deactivated = $results_deactivated->fetch_assoc();
 	$row_spam_log = $results_spam_log->fetch_assoc();
+	$row_sys_log = $results_sys_log->fetch_assoc();
 	
 	$total_spam = (int)$row_spam['total'];
 	$total_deactivated = (int)$row_deactivated['total'];
 	$total_spam_log = (int)$row_spam_log['total'];
+	$total_sys_log = (int)$row_sys_log['total'];
 
 	// if there are spam entries, show it in navigation
 	if ($total_spam >= 1) {
@@ -421,7 +426,8 @@
 	if(isset($_GET['action']) AND ($_GET['action'] == 'spam')) {
 		$page_admin = mgb_template_replace([
 			'TEMPLATE_DROPBOX_NORMAL' 	=> '',
-			'TEMPLATE_DROPBOX_BANLISTS' => ''
+			'TEMPLATE_DROPBOX_BANLISTS' => '',
+			'TEMPLATE_DROPBOX_SYS_LOG' 	=> ''
 		], $page_admin);
 		if($total >= 2) {
 			$page_admin = mgb_template_replace([
@@ -437,7 +443,8 @@
 	} elseif(isset($_GET['action']) AND ($_GET['action'] == 'banlist_ips' OR $_GET['action'] == 'banlist_emails' OR $_GET['action'] == 'banlist_domains' OR $_GET['action'] == 'spam_log')) {
 		$page_admin = mgb_template_replace([
 			'TEMPLATE_DROPBOX_NORMAL' 	=> '',
-			'TEMPLATE_DROPBOX_SPAM' 	=> ''
+			'TEMPLATE_DROPBOX_SPAM' 	=> '',
+			'TEMPLATE_DROPBOX_SYS_LOG' 	=> ''
 		], $page_admin);
 		if($total >= 1) {
 			$page_admin = mgb_template_replace([
@@ -478,6 +485,32 @@
 		} else {
 			$page_admin = mgb_template_replace(["TEMPLATE_DROPBOX_BANLISTS" => ''], $page_admin);
 		}
+	} elseif(isset($_GET['action']) AND $_GET['action'] == 'sys_log') {
+		$page_admin = mgb_template_replace([
+			'TEMPLATE_DROPBOX_NORMAL' 	=> '',
+			'TEMPLATE_DROPBOX_SPAM' 	=> '',
+			'TEMPLATE_DROPBOX_SPAM_LOG'	=> '',
+			'TEMPLATE_DROPBOX_BANLISTS'	=> ''
+		], $page_admin);
+		if($total >= 1) {
+			$page_admin = mgb_template_replace([
+				'TEMPLATE_DROPBOX_SYS_LOG' => $content_dropbox_sys_log				
+			], $page_admin);
+			if($_GET['action'] == 'sys_log') {
+				$page_admin = mgb_template_replace([
+					'OPTION_SHOW_EVERYTHING'	=> "<option value='12'>{LANG_SHOW_EVERYTHING}</option>",
+					'OPTION_SHOW_ADMIN_ACTIONS'	=> "<option value='13'>{LANG_SHOW_ADMIN_ACTIONS}</option>",
+					'OPTION_SHOW_BLOCK_ACTIONS' => "<option value='14'>{LANG_SHOW_BLOCK_ACTIONS}</option>",
+					'OPTION_SHOW_LOGIN_FAILS'	=> "<option value='15'>{LANG_SHOW_LOGIN_FAILS}</option>",
+					'OPTION_SHOW_SENT_EMAILS'	=> "<option value='16'>{LANG_SHOW_SENT_EMAILS}</option>",
+					'OPTION_DELETE_ALL_ENTRIES'	=> "<option value='1'>{LANG_DELETE_ALL_ENTRIES}</option>"
+				], $page_admin);
+				// $page_admin = template("OPTION_EXPORT_AS_SQL_DUMP", "<option value='10'>{LANG_EXPORT_AS_SQL_DUMP}", $page_admin);
+				// $page_admin = template("OPTION_EXPORT_AS_CSV", "<option value='11'>{LANG_EXPORT_AS_CSV}", $page_admin);
+			}
+		} else {
+			$page_admin = mgb_template_replace(["TEMPLATE_DROPBOX_SYS_LOG" => ''], $page_admin);
+		}
 	} else {
 		if(isset($total) AND ($total >= 1)) {
 			if($_GET['action'] == 'activate') {
@@ -512,7 +545,8 @@
 		}
 		$page_admin = mgb_template_replace([
 			'TEMPLATE_DROPBOX_SPAM' 	=> '',
-			'TEMPLATE_DROPBOX_BANLISTS' => ''
+			'TEMPLATE_DROPBOX_BANLISTS' => '',
+			'TEMPLATE_DROPBOX_SYS_LOG' 	=> ''
 		], $page_admin);
 	}
 
