@@ -151,8 +151,8 @@
 
 						$url_to_gb = "https://".$settings['h_domain'].$settings['gb_path']."index.php";
 
-						$lang['sendmail_user_comment_title'] = format_mail($lang['sendmail_user_comment_title'], $_POST['name'], $date, $time, $_POST['message'], $settings['h_domain'], $url_to_gb, "", "", "", "", "", "", "");
-						$settings['sendmail_comment_text'] = format_mail($settings['sendmail_comment_text'], $_POST['name'], $date, $time, $_POST['message'], $settings['h_domain'], $url_to_gb, "", "", "", "", "", "", "");
+						$lang['sendmail_user_comment_title'] = format_mail($lang['sendmail_user_comment_title'], $_POST['name'], $date, $time, trim(xhtmlbr2nl($_POST['message'])), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "", "");
+						$settings['sendmail_comment_text'] = format_mail($settings['sendmail_comment_text'], $_POST['name'], $date, $time, trim(xhtmlbr2nl($_POST['message'])), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "", "");
 
 						$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 						$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
@@ -229,6 +229,7 @@
 		} else {
 			$page_include = "<span class=\"admin\">".$lang['errormessage'][4]."</span>";
 			$content_scrolling_function = "<br>";
+			$ok = 0;
 		}
 
 		if($ok == 1) {

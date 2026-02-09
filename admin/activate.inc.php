@@ -76,7 +76,7 @@
 								$spam_list[$j]['counter']++;
 								mgb_sql_connect($mysqli, "UPDATE `".$db['prefix']."spam` SET `counter` = '".$spam_list[$j]['counter']."', `timestamp` = '".time()."' WHERE ID='".$spam_list[$j]['id']."' LIMIT 1", "Error while saving data into ".$db['prefix']."spam", 0, null, null);
 								// refresh spam list
-								$spam_list_result = mgb_sql_connect($mysqli, "SELECT id, ip, email, counter FROM ".$db['prefix']."spam", "Error while loading entries from spam table.", 1);
+								$spam_list_result = mgb_sql_connect($mysqli, "SELECT id, ip, email, counter FROM ".$db['prefix']."spam", "Error while loading entries from spam table.", 1, null, null);
 								for($k = 0; $k < mysqli_num_rows($spam_list_result); $k++) {
 									$spam_list[$k] = mysqli_fetch_array($spam_list_result, MYSQLI_ASSOC); // put all entries from spam table into an array named $spam_list
 								}
@@ -95,21 +95,16 @@
 							// store entry in spam table
 							
 							$sql = "INSERT INTO ".$db['prefix']."spam (
-								name, ip, email, city, icq, aim, msn, fb, twitter, hp, message, user_notification, user_show_email, captcha, sent_captcha, counter, user_agent, sneaked, timestamp
+								name, ip, email, city, hp, message, user_notification, user_show_email, captcha, sent_captcha, counter, user_agent, sneaked, timestamp
 							) VALUES (
-								?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+								?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 							)";
 							
 							$params = [
 								$whole_entry[$l]['name'],
 								$whole_entry[$l]['ip'],
 								$whole_entry[$l]['email'],
-								$whole_entry[$l]['city'],
-								$whole_entry[$l]['icq'],
-								$whole_entry[$l]['aim'],
-								$whole_entry[$l]['msn'],
-								$whole_entry[$l]['fb'],
-								$whole_entry[$l]['twitter'],
+								$whole_entry[$l]['city'],								
 								$whole_entry[$l]['hp'],
 								$whole_entry[$l]['message'],
 								$whole_entry[$l]['user_notification'],
@@ -122,7 +117,7 @@
 								$whole_entry[$l]['timestamp']
 							];
 							
-							$types = "sssssssssssiiiiisii";
+							$types = "ssssssiiiiisii";
 							
 							mgb_sql_connect($mysqli, $sql, "Error while saving data into ".$db['prefix']."spam", 0, $params, $types);
 						}
@@ -144,9 +139,9 @@
 
 					// store entry in spam table
 					$sql = "INSERT INTO".$db['prefix']."spam (
-						name, ip, email, city, icq, aim, msn, fb, twitter, hp, message, user_notification, user_show_email, captcha, sent_captcha, counter, user_agent, sneaked, timestamp
+						name, ip, email, city, hp, message, user_notification, user_show_email, captcha, sent_captcha, counter, user_agent, sneaked, timestamp
 					) VALUES (
-						?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+						?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 					)";
 					
 					$params = [
@@ -154,11 +149,6 @@
 						$spam[$_GET['id']]['ip'],
 						$spam[$_GET['id']]['email'],
 						$spam[$_GET['id']]['city'],
-						$spam[$_GET['id']]['icq'],
-						$spam[$_GET['id']]['aim'],
-						$spam[$_GET['id']]['msn'],
-						$spam[$_GET['id']]['fb'],
-						$spam[$_GET['id']]['twitter'],
 						$spam[$_GET['id']]['hp'],
 						$spam[$_GET['id']]['message'],
 						$spam[$_GET['id']]['user_notification'],
@@ -170,6 +160,8 @@
 						0,
 						$spam[$_GET['id']]['timestamp']					
 					];
+					
+					$types = "ssssssiiiiisii";
 					
 					mgb_sql_connect($mysqli, $sql, "Error while saving data into ".$db['prefix']."spam", 0, $params, $types);
 					// delete entry from entries table
@@ -184,8 +176,7 @@
 					$types = "i";
 					$result = mgb_sql_connect($mysqli, $sql, "Error while retrieving IP Address", 1, $params, $types);
 					$row = mysqli_fetch_assoc($result);
-					$ip = $row['ip'];
-					echo $ip;
+					$ip = $row['ip'];					
 					$sql = "UPDATE `".$db['prefix']."entries` SET checked = ? , ip = ? WHERE ID = ? LIMIT 1";
 					$params = [1, mgb_anonymize_ip($ip), $_GET['id']];
 					$types = "isi";
@@ -195,8 +186,8 @@
 				}
 
 				// send an email to user
-				if(isset($_GET['notify']) && $_GET['notify'] === 1) {
-					$result = mgb_sql_connect($mysqli, "SELECT name, email, message FROM ".$db['prefix']."entries WHERE id=".secure_value($_GET['id'])." LIMIT 1", "Error while loading information for sending an email to user.", 1);
+				if(isset($_GET['notify']) && $_GET['notify'] == 1) {
+					$result = mgb_sql_connect($mysqli, "SELECT name, email, message FROM ".$db['prefix']."entries WHERE id=".$_GET['id']." LIMIT 1", "Error while loading information for sending an email to user.", 1);
 					$data = mysqli_fetch_array($result, MYSQLI_ASSOC);
 					$name = $data['name'];
 					$email = $data['email'];
@@ -207,8 +198,8 @@
 
 					$url_to_gb = mgb_isHttps()."://".$settings['h_domain'].$settings['gb_path']."index.php";
 
-					$lang['sendmail_user_notification_title'] = format_mail($lang['sendmail_user_notification_title'], $name, $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
-					$settings['sendmail_user_notification_text'] = format_mail($settings['sendmail_user_notification_text'], $name, $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+					$lang['sendmail_user_notification_title'] = format_mail($lang['sendmail_user_notification_title'], $name, $date, $time, trim(xhtmlbr2nl($message)), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+					$settings['sendmail_user_notification_text'] = format_mail($settings['sendmail_user_notification_text'], $name, $date, $time, trim(xhtmlbr2nl($message)), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 
 					$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 					$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
@@ -346,11 +337,11 @@
 					$page_entry[$i] = mgb_template_replace([
 						'ENTRY_ID' 		=> $entry[$i]['ID'],
 						'ENTRY_NAME' 	=> mgb_format(substr($entry[$i]['name'], 0, 20)),
-						'ENTRY_MESSAGE' => mgb_format($entry[$i]['message']),
+						'ENTRY_MESSAGE' => mgb_render_text($entry[$i]['message'], 2, 2, $mysqli), // '2' means do nothing. don't parse bbcode and don't parse smilies. don't delete them either.
 						'ENTRY_IP' 		=> $entry[$i]['ip'],
 						'ENTRY_EMAIL' 	=> $entry[$i]['email'],
 						'ENTRY_HP' 		=> mgb_format($entry[$i]['hp']),
-						'ENTRY_COMMENT' => mgb_format($entry[$i]['comment']),
+						'ENTRY_COMMENT' => mgb_render_text($entry[$i]['comment'], 2, 2, $mysqli),
 						'LANG_QUOTE' 	=> $lang['quote'],
 						'ACTIVATE' 		=> "<a href=\"admin.php?action=activate&amp;id=".$entry[$i]['ID']."&amp;notify=".$entry[$i]['user_notification'].$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/activate.png\" title=\"".$lang['activate_entry']."\" alt=\"".$lang['activate_entry']."\"></a>",
 						'MARK_AS_SPAM' 	=> "<a href=\"admin.php?action=activate&amp;id=".$entry[$i]['ID']."&amp;isspam=1".$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/spam.png\" title=\"".$lang['mark_as_spam']."\" alt=\"".$lang['mark_as_spam']."\"></a>",

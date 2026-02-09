@@ -42,7 +42,7 @@
 		$allow_telemetry = $_SESSION['allow_telemetry'];
 
 		$server_name = $_SERVER["SERVER_NAME"];
-		$gb_path = dirname(dirname(__FILE__));
+		$gb_path = str_replace("install", '', dirname($_SERVER['PHP_SELF']));
 		$install_language = preg_replace("/\.\.\/language\//", "", $_SESSION['install_language']);		
 
 		// ++++++++++++++++++++++++++++++++++ //
@@ -248,6 +248,7 @@
 			`user_password` VARCHAR( 255 ) NOT NULL ,
 			`user_key` VARCHAR( 16 ) NOT NULL DEFAULT '',
 			`user_ip` VARBINARY( 40 ) NOT NULL DEFAULT '',
+			`user_agent` VARCHAR( 255 ) NOT NULL DEFAULT '',
 			`user_email` VARCHAR( 255 ) NOT NULL DEFAULT '',
 			`user_is_active` TINYINT( 1 ) NOT NULL DEFAULT '1',
 			`user_level` TINYINT( 1 ) NOT NULL DEFAULT '1',
@@ -272,6 +273,7 @@
 			`user_password` ,
 			`user_key` ,
 			`user_ip` ,
+			`user_agent` ,
 			`user_email` ,
 			`user_is_active` ,
 			`user_level` ,
@@ -290,6 +292,7 @@
 			'".$admin_password."',
 			'0',
 			'".$_SERVER['REMOTE_ADDR']."',
+			'".$_SERVER['HTTP_USER_AGENT']."',
 			'".$admin_email."',
 			'1',
 			'0',

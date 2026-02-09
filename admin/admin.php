@@ -99,7 +99,7 @@
 	$content_footer = mgb_load_template("admin", "default/general_admin", "footer", $settings['debug_mode']);
 
 	if(isset($_SESSION['user_key'])) {
-		if(!check_session($mysqli, $_SESSION['user_ID'], $_SESSION['user_key'], $_SESSION['user_ip'], $settings['session_timeout'], $settings['debug_mode'])) {
+		if(!check_session($mysqli, $_SESSION['user_ID'], $_SESSION['user_key'], $_SESSION['user_ip'], $_SERVER['HTTP_USER_AGENT'], $settings['session_timeout'], $settings['debug_mode'])) {
 			session_unset();
 			session_destroy();
 			$_SESSION = array();

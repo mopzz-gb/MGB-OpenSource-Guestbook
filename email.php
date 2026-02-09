@@ -365,7 +365,7 @@
 						$_SERVER['HTTP_USER_AGENT'],
 						'',
 						'',
-						trim($_POST['message']),
+						trim(xhtmlbr2nl($_POST['message'])),
 						$site_name,
 						$type,
 						$settings['mailer_method']);
@@ -397,8 +397,8 @@
 					$mail_header .= "X-Mailer: PHP/".phpversion();
 
 					$mail_send = @mail($sendemail_email,
-					format_mail($lang['email_caption'], trim($name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
-					format_mail($settings['sendmail_contactmail_text'], trim($name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+					format_mail($lang['email_caption'], trim($name), $date, $time, trim(xhtmlbr2nl($message)), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+					format_mail($settings['sendmail_contactmail_text'], trim($name), $date, $time, trim(xhtmlbr2nl($message)), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
 					$mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
@@ -415,8 +415,8 @@
 					$mail = new PHPMailer(); */
 					
 					$mail_send = mgb_phpmailer($sendemail_email, $email, $name, $settings['h_domain'],
-					format_mail($lang['email_caption'], trim($name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
-					format_mail($settings['sendmail_contactmail_text'], trim($name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""), $settings['debug_mode'], "user", $language_short, $charset);
+					format_mail($lang['email_caption'], trim($name), $date, $time, trim(xhtmlbr2nl($message)), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+					format_mail($settings['sendmail_contactmail_text'], trim($name), $date, $time, trim(xhtmlbr2nl($message)), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""), $settings['debug_mode'], "user", $language_short, $charset);
 					if($mail_send[0] == 0) {
 						$sendemail_successfull = 0;
 						$errormessage_mail = $mail_send[1];
@@ -435,7 +435,7 @@
 							$mail_header .= "X-Mailer: PHP/".phpversion();
 
 							$mail_send_copy = @mail($email,
-								format_mail($lang['email_caption_copy'], trim($sendemail_name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+								format_mail($lang['email_caption_copy'], trim($sendemail_name), $date, $time, trim(xhtmlbr2nl($message)), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
 								format_mail($settings['sendmail_contactmail_text_copy'], trim($sendemail_name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
 							$mail_header);
 							if(!$mail_send_copy) {
@@ -443,7 +443,7 @@
 							}
 						} else {
 							$mail_send_copy = mgb_phpmailer($email, $sendemail_email, $name, $settings['h_domain'],
-								format_mail($lang['email_caption_copy'], trim($sendemail_name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
+								format_mail($lang['email_caption_copy'], trim($sendemail_name), $date, $time, trim(xhtmlbr2nl($message)), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""),
 								format_mail($settings['sendmail_contactmail_text_copy'], trim($sendemail_name), $date, $time, trim($message), $settings['h_domain'], $url_to_gb, "", "", "", "", "", ""), $settings['debug_mode'], "user", $language_short, $charset);
 							if($mail_send_copy[0] == 0) {
 								$errormessage_mail = $mail_send_copy[1];

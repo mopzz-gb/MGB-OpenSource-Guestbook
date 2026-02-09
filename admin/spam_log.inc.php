@@ -544,21 +544,23 @@
 
 			// load spam_log entries
 			// Erlaubte Spalten für ORDER BY
-			$allowed_columns = ['id', 'message', 'matches', 'timestamp'];
+			$allowed_columns = ['timestamp', 'id', 'name', 'message'];
 			// Erlaubte Sortierrichtungen
-			$allowed_sort = ['ASC', 'DESC'];
+			$allowed_sort = ['DESC', 'ASC'];
 
 			// Standardwerte
 			$orderby = 'timestamp';
-			$sort = 'DESC';
+			$sort = 'DESC';		
 
 			// Benutzereingaben validieren
-			if (isset($_GET['orderby']) && in_array($_GET['orderby'], $allowed_columns)) {
+			if (!empty($_GET['orderby']) && isset($_GET['orderby']) && in_array($_GET['orderby'], $allowed_columns, true)) {
 				$orderby = $_GET['orderby'];
+			} else {
+				$orderby = 'timestamp';
 			}
-			if (isset($_GET['sort']) && in_array(strtoupper($_GET['sort']), $allowed_sort)) {
+			if (!empty($_GET['sort']) && isset($_GET['sort']) && in_array(strtoupper($_GET['sort']), $allowed_sort, true)) {
 				$sort = strtoupper($_GET['sort']);
-			}
+			}		
 
 			// load guestbook entries
 			$sql = "SELECT * FROM ".$db['prefix']."spam_log ORDER BY $orderby $sort LIMIT $load_start, $load_end";			
@@ -577,7 +579,7 @@
 			}
 
 			// fill entry template with content
-			require_once (MGB_ROOT."includes/functions.inc.php");
+			require_once (MGB_ROOT."includes/functions.inc.php");			
 
 			if(!empty($entry)) {
 				for($i = 0; $i < count($entry); $i++) {
@@ -620,19 +622,20 @@
 					}
 					
 					if(empty($entry[$i]['sneaked'])) {
-						$page_entry[$i] = mgb_template_replace(['ENTRY_REPORT_SPAM' => "&nbsp;-&nbsp;<a href=\"admin.php?action=spam_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=report_to_stopforumspam".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_REPORT_TO_STOPFORUMSPAM}'); submit();\" title=\"{LANG_REPORT_SPAM}\">".$lang['confirm_report_spam']."</a>"], $page_entry[$i]);
+						$page_entry[$i] = mgb_template_replace(['ENTRY_REPORT_SPAM' => "&nbsp;➔&nbsp;<a href=\"admin.php?action=spam_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=report_to_stopforumspam".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_REPORT_TO_STOPFORUMSPAM}'); submit();\" title=\"{LANG_REPORT_SPAM}\">".$lang['confirm_report_spam']."</a>"], $page_entry[$i]);
 					} else {
 						$page_entry[$i] = mgb_template_replace(['ENTRY_REPORT_SPAM' => ""], $page_entry[$i]);
 					}
 					
 					$page_entry[$i] = mgb_template_replace([
+						'ENTRY_NAME'			=> $entry[$i]['name'],
 						'ENTRY_USER_AGENT' 		=> $entry[$i]['user_agent'],
 						'ENTRY_HTTP_REFERER'	=> $entry[$i]['http_referer'],
 						'ENTRY_HP' 				=> mgb_format($entry[$i]['hp']),
 						'ENTRY_MESSAGE' 		=> mgb_format($entry[$i]['message']),
 						'ENTRY_TYPE' 			=> $lang['spam_entry_type'][$entry[$i]['type']],
 						'ENTRY_SITE' 			=> $entry[$i]['site'],
-						'ENTRY_TIMESTAMP' 		=> $entry_timestamp,
+						'ENTRY_TIMESTAMP' 		=> $entry_timestamp,						
 						'DELETE' 				=> "<a href=\"admin.php?action=spam_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('".$entry[$i]['ID'].", ".$entry[$i]['ip'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
 					], $page_entry[$i]);
 

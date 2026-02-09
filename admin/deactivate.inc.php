@@ -162,11 +162,11 @@
 					$page_entry[$i] = mgb_template_replace([
 						'ENTRY_ID' 		=> $entry[$i]['ID'],
 						'ENTRY_NAME' 	=> mgb_format($entry[$i]['name'], 0, 20),
-						'ENTRY_MESSAGE' => mgb_format($entry[$i]['message']),
+						'ENTRY_MESSAGE' => mgb_render_text($entry[$i]['message'], 2, 2, $mysqli), // '2' means do nothing. don't parse bbcode and don't parse smilies. don't delete them either.
 						'ENTRY_IP' 		=> $entry[$i]['ip'],
 						'ENTRY_EMAIL' 	=> $entry[$i]['email'],
 						'ENTRY_HP' 		=> mgb_format($entry[$i]['hp']),
-						'ENTRY_COMMENT' => mgb_format($entry[$i]['comment']),
+						'ENTRY_COMMENT' => mgb_render_text($entry[$i]['comment'], 2, 2, $mysqli),
 						'LANG_QUOTE' 	=> $lang['quote'],
 						'DEACTIVATE' 	=> "<a href=\"admin.php?action=deactivate&amp;id=".$entry[$i]['ID'].$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/deactivate.png\" title=\"".$lang['deactivate_entry']."\" alt=\"".$lang['deactivate_entry']."\"></a>",
 						'TEMPLATE_PATH' => "templates/".$settings['template_path']

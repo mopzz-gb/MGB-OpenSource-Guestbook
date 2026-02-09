@@ -43,7 +43,30 @@
 			$prefix = preg_replace('/[^a-zA-Z0-9_]/', '', $value);
 			return $prefix;
 		}
-	}	
+	}
+
+	// MGB_GETUSERIP
+	// INFO: GETS THE REAL USER IP
+	// CREATED: 09.02.2026
+	function mgb_getUserIp(): string {
+		$keys = [
+			'HTTP_CF_CONNECTING_IP',
+			'HTTP_X_REAL_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'REMOTE_ADDR'
+		];
+
+		foreach ($keys as $key) {
+			if (!empty($_SERVER[$key])) {
+				$ip = explode(',', $_SERVER[$key])[0];
+				if (filter_var($ip, FILTER_VALIDATE_IP)) {
+					return $ip;
+				}
+			}
+		}
+
+		return '0.0.0.0';
+	}
 
 	// MGB_ISIPBANNED
 	// CREATED: 02.01.2026
@@ -65,7 +88,7 @@
 				return false;
 			}
 
-			$ip = $_SERVER['REMOTE_ADDR'] ?? '';
+			$ip = mgb_getUserIp() ?? '';
 				if ($ip === '') {
 				return false;
 			}
@@ -905,7 +928,7 @@
 				$sql = "SELECT user_password FROM ".$db['prefix']."user WHERE user_name='".$name."'";
 			}
 
-			$result = mgb_sql_connect($mysqli, $sql, "Error while checking login information!", 1);
+			$result = mgb_sql_connect($mysqli, $sql, "Error while checking login information!", 1, null, null);
 			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			if(password_verify($password, $user['user_password'])) {
@@ -913,7 +936,7 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."', `user_agent` = '".$_SERVER['HTTP_USER_AGENT']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0, null, null);
 				return TRUE;
 			} elseif($user['user_password'] === $old_password) {
 				$newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -921,9 +944,9 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."', `user_agent` = '".$_SERVER['HTTP_USER_AGENT']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0, null, null);
 				// update user_password in database
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_password` = '".$newHash."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_password` = '".$newHash."' WHERE ID='".$ID."' LIMIT 1", "Error while updating user information.", 0, null, null);
 				return TRUE;
 			} else {
 				unset($ID);
@@ -1149,33 +1172,47 @@
 
 	// check session
 	if(!function_exists("check_session")) {
-		function check_session($mysqli, $sessid, $sessionkey, $sessionip, $timeout, $debug_mode) {
+		function check_session($mysqli, $sessid, $sessionkey, $sessionip, $sessionagent, $timeout, $debug_mode) {
 			require("../includes/config.inc.php");
-			$result = mgb_sql_connect($mysqli, "SELECT user_key, logged_in FROM ".$db['prefix']."user WHERE ID=".$sessid." LIMIT 1", "Error while loading user information.", 1, null, null);
+			$result = mgb_sql_connect($mysqli, "SELECT user_key, user_agent, logged_in FROM ".$db['prefix']."user WHERE ID=".$sessid." LIMIT 1", "Error while loading user information.", 1, null, null);
 			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			$count_ok = 0;
 
+			// check IP
 			if(!empty($debug_mode)) {
 				echo "<pre>";
 				echo "REMOTE_ADDR: ".$_SERVER['REMOTE_ADDR']."<br>";
 				echo "\$sessionip: ".$sessionip."<br>";
 				echo "</pre>";
 			}
-			if($_SERVER['REMOTE_ADDR'] == $sessionip) {
+			if($_SERVER['REMOTE_ADDR'] === $sessionip) {
 				$count_ok++;
 			}
 
+			// check session key
 			if(!empty($debug_mode)) {
 				echo "<pre>";
 				echo "user_key: ".$user['user_key']."<br>";
 				echo "\$sessionkey: ".$sessionkey."<br>";
 				echo "</pre>";
 			}
-			if($user['user_key'] == $sessionkey) {
+			if($user['user_key'] === $sessionkey) {
+				$count_ok++;
+			}
+			
+			// check user agent
+			if(!empty($debug_mode)) {
+				echo "<pre>";
+				echo "user_agent: ".$user['user_agent']."<br>";
+				echo "\$sessionagent: ".$sessionagent."<br>";
+				echo "</pre>";
+			}
+			if($user['user_agent'] === $sessionagent) {
 				$count_ok++;
 			}
 
+			// check session timeout
 			if(!empty($debug_mode)) {
 				echo "<pre>";
 				echo "time: ".time()."<br>";
@@ -1188,7 +1225,7 @@
 				$count_ok++;
 			}
 
-			if($count_ok == 3) {
+			if($count_ok === 4) {
 				if(!empty($debug_mode)) {
 					echo "<pre>";
 					echo "count_ok: ".$count_ok."<br><br>";
@@ -1206,7 +1243,7 @@
 		function check_rights($mysqli, $site, $sessid) {
 			require "../includes/config.inc.php";
 
-			$result = mgb_sql_connect($mysqli, "SELECT user_level, r_settings, r_settings_database, r_activate, r_deactivate, r_delete, r_edit, r_spam, r_edit_smilies, r_banlists FROM ".$db['prefix']."user WHERE ID=".$sessid, "Error while checking user rights.", 1);
+			$result = mgb_sql_connect($mysqli, "SELECT user_level, r_settings, r_settings_database, r_activate, r_deactivate, r_delete, r_edit, r_spam, r_edit_smilies, r_banlists, r_telemetry FROM ".$db['prefix']."user WHERE ID=".$sessid, "Error while checking user rights.", 1, null, null);
 			$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 			switch ($user['user_level']) {
@@ -2370,7 +2407,7 @@
 	if(!function_exists("mgb_format")) {
 		function mgb_format($string) {
 			if(!empty($string)) {
-				return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+				return trim(htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
 			} else {
 				return $string;
 			}

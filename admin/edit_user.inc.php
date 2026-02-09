@@ -332,7 +332,7 @@
 							}
 
 							$lang['sendmail_adduser_title'] = format_mail($lang['sendmail_adduser_title'], "", "", "", "", $settings['h_domain'], "", $_POST['name'], $_POST['new_password_1'], $url, "", "", "");
-							$lang['sendmail_adduser_text'] = format_mail($lang['sendmail_adduser_text'], "", "", "", "", $settings['h_domain'], "", $_POST['name'], $_POST['new_password_1'], $url, "", "", "");
+							$lang['sendmail_adduser_text'] = format_mail(xhtmlbr2nl($lang['sendmail_adduser_text']), "", "", "", "", $settings['h_domain'], "", $_POST['name'], $_POST['new_password_1'], $url, "", "", "");
 
 							$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 							$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
@@ -343,7 +343,7 @@
 								$mail_send = @mail($_POST['email'], $lang['sendmail_adduser_title'], $lang['sendmail_adduser_text'], $mail_header);
 								if($mail_send) {
 									$sendemail_successfull = 1;
-									mgb_trigger_sys_log($mysqli, 1026, $_POST['name'], '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+									mgb_trigger_sys_log($mysqli, 1026, $_POST['name'], $_POST['email'], '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 								} else {
 									$sendemail_successfull = 0;
 								}

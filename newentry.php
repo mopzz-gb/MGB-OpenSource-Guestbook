@@ -59,6 +59,9 @@
 		http_response_code(403);
 		exit;
 	}
+	
+	// Get real User IP
+	$_SESSION['REMOTE_ADDR'] = mgb_getUserIp();
 
 	// override language path if "lang" parameter is set
 	if(!empty($_GET['lang'])) {
@@ -76,13 +79,13 @@
 	// check if this is a direct or not allowed access to the script
 	if($settings['direct_access'] === 1) {
 		if(empty($_SERVER['HTTP_REFERER'])) { $_SERVER['HTTP_REFERER'] = ""; }
-		if(mgb_http_referer($mysqli, $settings['direct_access_text'], $settings['search_engines_excluded'], $settings['search_engines'], $settings['banlist_log'], $_SERVER['HTTP_REFERER'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['REMOTE_ADDR'], $db['prefix'], $site_name, $settings['debug_mode']) === FALSE) {
+		if(mgb_http_referer($mysqli, $settings['direct_access_text'], $settings['search_engines_excluded'], $settings['search_engines'], $settings['banlist_log'], $_SERVER['HTTP_REFERER'], $_SERVER['HTTP_USER_AGENT'], $_SESSION['REMOTE_ADDR'], $db['prefix'], $site_name, $settings['debug_mode']) === FALSE) {
 			// destroy active session
 			session_unset();
 			session_destroy();
 			$_SESSION = array();
 			mgb_echo($lang['errormessage'][19]);
-			mgb_trigger_sys_log($mysqli, 3003, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+			mgb_trigger_sys_log($mysqli, 3003, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 			die();
 		}
 	}
@@ -180,15 +183,15 @@
 		// ============
 		// check www.stopforumspam.com if user is known for intense spamming
 		if($settings['check_against_anti_spam_sites'] === 1 && !empty($_POST['name']) && !empty($_POST['email'])) {
-			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) === 1) {
+			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SESSION['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) === 1) {
 				if($settings['sfs_mark_as_spam'] === 1) {
 					$mark_as_spam = 1; // accept the entry, but mark it as spam
 					$noemail = 1;
-					mgb_trigger_sys_log($mysqli, 3007, $_POST['name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry accepted but marked as spam)
+					mgb_trigger_sys_log($mysqli, 3007, $_POST['name'], $_POST['email'], '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry accepted but marked as spam)
 					$type = 14; // blocked by stopforumspam
 				} else {
 					$errorcode = 19; // user was blocked by www.stopforumspam.com
-					mgb_trigger_sys_log($mysqli, 3008, $_POST['name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry by stopforumspam denied)
+					mgb_trigger_sys_log($mysqli, 3008, $_POST['name'], $_POST['email'], '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry by stopforumspam denied)
 					$type = 14; // blocked by stopforumspam
 				}
 			}			
@@ -222,7 +225,7 @@
 				if(!mgb_get_keystrokes($settings['keystroke_max_cps'], $settings['keystroke_ban_time'], $settings['dynamic_fieldnames'], $settings['debug_mode'])) {
 					$errorcode = 17; // too fast typing, possible spam robot?
 					$type = 11;
-					mgb_trigger_sys_log($mysqli, 3004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 3004, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
 			} else {
 				$keystroke_ban_time_rest = $_SESSION['keystroke_ban_time'] - time();
@@ -232,7 +235,7 @@
 					if(!mgb_get_keystrokes($settings['keystroke_max_cps'], $settings['keystroke_ban_time'], $settings['dynamic_fieldnames'], $settings['debug_mode'])) {
 						$errorcode = 17; // too fast typing, possible spam robot?
 						$type = 11; // blocked by keystroke
-						mgb_trigger_sys_log($mysqli, 3004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 3004, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 				}
 			}
@@ -243,19 +246,19 @@
 			if($settings['captcha_method'] === 0) { // security code
 				if($_SESSION['CAPTCHA_CODE'] !== $_POST['captcha']) {
 					$errorcode = 7;  // captcha wrong or not set
-					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
 			} elseif($settings['captcha_method'] === 1) { // mathematical captcha
 				if($_SESSION['CAPTCHA_SUM'] !== $_POST['captcha']) {
 					$errorcode = 7; // captcha wrong or not set
-					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}
 			} elseif($settings['captcha_method'] === 2) { // reCaptchav2
-				$response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$settings['recaptcha_private_key']."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']);
+				$response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$settings['recaptcha_private_key']."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SESSION['REMOTE_ADDR']);
         			$responseKeys = json_decode($response, true);
         			if(intval($responseKeys["success"]) !== 1) {
 					$errorcode = 7; // captcha wrong or not set
-					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+					mgb_trigger_sys_log($mysqli, 3005, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
         			}
 			}
 
@@ -268,7 +271,7 @@
 					?, ?, ?, ?, ?, ?, ?, ?, ?
 				)";
 				$params = [
-					$_SERVER['REMOTE_ADDR'],
+					$_SESSION['REMOTE_ADDR'],
 					trim($_POST['name']) ?? '',
 					$_POST['email'] ?? '',
 					$_SERVER['HTTP_USER_AGENT'],
@@ -291,7 +294,7 @@
 		if((!empty($_POST['name']) AND !empty($_POST['email']) AND !empty($_POST['message'])) AND ($errorcode != 7) AND ($mark_as_spam != 1) AND (!$settings['banlist_ips'] === 1 OR $settings['banlist_emails'] === 1 OR $settings['banlist_domains'] === 1)) {
 			$check_banlists = mgb_check_banlists(
 				$mysqli,
-				$_SERVER['REMOTE_ADDR'],
+				$_SESSION['REMOTE_ADDR'],
 				$_POST['email'],
 				$settings['blocktime'],
 				$settings['banlist_ips'],
@@ -318,7 +321,7 @@
 				)";
 
 				$params = [
-					$_SERVER['REMOTE_ADDR'],
+					$_SESSION['REMOTE_ADDR'],
 					trim($_POST['name']) ?? '',
 					$_POST['email'] ?? '',
 					$_SERVER['HTTP_USER_AGENT'],
@@ -337,14 +340,14 @@
 				mgb_spam_mail($charset,
 					$settings['spam_mail'],
 					$settings['admin_gbemail'],
-					$_SERVER['REMOTE_ADDR'],
+					$_SESSION['REMOTE_ADDR'],
 					trim($_POST['name']),
 					$_POST['email'],
 					$_POST['hp'] ?? '',
 					$_SERVER['HTTP_USER_AGENT'],
 					'',
 					'',
-					trim($_POST['message']),
+					trim(xhtmlbr2nl($_POST['message'])),
 					$site_name,
 					$type,
 					$settings['mailer_method'],
@@ -382,10 +385,10 @@
 			// check if "moderated gb" and "user email notification" is on
 			if($settings['moderated'] === 1 OR $mark_as_spam === 1) {
 				$checked = 0;
-				$ip = $_SERVER['REMOTE_ADDR'];
+				$ip = $_SESSION['REMOTE_ADDR'];
 			} else {
 				$checked = 1;
-				$ip = mgb_anonymize_ip($_SERVER['REMOTE_ADDR']);
+				$ip = mgb_anonymize_ip($_SESSION['REMOTE_ADDR']);
 			}
 			if($settings['user_notification'] === 0 OR empty($entry_email)) { $user_notification = 0; } else { $user_notification = 1; }
 			if($settings['user_show_email'] === 0 OR empty($entry_email)) { $user_show_email = 0; } else { $user_show_email = 1; }
@@ -449,8 +452,8 @@
 
 				$url_to_gb = mgb_isHttps()."://".$settings['h_domain'].$settings['gb_path']."admin/admin.php";
 
-				$lang['sendmail_admin_title'] = format_mail($lang['sendmail_admin_title'], $_POST['email_name'], $date, $time, $_POST['email_message'], $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
-				$settings['sendmail_admin_text'] = format_mail($settings['sendmail_admin_text'], $_POST['email_name'], $date, $time, $_POST['email_message'], $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				$lang['sendmail_admin_title'] = format_mail($lang['sendmail_admin_title'], $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				$settings['sendmail_admin_text'] = format_mail($settings['sendmail_admin_text'], $_POST['email_name'], $date, $time, xhtmlbr2nl($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 
 				$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
 				$mail_header .= "from: ".$settings['admin_gbemail']."\r\n";
@@ -482,11 +485,11 @@
 
 				$url_to_gb = mgb_isHttps()."://".$settings['h_domain'].$settings['gb_path']."index.php?lang=".$_GET['lang'];
 
-				$lang['sendmail_user_title'] = format_mail($lang['sendmail_user_title'], trim($_POST['email_name']), $date, $time, trim($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				$lang['sendmail_user_title'] = format_mail($lang['sendmail_user_title'], trim($_POST['email_name']), $date, $time, trim(xhtmlbr2nl($_POST['email_message'])), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 				if($settings['moderated'] == 0) {
-				  $settings['sendmail_user_text'] = format_mail($settings['sendmail_user_text'], trim($_POST['email_name']), $date, $time, trim($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				  $settings['sendmail_user_text'] = format_mail($settings['sendmail_user_text'], trim($_POST['email_name']), $date, $time, trim(xhtmlbr2nl($_POST['email_message'])), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 				} else {
-				  $settings['sendmail_user_text'] = format_mail($settings['sendmail_user_text_moderated'], trim($_POST['email_name']), $date, $time, trim($_POST['email_message']), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
+				  $settings['sendmail_user_text'] = format_mail($settings['sendmail_user_text_moderated'], trim($_POST['email_name']), $date, $time, trim(xhtmlbr2nl($_POST['email_message'])), $settings['h_domain'], $url_to_gb, "", "", "", "", "", "");
 				}
 
 				$mail_header = "content-type: text/plain; charset=".$charset."\r\n";
@@ -498,7 +501,7 @@
 					$mail_send = @mail($_POST['email'], $lang['sendmail_user_title'], $settings['sendmail_user_text'], $mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, 3006, trim($_POST['email_name']), $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 3006, trim($_POST['email_name']), $_POST['email'], '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					} else {
 						$sendemail_successfull = 0;
 					}
@@ -509,7 +512,7 @@
 						// $errormessage = $mail_send[1];
 					} else {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, 3006, trim($_POST['email_name']), $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 3006, trim($_POST['email_name']), $_POST['email'], '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 				}
 			}
