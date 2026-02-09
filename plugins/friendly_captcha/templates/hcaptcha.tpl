@@ -1,1 +1,0 @@
-<div class="h-captcha" data-sitekey="{HCAPTCHA_SITEKEY}"></div>
