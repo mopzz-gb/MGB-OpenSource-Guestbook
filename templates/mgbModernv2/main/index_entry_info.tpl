@@ -1,3 +1,0 @@
-	<tr>
-		<td class="entry_info" colspan="3">{TEMPLATE_ENTRY_EMAIL}{TEMPLATE_ENTRY_HP}{TEMPLATE_ENTRY_MASTODON}{TEMPLATE_ENTRY_BLUESKY}</td>
-	</tr>
