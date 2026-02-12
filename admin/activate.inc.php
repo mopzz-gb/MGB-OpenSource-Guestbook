@@ -43,7 +43,7 @@
 			$_POST['dropbox'] = cleanstr($_POST['dropbox']);
 
 			if(isset($_POST['dropbox']) AND $_POST['dropbox'] == 1) { // Activate all entries at once
-				$sql = "UPDATE ".$db['prefix']."entries SET 'checked' = ? WHERE checked = ?";
+				$sql = "UPDATE `".$db['prefix']."entries` SET `checked` = ? WHERE `checked` = ?";
 				$params = [1, 0];
 				$types = "ii";
 				mgb_sql_connect($mysqli, $sql, "Error while activating all entries at once and updating sql table.", 0, $params, $types);

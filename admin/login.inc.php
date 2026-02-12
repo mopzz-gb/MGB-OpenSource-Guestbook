@@ -45,6 +45,7 @@
 		$login_status_img = "<img src=\"templates/default/images/login.png\" height=\"16\" width=\"16\" title=\"{LANG_LOGIN}\" alt=\"{LANG_LOGIN}\">";
 		$_POST['sent'] = 0;
 	} else {
+		if(empty($_SESSION['login_fail'])) { $_SESSION['login_fail'] = 0; }
 		if(isset($_POST['sent']) AND $_POST['sent'] == 1) {
 			if(!empty($_POST['username']) AND !empty($_POST['password'])) {
 				if(login_ok($mysqli, $_POST['username'], "", $_POST['password'])) {
@@ -98,7 +99,7 @@
 					$login_status_text = $lang['logged_out'];
 					$login_status_img = "<img src=\"templates/default/images/login.png\" height=\"16\" width=\"16\" title=\"{LANG_LOGIN}\" alt=\"{LANG_LOGIN}\">";
 					$login_is_ok = 0;
-					$errorcode = 2;
+					$errorcode = 2;					
 					$_SESSION['login_fail'] = mgb_login_fail($_SESSION['login_fail']);
 					mgb_trigger_sys_log($mysqli, 1025, '', '', '', $_POST['username'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
 				}

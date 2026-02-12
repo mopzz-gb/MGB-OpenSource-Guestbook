@@ -428,9 +428,9 @@
 		'TEMPLATE_SCROLLING_FUNCTION' 	=> $content_scrolling_function,
 		'TEMPLATE_ENTRIES' 				=> $page_entry_echo,
 		'TEMPLATE_PATH' 				=> "templates/".$settings['template_path'],
-		'TEMPLATE_STYLE_PATH' 			=> $settings['template_style_path'],
-		'TEMPLATE_COPYRIGHT' 			=> $content_copyright,
-		'TEMPLATE_FOOTER' 				=> $content_footer
+		'TEMPLATE_STYLE_PATH' 			=> $settings['template_style_path'],		
+		'TEMPLATE_FOOTER' 				=> $content_footer,
+		'TEMPLATE_COPYRIGHT' 			=> $content_copyright
 	], $page_body_index);
 
 	// then strings. starting by initialising some of them

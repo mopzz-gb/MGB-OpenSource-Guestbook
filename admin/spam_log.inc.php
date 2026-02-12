@@ -326,7 +326,7 @@
 			}
 			
 			if((isset($_POST['dropbox']) AND $_POST['dropbox'] == 1) OR ($delete_everything == 3)) { // Delete all spam_log entries
-				mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."spam_log", "Error while deleting all log entries.", 0, null, null);
+				mgb_sql_connect($mysqli, "TRUNCATE `".$db['prefix']."spam_log`", "Error while deleting all log entries.", 0, null, null);
 			}
 
 			if(isset($_GET['id'])) {
@@ -503,11 +503,7 @@
 			$load_start = ($_GET['p'] * $epp) - $epp;
 			$load_end = $epp;
 
-			$pages_total = ceil($p);
-			
-			if(empty($_GET['orderby'])) { $_GET['orderby'] = "id"; }
-			if(empty($_GET['sort'])) { $_GET['sort'] = "ASC"; }
-			if($_GET['orderby'] == "content") { $_GET['orderby'] = "message"; }
+			$pages_total = ceil($p);		
 
 			if ($_GET['p'] == 1) {
 				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=spam_log".$show_url."&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
@@ -550,7 +546,7 @@
 
 			// Standardwerte
 			$orderby = 'timestamp';
-			$sort = 'DESC';		
+			$sort = 'DESC';
 
 			// Benutzereingaben validieren
 			if (!empty($_GET['orderby']) && isset($_GET['orderby']) && in_array($_GET['orderby'], $allowed_columns, true)) {

@@ -100,6 +100,7 @@
 				} else {
 					echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;\"><br>Some errors have occurred, but that does not necessarily mean that the update did not run smoothly.<br><br>Open the guestbook and check that everything is OK. If you still encounter problems, please report them in the forum: <a href='https://forum.m-gb.org/'>forum.m-gb.org</a>.<br /></span>\n";
 				}
+				mgb_trigger_sys_log($mysqli, 5001, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (database upgrade successfull)
 			} else {
 				echo "\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: maroon;\">No changes were applied.<br /></span>\n";
 			}
@@ -176,28 +177,7 @@
 			echo "\t\t\t<input type=\"submit\" class=\"button\" name=\"confirm\" value=\"Yes, HAL. I'm sure.\">\n";
 		} else {
 			echo "\t\t\t<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">Newest version is already installed. An update is not necessary. :)</span><br><br>\n";
-			echo "\t\t\t<input type=\"checkbox\" name=\"ignore\" value=\"1\"><span style='font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;'>&nbsp;I know what i do, so ignore it and try to upgrade anyway.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use following upgrade information (Your previous version, before upgrading to the latest): </span>\n";
-			echo "\t\t\t<select class=\"option\" name=\"upgrade_information\" size=\"1\">\n";
-			echo "\t\t\t\t<option value='06'>0.6</option>\n";
-			echo "\t\t\t\t<option value='061'>0.6.1</option>\n";
-			echo "\t\t\t\t<option value='062'>0.6.2</option>\n";
-			echo "\t\t\t\t<option value='063'>0.6.3</option>\n";
-			echo "\t\t\t\t<option value='064'>0.6.4</option>\n";
-			echo "\t\t\t\t<option value='065'>0.6.5</option>\n";
-			echo "\t\t\t\t<option value='066'>0.6.6</option>\n";
-			echo "\t\t\t\t<option value='067'>0.6.7 &amp; 0.6.7.1</option>\n";
-			echo "\t\t\t\t<option value='068'>0.6.8</option>\n";
-			echo "\t\t\t\t<option value='069'>0.6.9</option>\n";
-			echo "\t\t\t\t<option value='0691'>0.6.9.1</option>\n";
-			echo "\t\t\t\t<option value='0692'>0.6.9.2</option>\n";
-			echo "\t\t\t\t<option value='0693'>0.6.9.3</option>\n";
-			echo "\t\t\t\t<option value='0694'>0.6.9.4</option>\n";
-			echo "\t\t\t\t<option value='0695'>0.6.9.5</option>\n";
-			echo "\t\t\t\t<option value='07'>0.7</option>\n";
-			echo "\t\t\t\t<option value='0701'>0.7.0.1 - 0.7.0.3</option>\n";
-			echo "\t\t\t\t<option selected='selected' value='0704'>0.7.0.4</option>\n";
-			echo "\t\t\t</select><br>\n";
-			echo "\t\t\t<input type=\"checkbox\" name=\"no_inserts\" value=\"1\"><span style='font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;'>&nbsp;No INSERTS (check this ONLY if you are upgrading from an older upgrade version as yours and you don't want some data duplicate or changed like smilies etc.)</span><br><br>\n";
+			echo "\t\t\t<input type=\"checkbox\" name=\"ignore\" value=\"1\"><span style='font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;'>&nbsp;I know what i do, so ignore it and try to upgrade anyway.</span><br><br>\n";
 			echo "\t\t\t<input type=\"submit\" class=\"button\" name=\"confirm\" value=\"Do it!\">\n";
 		}
 		echo "\t\t</form>\n";

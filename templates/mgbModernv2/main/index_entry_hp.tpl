@@ -1,0 +1,1 @@
+<a href="{ENTRY_HP}" target="_blank"><img class="icon" src="images/iconsets/{ICONSET_PATH}/hp.png" alt="{LANG_HP_OF}" title="{LANG_HP_OF}"></a><img src="images/iconsets/{ICONSET_PATH}/space.png" alt="" title="" height="16" width="5">

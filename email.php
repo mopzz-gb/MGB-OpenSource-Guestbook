@@ -57,23 +57,15 @@
 	if(empty($_SESSION['start_time'])) {
 		$_SESSION['start_time'] = time();
 	}
-
+	
 	// check if user's ip is on banlist
-	if($settings['banlist_ips'] == 1) {
-		$result = mgb_sql_connect($mysqli, "SELECT banned_ip, timestamp FROM ".$db['prefix']."banlist_ips WHERE banned_ip = '".$_SERVER['REMOTE_ADDR']."'", "Error while checking remote IP.", 1);
-		$ip_check = mysqli_fetch_array($result, MYSQLI_ASSOC);
-		if(isset($ip_check['banned_ip']) && $ip_check['banned_ip'] === $_SERVER['REMOTE_ADDR']) {
-			if($settings['blocktime'] != 99999999 AND $settings['banlist_cleanup'] === 1) {
-				if(time() - $ip_check['timestamp'] >= $settings['blocktime']) {
-					mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."banlist_ips` WHERE banned_ip='".$_SERVER['REMOTE_ADDR']."' LIMIT 1", "Error while deleting a single ip entry.", 0, null, null);
-				} else {
-					die();
-				}
-			} else {
-				die();
-			}
-		}
+	if (mgb_isIpBanned($mysqli, $settings, $db)) {
+		http_response_code(403);
+		exit;
 	}
+	
+	// Get real User IP
+	$_SESSION['REMOTE_ADDR'] = mgb_getUserIp();
 
 	// override language path if lang parameter is set
 	if(!empty($_GET['lang'])) {
@@ -91,13 +83,13 @@
 	// check if this is a direct or not allowed access to the script
 	if(empty($_SERVER['HTTP_REFERER'])) { $_SERVER['HTTP_REFERER'] = ""; }
 	if($settings['direct_access'] == 1) {
-		if(mgb_http_referer($mysqli, $settings['direct_access_text'], $settings['search_engines_excluded'], $settings['search_engines'], $settings['banlist_log'], $_SERVER['HTTP_REFERER'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['REMOTE_ADDR'], $db['prefix'], $site_name, $settings['debug_mode']) === FALSE) {
+		if(mgb_http_referer($mysqli, $settings['direct_access_text'], $settings['search_engines_excluded'], $settings['search_engines'], $settings['banlist_log'], $_SERVER['HTTP_REFERER'], $_SERVER['HTTP_USER_AGENT'], $_SESSION['REMOTE_ADDR'], $db['prefix'], $site_name, $settings['debug_mode']) === FALSE) {
 			// destroy active session
 			session_unset();
 			session_destroy();
 			$_SESSION = array();
 			mgb_echo($lang['errormessage'][19]);
-			mgb_trigger_sys_log($mysqli, 4005, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+			mgb_trigger_sys_log($mysqli, 4005, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 			die();
 		}
 	}
@@ -138,11 +130,11 @@
 		} else {
 			if(time() - $_SESSION['file_call'] <= $settings['autoblock_config']) {
 				// check if user's ip is on banlist
-				$sql = "SELECT * FROM ".$db['prefix']."banlist_ips WHERE banned_ip = ".$_SERVER['REMOTE_ADDR'];
+				$sql = "SELECT * FROM ".$db['prefix']."banlist_ips WHERE banned_ip = ".$_SESSION['REMOTE_ADDR'];
 				$result = mgb_sql_connect($mysqli, $sql, "Error while checking remote IP.", 1, null, null); 
 				if ($result && $result->num_rows > 0) {
 					$ip = $result->fetch_assoc();				
-					if($_SERVER['REMOTE_ADDR'] !== $ip['banned_ip']) {
+					if($_SESSION['REMOTE_ADDR'] !== $ip['banned_ip']) {
 						$match = $ip['matches']++;
 						$sql = "UPDATE `".$db['prefix']."banlist_ips` SET `matches` = '".$match."' WHERE `ID` = ".$ip['ID']; 						
 						mgb_sql_connect($mysqli, $sql, "Error while updating banlist_ips", 0, null, null);
@@ -180,11 +172,11 @@
 			} else {
 				if(time() - $_SESSION['file_call'] <= $settings['autoblock_config']) {
 					// check if user's ip is on banlist
-					$sql = "SELECT * FROM ".$db['prefix']."banlist_ips WHERE banned_ip = ".$_SERVER['REMOTE_ADDR'];
+					$sql = "SELECT * FROM ".$db['prefix']."banlist_ips WHERE banned_ip = ".$_SESSION['REMOTE_ADDR'];
 					$result = mgb_sql_connect($mysqli, $sql, "Error while checking remote IP.", 1, null, null); 
 					if ($result && $result->num_rows > 0) {
 						$ip = $result->fetch_assoc();		
-						if($_SERVER['REMOTE_ADDR'] !== $ip['banned_ip']) {
+						if($_SESSION['REMOTE_ADDR'] !== $ip['banned_ip']) {
 							$match = $ip['matches']++;
 							$sql = "UPDATE `".$db['prefix']."banlist_ips` SET `matches` = '".$match."' WHERE `ID` = ".$ip['ID']; 	
 							mgb_sql_connect($mysqli, $sql, "Error while updating banlist_ips", 0, null, null);
@@ -235,9 +227,9 @@
 		// ============
 		// check www.stopforumspam.com if user is known for intense spamming
 		if($settings['check_against_anti_spam_sites'] == 1) {
-			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SERVER['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) == 1) {
+			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SESSION['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) == 1) {
 				$errorcode = 19; // user was blocked by www.stopforumspam.com
-				mgb_trigger_sys_log($mysqli, 4006, $_POST['name'], $_POST['email'], '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry by stopforumspam denied)
+				mgb_trigger_sys_log($mysqli, 4006, $_POST['name'], $_POST['email'], '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry by stopforumspam denied)
 			}
 			$type = 14; // blocked by stopforumspam
 		}
@@ -274,21 +266,21 @@
 				if($settings['captcha_method'] == 0) { // security code
 					if($_SESSION['CAPTCHA_CODE'] != $_POST['captcha']) {
 						$errorcode = 7;  // captcha wrong or not set
-						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
+						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
 						$type = 9; // captcha wrong
 					}
 				} elseif($settings['captcha_method'] == 1) { // mathematical captcha
 					if($_SESSION['CAPTCHA_SUM'] != $_POST['captcha']) {
 						$errorcode = 7; // captcha wrong or not set
-						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
+						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
 						$type = 9; // captcha wrong
 					}
 				} elseif($settings['captcha_method'] == 2) { // reCaptchav2
-					$response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$settings['recaptcha_private_key']."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']);
+					$response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".$settings['recaptcha_private_key']."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SESSION['REMOTE_ADDR']);
         			$responseKeys = json_decode($response, true);
         			if(intval($responseKeys["success"]) !== 1) {
 						$errorcode = 7; // captcha wrong or not set
-						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
+						mgb_trigger_sys_log($mysqli, 4004, '', '', '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog (captcha wrong)
 						$type = 9; // captcha wrong
         			}				
 				}
@@ -301,7 +293,7 @@
 					)";
 
 					$params = [
-						$_SERVER['REMOTE_ADDR'],
+						$_SESSION['REMOTE_ADDR'],
 						$_POST['name'],
 						$_POST['email'],
 						$_SERVER['HTTP_USER_AGENT'],
@@ -320,7 +312,7 @@
 
 			// check ip, email and domain with banlists
 			if((!empty($_POST['name']) AND !empty($_POST['email']) AND !empty($_POST['message'])) AND ($errorcode != 7) AND ($errorcode != 4) AND (!$settings['banlist_ips'] == 1 OR $settings['banlist_emails'] == 1 OR $settings['banlist_domains'] == 1)) {
-				$check_banlists = mgb_check_banlists($mysqli, $_SERVER['REMOTE_ADDR'], $_POST['email'], $settings['blocktime'], $settings['banlist_ips'], $settings['banlist_emails'], $settings['banlist_domains'], $settings['debug_mode']);
+				$check_banlists = mgb_check_banlists($mysqli, $_SESSION['REMOTE_ADDR'], $_POST['email'], $settings['blocktime'], $settings['banlist_ips'], $settings['banlist_emails'], $settings['banlist_domains'], $settings['debug_mode']);
 				if($check_banlists == 1) {
 					$errorcode = 14; // blocked by ip
 					$type = 1; // blocked by ip
@@ -340,7 +332,7 @@
 					)";
 
 					$params = [
-						$_SERVER['REMOTE_ADDR'],
+						$_SESSION['REMOTE_ADDR'],
 						trim($_POST['name']),
 						$_POST['email'],
 						$_SERVER['HTTP_USER_AGENT'],
@@ -358,7 +350,7 @@
 					mgb_spam_mail($charset,
 						$settings['spam_mail'],
 						$settings['admin_gbemail'],
-						$_SERVER['REMOTE_ADDR'],
+						$_SESSION['REMOTE_ADDR'],
 						trim($_POST['name']),
 						$_POST['email'],
 						$_POST['hp'],
@@ -402,7 +394,7 @@
 					$mail_header);
 					if($mail_send) {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, 4001, $_POST['name'], $_POST['email'], $_POST['message'], '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 4001, $_POST['name'], $_POST['email'], $_POST['message'], '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 				} elseif($settings['mailer_method'] == 1) { // use phpmailer to send e-mails
 					/* use PHPMailer\PHPMailer\PHPMailer;
@@ -422,7 +414,7 @@
 						$errormessage_mail = $mail_send[1];
 					} else {
 						$sendemail_successfull = 1;
-						mgb_trigger_sys_log($mysqli, 4001, $_POST['name'], $_POST['email'], $_POST['message'], '', '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
+						mgb_trigger_sys_log($mysqli, 4001, $_POST['name'], $_POST['email'], $_POST['message'], '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog
 					}
 				}
 

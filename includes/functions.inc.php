@@ -48,24 +48,26 @@
 	// MGB_GETUSERIP
 	// INFO: GETS THE REAL USER IP
 	// CREATED: 09.02.2026
-	function mgb_getUserIp(): string {
-		$keys = [
-			'HTTP_CF_CONNECTING_IP',
-			'HTTP_X_REAL_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'REMOTE_ADDR'
-		];
+	if(!function_exists('mgb_getUserIp')) {
+		function mgb_getUserIp(): string {
+			$keys = [
+				'HTTP_CF_CONNECTING_IP',
+				'HTTP_X_REAL_IP',
+				'HTTP_X_FORWARDED_FOR',
+				'REMOTE_ADDR'
+			];
 
-		foreach ($keys as $key) {
-			if (!empty($_SERVER[$key])) {
-				$ip = explode(',', $_SERVER[$key])[0];
-				if (filter_var($ip, FILTER_VALIDATE_IP)) {
-					return $ip;
+			foreach ($keys as $key) {
+				if (!empty($_SERVER[$key])) {
+					$ip = explode(',', $_SERVER[$key])[0];
+					if (filter_var($ip, FILTER_VALIDATE_IP)) {
+						return $ip;
+					}
 				}
 			}
-		}
 
-		return '0.0.0.0';
+			return '0.0.0.0';
+		}
 	}
 
 	// MGB_ISIPBANNED
@@ -203,13 +205,13 @@
 				} elseif(isset($mgb_installation_complete) AND $mgb_installation_complete == TRUE AND file_exists($path.'install') AND is_dir($path.'install')) {
 					require $path."install/includes/config.inc.php";
 					$sql = "SELECT version FROM ".$db['prefix']."settings";
-					$result = mgb_sql_connect($mysqli, $sql, "Error while retrieving version of MGB.", 1);
+					$result = mgb_sql_connect($mysqli, $sql, "Error while retrieving version of MGB.", 1, null, null);
 					$existing_version = $result->fetch_assoc();
 					if(version_compare($existing_version['version'], MGB_VERSION, "!=")) {
 						echo "<meta http-equiv='refresh' content='0; URL=install/upgrade.php'>";
 						die();
 					} else {
-						echo "<center><span>If you upgraded to a newer version shortly, please run <a href='install/upgrade.php'>upgrade.php</a> in install directory <b>now!</b> Otherwise you might discover problems when using this software.<br>If you did a fresh install, you can ignore this message. To remove it, delete install directory. Thank you!<br><br></span></center>";
+						echo "<center><span>If you upgraded to a newer version shortly, please run <a href='".$path."install/upgrade.php'>upgrade.php</a> in install directory <b>now!</b> Otherwise you might discover problems when using this software.<br>If you did a fresh install, you can ignore this message. To remove it, delete install directory. Thank you!<br><br></span></center>";
 					}
 				}
 			} else {
@@ -368,8 +370,8 @@
 					if($fieldnull[$i] == "NO") {
 						$sql_dump.= " NOT NULL";
 					}
-					if(!empty($fielddefault[$i])) {
-						$sql_dump.= " DEFAULT ".$fielddefault[$i];
+					if(!empty($fielddefault[$i]) AND strtoupper($fieldnames[$i]) != "MEDIUMTEXT") {						
+						$sql_dump.= " DEFAULT '".$fielddefault[$i]."'";
 					}
 					if(!empty($fieldextra[$i])) {
 						$sql_dump.= " ".$fieldextra[$i];
@@ -416,7 +418,7 @@
 							$sql_dump .= "(";
 							for($j = 0; $j < count($fieldnames); $j++) {
 								$counterj = count($fieldnames) - 1;
-								$sql_dump .= $export[$i][$fieldnames[$j]];
+								$sql_dump .= "'".mysqli_real_escape_string($mysqli, $export[$i][$fieldnames[$j]])."'";
 								if($j < $counterj) {
 									$sql_dump .= ", ";
 								} else {

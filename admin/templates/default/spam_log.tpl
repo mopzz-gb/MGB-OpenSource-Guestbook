@@ -7,7 +7,7 @@
 		<td class="entry_icons">{DELETE}<!-- <br>{ENTRY_COUNTRY} --></td>
 	</tr>
 	<tr>
-		<td class="entry_ip" colspan="2"><span><b>{ENTRY_IP}{ENTRY_REPORT_SPAM}</b></span></td>
+		<td class="entry_ip" colspan="2"><span><b>{ENTRY_IP}{ENTRY_REPORT_SPAM}<br>{ENTRY_DOMAIN}</b></span></td>
 		<td class="entry_message" colspan="2"><span><b>{ENTRY_EMAIL}<br>{ENTRY_HP}</b></span></td>
 	</tr>
 	<tr>

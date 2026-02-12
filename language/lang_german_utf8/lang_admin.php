@@ -209,7 +209,8 @@
 		4003 => "<b>email.php</b>: Die IP <b>{ENTRY_IP}</b> wurde automatisch von der Bannliste gelöscht.",
 		4004 => "<b>email.php</b>: Das Captcha wurde von der IP <b>{ENTRY_IP}</b> falsch eingegeben.",
 		4005 => "<b>email.php</b>: Ein direkter Zugriff ohne Referer von der IP <b>{ENTRY_IP}</b> wurde geblockt.",
-		4006 => "<b>email.php</b>: <b>stopforumspam</b> hat einen Eintrag abgelehnt => {ENTRY_NAME}, {ENTRY_EMAIL}"
+		4006 => "<b>email.php</b>: <b>stopforumspam</b> hat einen Eintrag abgelehnt => {ENTRY_NAME}, {ENTRY_EMAIL}",
+		5001 => "<b>upgrade.php</b> Ein Datenbankupgrade wurde erfolgreich durchgeführt."
 	],
 
 	// SPAM.INC.PHP

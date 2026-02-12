@@ -150,7 +150,7 @@
 	// 21.06.2013 :: MGB_GET_SQL_STRUCTURE
 	// GETS STRUCTURE OF SQL TABLES TO CREATE BACKUPS
 	if(!function_exists("mgb_get_sql_structure")) {
-		function mgb_get_sql_structure(mysqli $mysqli, string $tablename, int $mode) {
+		function mgb_get_sql_structure($mysqli, $tablename, $mode) {
 			if($mode == 1) {
 				// get structure of table and build output
 				$result = $mysqli->query("SHOW COLUMNS FROM `".$tablename."`");
@@ -173,8 +173,8 @@
 					if($fieldnull[$i] == "NO") {
 						$sql_dump.= " NOT NULL";
 					}
-					if(!empty($fielddefault[$i])) {
-						$sql_dump.= " DEFAULT ".$fielddefault[$i];
+					if(!empty($fielddefault[$i]) AND strtoupper($fieldnames[$i]) != "MEDIUMTEXT") {						
+						$sql_dump.= " DEFAULT '".$fielddefault[$i]."'";
 					}
 					if(!empty($fieldextra[$i])) {
 						$sql_dump.= " ".$fieldextra[$i];
@@ -188,7 +188,7 @@
 						$sql_dump.= " ,\n";
 					}
 				}
-				$sql_dump.= ") DEFAULT CHARSET=utf8mb4 ;\n\n";
+				$sql_dump.= ") DEFAULT CHARSET=utf8 ;\n\n";
 			} elseif($mode == 2) {
 				// get content of table and build output
 				$result = $mysqli->query("SHOW COLUMNS FROM `".$tablename."`");
@@ -221,7 +221,7 @@
 							$sql_dump .= "(";
 							for($j = 0; $j < count($fieldnames); $j++) {
 								$counterj = count($fieldnames) - 1;
-								$sql_dump .= $export[$i][$fieldnames[$j]];
+								$sql_dump .= "'".mysqli_real_escape_string($mysqli, $export[$i][$fieldnames[$j]])."'";
 								if($j < $counterj) {
 									$sql_dump .= ", ";
 								} else {
@@ -324,6 +324,34 @@
 					}
 				}
 			}
+		}
+	}
+	
+	// MGB_TRIGGER_SYS_LOG_EVENT
+	// DESCR: writes the system log
+	// CREATED: 30.09.2015
+
+	if(!function_exists("mgb_trigger_sys_log")) {
+		function mgb_trigger_sys_log(
+			mysqli $mysqli,
+			int $type = 0,
+			string $name = '',
+			string $email = '', 
+			string $text = '',
+			string $user = '',
+			string $user_new = '',
+			string $user_edit = '', 
+			string $ip = '',
+			string $db_prefix = ''
+		) {
+			$sql = "INSERT INTO ".$db_prefix."sys_log
+				( type, name, email, text, user, user_new, user_edit, ip, timestamp )
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+			";
+			
+			$stmt = $mysqli->prepare($sql);
+			$stmt->bind_param("issssssss", $type, $name, $email, $text, $user, $user_new, $user_edit, $ip, time());
+			$stmt->execute();
 		}
 	}
 ?>
