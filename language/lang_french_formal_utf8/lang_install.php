@@ -84,6 +84,8 @@
 	$lang['admin_email'] = "E-Mail:";
 	$lang['admin_gbemail'] = "E-Mail du livre d’hôtes:";
 
+	$lang['allow_telemetry'] = "Autoriser la collecte des <br>données d'utilisation anonymes.<br><br>Sont enregistrées:<br><br>– la version du MGB<br>– la version PHP<br>– la version SQL<br>– l'ID d'installation anonyme<br>– le ping d'activité";
+
  	$lang['post_admin_name'] = "Webmaster";
  	$lang['post_admin_username'] = "admin";
 
@@ -94,6 +96,7 @@
 	$lang['error_4_step2'] = "Il y a déjà une installation avec le préfixe spécifié dans la base de données. Choisissez un autre préfixe, s\'il vous plaît.";
 	$lang['error_5_step2'] = "Le préfixe spécifié contient des caractères spéciaux, et n\'est donc pas valable. Ne sont autorisés que le trait de soulignement (_) et/ou le trait d\'union (-).";
 	$lang['error_6_step2'] = "Le nom d'utilisateur indiqué contient des caractères spéciaux et n'est donc pas valide. Seules les lettres minuscules et majuscules ainsi que les chiffres sont autorisés.";
+	$lang['error_7_step2'] = "Les deux mots de passe d'administrateur ne sont pas identiques.";
 
 	$lang['to_administration'] = "Aller à l’administration";
 	$lang['to_guestbook'] = "Aller au livre d’hôtes";

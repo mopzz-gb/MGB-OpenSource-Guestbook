@@ -83,6 +83,8 @@
 	$lang['admin_password'] = "Password:";
 	$lang['admin_email'] = "Email:";
 	$lang['admin_gbemail'] = "Guestbook email:";
+	
+	$lang['allow_telemetry'] = "Allow the collection of<br>anonymous usage data.<br><br>We collect:<br><br>– MGB Version<br>– PHP Version<br>– SQL Version<br>– Anonymous Install ID<br>– Activity ping";
 
 	$lang['post_admin_name'] = "Webmaster";
 	$lang['post_admin_username'] = "Admin";

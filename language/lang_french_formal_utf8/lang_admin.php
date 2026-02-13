@@ -731,7 +731,7 @@
 	$lang['r_delete'] = "Supprimer les entrées:";
 	$lang['r_edit'] = "Éditer les entrées:";
 	$lang['r_spam'] = "Administration – Spam:";
-	$lang['r_banlists'] = "Gérer les listes de blocage:";
+	$lang['r_banlists'] = "Administration des listes de blocage:";
 	$lang['r_edit_smilies'] = "Éditer les smileys";
 	$lang['r_telemetry'] = "Gérer les statistiques d'utilisation:";
 	$lang['old_password'] = "Votre mot de passe actuel:";
