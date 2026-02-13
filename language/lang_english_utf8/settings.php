@@ -1,7 +1,7 @@
 <?php
 	/*
 	MGB 0.7.x - OpenSource PHP and MySql Guestbook
-	Copyright (C) 2004 - 2013 Juergen Grueneisl - http://www.m-gb.org/
+	Copyright (C) 2004 - 2026 Juergen Grueneisl - https://www.m-gb.org/
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 	$language = "English";
 	$language_short = "en";
 	$language_short_mgb = "";
-	$language_version = "0.7";
+	$language_version = "0.7.1";
 	$language_timezone = "Europe/London";
 	$language_author = "Jürgen Schäfer";
 ?>
