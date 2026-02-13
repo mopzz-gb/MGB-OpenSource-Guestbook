@@ -32,5 +32,5 @@
 	$language_short_mgb = "";
 	$language_version = "0.7";
 	$language_timezone = "Europe/London";
-	$language_author = "J&uuml;rgen Sch&auml;fer";
+	$language_author = "Jürgen Schäfer";
 ?>

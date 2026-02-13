@@ -29,7 +29,7 @@
 	$language = "Italiano / Italian";
 	$language_short = "it";
 	$language_short_mgb = "";
-	$language_version = "0.6.x";
+	$language_version = "0.6";
 	$language_timezone = "Europe/Rome";
 	$language_author = "Christian Castelli";
 ?>
