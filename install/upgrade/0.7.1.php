@@ -23,7 +23,7 @@
 	*/
 	
 	return [
-		'version'		=>	'0.7.1',
+		'version'		=>	'0.7.1.1',
 		'description'	=>	'Adding telemetry, updating structure of banlists, add new social networks',
 		'sql'			=>	[
 			function(mysqli $mysqli, array $db) {
@@ -82,7 +82,7 @@
 					return "ALTER TABLE `".$db['prefix']."user`
 					ADD `user_agent` VARCHAR(255) NOT NULL DEFAULT '' AFTER `user_ip`,
 					ADD `r_telemetry` TINYINT(1) NOT NULL DEFAULT '0' AFTER `r_banlists`;";
-			}
+			},
 			
 			function(mysqli $mysqli, array $db) {
 					return "DROP TABLE `".$db['prefix']."captcha`, `".$db['prefix']."lastip`;";

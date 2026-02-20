@@ -17,14 +17,14 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-	===================
-	install.php - 0.7.1
-	===================
+	=====================
+	install.php - 0.7.1.1
+	=====================
 	*/
 
 	// Show all errors but no warnings and make sure they are displayed
-	error_reporting(E_ALL & ~E_NOTICE);
-	ini_set("display_errors", 1);
+	ini_set('display_errors', '1');
+	error_reporting(E_ALL & ~E_NOTICE);	
 
 	// set root path
 	define('MGB_ROOT', dirname(dirname(__FILE__))."/");
@@ -36,10 +36,10 @@
 
 	require MGB_ROOT.'install/includes/functions.inc.php';
 
-	if(file_exists(MGB_ROOT.'install/includes/config.inc.php')) {
-		require_once (MGB_ROOT.'install/includes/config.inc.php');
-		if(isset($mgb_installation_complete) AND (cleanstr($mgb_installation_complete) == TRUE)) {
-			echo "<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">config.inc.php exists. It seems that MGB has been already installed.</span><br><br>
+	if(file_exists(MGB_ROOT.'includes/config.inc.php')) {
+		require (MGB_ROOT.'includes/config.inc.php');
+		if((isset($mgb_installation_complete) AND ($mgb_installation_complete == TRUE)) || !empty($db['dbname']) || !empty($db['prefix'])) {
+			echo "<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">config.inc.php already exists. It seems that MGB has been already installed.</span><br><br>
 			<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;\">If you want to upgrade your MGB installation call <a href='upgrade.php'>upgrade.php</a> instead of install.php. If you want a new installation, delete ''config.inc.php'' in root/includes directory and try again.</span>";
 			die();
 		}
