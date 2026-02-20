@@ -1,3 +1,7 @@
+[0.7.1.1]
+
+ [FIX] Fixed a typo in upgrade/0.7.1.php (now 0.7.1.1.php) that prevented properly upgrading to 0.7.1
+ 
 [0.7.1]
 
  [NEW] Full PHP8 compatiblity
