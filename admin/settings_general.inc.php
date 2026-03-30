@@ -97,7 +97,7 @@
 			// start replacement for template
 
 			// replacement that has nothing to do with front end
-			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_general".$sid], $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_general"], $page_include);
 
 			// value replacement
 			if ($settings['caching'] == 0) {

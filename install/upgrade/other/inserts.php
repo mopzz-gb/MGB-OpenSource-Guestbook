@@ -69,6 +69,17 @@
 		$sqldescription[] = "Adding unique install id...";
 	}
 	
+	// 0.7.2
+	if (version_compare($settings['version'], '0.7.1.1', '<')) {
+		if (isset($settings['language_path']) && str_contains($settings['language_path'], '../language/')) {
+			$language_path = str_replace('../language/', '', $settings['language_path']);
+			
+			$sql[] = "UPDATE `".$db['prefix']."settings` SET `language_path` = '".$language_path."'";
+			$sqldescription[] = "Updating language path...";
+		}
+	}
+		
+	
 	foreach ($sql as $i => $query) {
 		echo "<span style='
 			font-family: verdana, arial, helvetica, sans-serif;

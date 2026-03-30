@@ -1,4 +1,4 @@
-<form action="admin.php?action={ACTION}&amp;option=dropbox{PAGE_NR}{SID}" method="post">
+<form action="admin.php?action={ACTION}&amp;option=dropbox{PAGE_NR}" method="post">
 <table class="dropbox" summary="dropbox" cellspacing="0" cellpadding="0">
 	<tr>
 		<td class="dropbox_l">

@@ -271,8 +271,8 @@
 	'timestamp' 				=> "Zeitstempel",
 	'quote' 					=> "Zitat von",
 	'report_spam' 				=> "Sendet den Eintrag an www.stopforumspam.com und hilft somit Spam weiter einzudämmen.",
-	'report_successfull' 		=> "übertragung erfolgreich!",
-	'report_failed' 			=> "übertragung fehlgeschlagen!",
+	'report_successfull' 		=> "Übertragung erfolgreich!",
+	'report_failed' 			=> "Übertragung fehlgeschlagen!",
 	'sfs_username' 				=> "Benutzername",
 	'sfs_email' 				=> "E-Mail",
 	'sfs_ip' 					=> "IP",
@@ -320,6 +320,7 @@
 	'show_sent_emails'							=> "➔ Zeige E-Mails die über das Gästebuch versendet wurden",
 	'export_as_sql_dump' 						=> "➔ Exportieren als SQL Dump",
 	'export_as_csv' 							=> "➔ Exportieren als CSV",
+	'export_as_txt' 							=> "➔ Exportieren als Textdatei",
 	'sneak_everything' 							=> "➔ Alle Einträge petzen!",
 
 	// CONFIRMS
@@ -379,6 +380,7 @@
 	'banlist_domains' 		=> "Domain Liste",
 	'spam_log' 				=> "Spamprotokoll",
 	'sys_log' 				=> "Systemprotokoll",
+	'statistics'			=> "Statistiken",
 	'stats' 				=> "Statistik",
 	'license' 				=> "Lizenz",
 	'forum' 				=> "Forum",
@@ -757,6 +759,13 @@
 	'same_version' 			=> "Du besitzt die neueste Version.<br>Eine Aktualisierung ist nicht erforderlich.",
 	'newer_version' 		=> "Deine Version ist neuer als die verfügbare stabile Version.<br>Eine Aktualisierung ist nicht erforderlich.",
 	'new_version_available' => "Eine neuere Version ist verfügbar: <a href='https://www.m-gb.org/files/latest/mgb-latest.zip' class='admin' target='_blank' title='Jetzt aktualisieren'>{LATEST_VERSION}</a>",
+	
+	// STATISTICS.INC.PHP
+	'st_unknown'			=> "Unbekannt",
+	'st_install_date'		=> "Installationsdatum:",
+	'st_age'				=> "Alter der MGB Installation:",
+	'st_entries'			=> "Anzahl Gästebucheinträge:",
+	'st_entries_per_day'	=> "Gästebucheinträge pro Tag seit Installation:",
 
 	// LOSTPASSWORD.PHP
 	'lostpassword_mail' 				=> "Deine E-Mail Adresse:",

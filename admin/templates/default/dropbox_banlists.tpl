@@ -1,4 +1,4 @@
-<form action="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox{PAGE_NR}{SID}" method="post">
+<form action="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox{PAGE_NR}" method="post">
 <table class="dropbox" summary="dropbox" cellspacing="0" cellpadding="0">
 	<tr>
 		<td class="dropbox_l">
@@ -15,6 +15,7 @@
 		{OPTION_SHOW_BANNED_BY_DOMAIN_ONLY}
 		{OPTION_SHOW_BANNED_BY_KEYSTROKE_ONLY}
 		{OPTION_SHOW_BANNED_BY_CAPTCHA_ONLY}
+		{OPTION_EXPORT_AS_TXT}
 		</select>
 		</td>
 		<td class="dropbox_r">
@@ -26,10 +27,10 @@
 <br>
 <table summary="entry" class="entry" cellspacing="0" cellpadding="3">
 	<tr>
-		<td class="sort_id"><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=id&amp;sort=DESC{PAGE_NR}{SID}"><img src="../images/iconsets/default/arrow_down.png"></a><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=id&amp;sort=ASC{PAGE_NR}{SID}"><img src="../images/iconsets/default/arrow_up.png"></a></td>
-		<td class="sort_content"><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=content&amp;sort=DESC{PAGE_NR}{SID}"><img src="../images/iconsets/default/arrow_down.png"></a><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=content&amp;sort=ASC{PAGE_NR}{SID}"><img src="../images/iconsets/default/arrow_up.png"></a></td>
-		<td class="sort_matches"><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=matches&amp;sort=DESC{PAGE_NR}{SID}"><img src="../images/iconsets/default/arrow_down.png"></a><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=matches&amp;sort=ASC{PAGE_NR}{SID}"><img src="../images/iconsets/default/arrow_up.png"></a></td>
-		<td class="sort_timestamp"><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=timestamp&amp;sort=DESC{PAGE_NR}{SID}"><img src="../images/iconsets/default/arrow_down.png"></a><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=timestamp&amp;sort=ASC{PAGE_NR}{SID}"><img src="../images/iconsets/default/arrow_up.png"></a></td>
+		<td class="sort_id"><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=id&amp;sort=DESC{PAGE_NR}"><img src="../images/iconsets/default/arrow_down.png"></a><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=id&amp;sort=ASC{PAGE_NR}"><img src="../images/iconsets/default/arrow_up.png"></a></td>
+		<td class="sort_content"><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=content&amp;sort=DESC{PAGE_NR}"><img src="../images/iconsets/default/arrow_down.png"></a><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=content&amp;sort=ASC{PAGE_NR}"><img src="../images/iconsets/default/arrow_up.png"></a></td>
+		<td class="sort_matches"><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=matches&amp;sort=DESC{PAGE_NR}"><img src="../images/iconsets/default/arrow_down.png"></a><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=matches&amp;sort=ASC{PAGE_NR}"><img src="../images/iconsets/default/arrow_up.png"></a></td>
+		<td class="sort_timestamp"><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=timestamp&amp;sort=DESC{PAGE_NR}"><img src="../images/iconsets/default/arrow_down.png"></a><a href="admin.php?action={ACTION_BANLISTS}&amp;option=dropbox&amp;orderby=timestamp&amp;sort=ASC{PAGE_NR}"><img src="../images/iconsets/default/arrow_up.png"></a></td>
 		<td class="sort_icons">&nbsp;</td>
 	</tr>
 </table>

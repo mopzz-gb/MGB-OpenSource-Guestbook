@@ -110,11 +110,20 @@
 	</tr>
 	<tr>
 		<td class="inner_navigation_l">
-		<img class="icon" src="templates/default/images/log.png" height="16" width="16" title="{LANG_SPAM_LOG}" alt="{LANG_SPAM_LOG}">
+		<img class="icon" src="templates/default/images/log.png" height="16" width="16" title="{LANG_SYS_LOG}" alt="{LANG_SYS_LOG}">
 		</td>
 		<td class="inner_navigation_r">
 		<span class="navigation">
 		<a class="admin" href="{LINK_SYS_LOG}" title="{LANG_SYS_LOG}">&nbsp;{LANG_SYS_LOG}</a></span>
+		</td>
+	</tr>
+	<tr>
+		<td class="inner_navigation_l">
+		<img class="icon" src="templates/default/images/stats.png" height="16" width="16" title="{LANG_STATISTICS}" alt="{LANG_STATISTICS}">
+		</td>
+		<td class="inner_navigation_r">
+		<span class="navigation">
+		<a class="admin" href="{LINK_STATISTICS}" title="{LANG_STATISTICS}">&nbsp;{LANG_STATISTICS}</a></span>
 		</td>
 	</tr>
 	<tr>

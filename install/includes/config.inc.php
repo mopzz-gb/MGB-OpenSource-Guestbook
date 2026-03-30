@@ -21,11 +21,11 @@
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
 	if(!defined('MGB_VERSION')) {
-		define('MGB_VERSION', '0.7.1');
+		define('MGB_VERSION', '0.7.2');
 	}
 	
 	if(!isset($mgb_version)) {
-		$mgb_version = "0.7.1";
+		$mgb_version = "0.7.2";
 	}
 	
 	if(!defined('INSTALL')) {

@@ -244,7 +244,7 @@
 							'SELECTED_R_BANLISTS_1' 			=> $selected_r_banlists_1,
 							'SELECTED_R_TELEMETRY_0' 			=> $selected_r_telemetry_0,
 							'SELECTED_R_TELEMETRY_1' 			=> $selected_r_telemetry_1,
-							'FORM_ACTION' 						=> "admin.php?action=editusers&amp;mode=edit&amp;id=".$userID.$sid
+							'FORM_ACTION' 						=> "admin.php?action=editusers&amp;mode=edit&amp;id=".$userID
 						], $page_edit_user_single);
 
 						$content_scrolling_function = NULL;
@@ -428,7 +428,7 @@
 						'SELECTED_R_TELEMETRY_1' 			=> $selected_r_telemetry_1,
 						'EDIT_USER_NEW_PASSWORD_1' 			=> $save_pw,
 						'EDIT_USER_NEW_PASSWORD_2' 			=> $save_pw,
-						'FORM_ACTION' 						=> "admin.php?action=editusers&amp;mode=adduser".$sid
+						'FORM_ACTION' 						=> "admin.php?action=editusers&amp;mode=adduser"
 					], $page_edit_user_adduser);
 
 					$content_scrolling_function = NULL;
@@ -453,7 +453,7 @@
 					$page_edit_user[$i] = $content_edit_user;
 
 					if($i == 0) {
-						$edit_user_icon_adduser = "<a href=\"admin.php?action=editusers&amp;mode=adduser".$sid."\"><img class=\"icon\" src=\"templates/default/images/user_adduser.png\" title=\"".$lang['user_add']."\" alt=\"".$lang['user_add']."\"></a>";
+						$edit_user_icon_adduser = "<a href=\"admin.php?action=editusers&amp;mode=adduser"."\"><img class=\"icon\" src=\"templates/default/images/user_adduser.png\" title=\"".$lang['user_add']."\" alt=\"".$lang['user_add']."\"></a>";
 					} else {
 						$edit_user_icon_adduser = NULL;
 					}
@@ -465,7 +465,7 @@
 						'EDIT_USER_ID' 				=> $users[$i]['ID'],
 						'EDIT_USER_NAME' 			=> $users[$i]['user_name'],
 						'EDIT_USER_LEVEL' 			=> $user_level,
-						'EDIT_USER_ICON_EDIT' 		=> "<a href=\"admin.php?action=editusers&amp;mode=edit&amp;id=".$users[$i]['ID'].$sid."\"><img class=\"icon\" src=\"templates/default/images/user_edit.png\" title=\"".$lang['user_edit']."\" alt=\"".$lang['user_edit']."\"></a>",
+						'EDIT_USER_ICON_EDIT' 		=> "<a href=\"admin.php?action=editusers&amp;mode=edit&amp;id=".$users[$i]['ID']."\"><img class=\"icon\" src=\"templates/default/images/user_edit.png\" title=\"".$lang['user_edit']."\" alt=\"".$lang['user_edit']."\"></a>",
 						'EDIT_USER_ICON_ADDUSER' 	=> $edit_user_icon_adduser
 					], $page_edit_user[$i]);
 

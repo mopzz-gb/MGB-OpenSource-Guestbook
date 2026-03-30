@@ -24,7 +24,7 @@
 
 	// Show all errors but no warnings
 	ini_set('display_errors', '1');
-	error_reporting(E_ALL & ~E_NOTICE);
+	error_reporting(E_ALL & ~E_NOTICE);	
 
 	// set timezone
 	if(function_exists("date_default_timezone_set")) {
@@ -63,11 +63,11 @@
 		echo "\t<body>\n";
 
 		// load includes
-		require_once ("../includes/config.inc.php");
-		require_once ("includes/config.inc.php");		
-		require_once ('../includes/db.php');
-		require_once ("includes/functions.inc.php");
-		require_once ("includes/load_settings.inc.php");
+		require ("../includes/config.inc.php");
+		require ("includes/config.inc.php");		
+		require ('../includes/db.php');
+		require ("includes/functions.inc.php");
+		require ("includes/load_settings.inc.php");
 		
 		// do a full backup
 		mgb_backup_database($mysqli, $db['prefix'], $settings['version'], $db['hostname'], $db['dbname'], 2);
@@ -133,10 +133,10 @@
 		echo "\t\t\t<br><br>\n";
 
 		// load includes
-		require ("../includes/config.inc.php");
-		require ("includes/config.inc.php");
-		require ("includes/functions.inc.php");
-		require ("includes/load_settings.inc.php");
+		require_once ("../includes/config.inc.php");
+		require_once ("includes/config.inc.php");
+		require_once ("includes/functions.inc.php");
+		require_once ("includes/load_settings.inc.php");
 
 		echo "\t\t\t<table summary=\"upgrade\">\n";
 		echo "\t\t\t\t<tr>\n";

@@ -649,7 +649,7 @@
 			$pages_total = ceil($p);
 
 			if ($_GET['p'] === 1) {
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				if ($pages_total >= 3 ) {
 					$sf_last = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
@@ -658,21 +658,21 @@
 
 			if ($_GET['p'] > 1) {
 				if (($pages_total >= 3) AND ($_GET['p'] > 2)) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				if (($pages_total >= 3) AND ($_GET['p'] < ($pages_total - 1))) {
-					$sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".$pages_total.$sid."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
+					$sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
 				}
 			}
 
 			if ($_GET['p'] === $pages_total) {
 				if ($pages_total >= 3) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=spam&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				$sf_forwards = "";
 			}
@@ -746,23 +746,23 @@
 
 				$page_entry[$i] = mgb_template_replace([
 					'ENTRY_MESSAGE' => mgb_format($entry[$i]['message']),
-					'ENTRY_IP' 		=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_ip_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_IP_BLOCKLIST}'); submit();\" title=\"".$lang['spam_add_to_ip_banlist']."\">".$entry[$i]['ip']."</a>"
+					'ENTRY_IP' 		=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_ip_banlist".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_IP_BLOCKLIST}'); submit();\" title=\"".$lang['spam_add_to_ip_banlist']."\">".$entry[$i]['ip']."</a>"
 				], $page_entry[$i]);
 				if(empty($entry[$i]['sneaked'])) {
-					$page_entry[$i] = mgb_template_replace(['ENTRY_REPORT_SPAM' => "&nbsp;-&nbsp;<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=report_to_stopforumspam".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_REPORT_TO_STOPFORUMSPAM}'); submit();\" title=\"{LANG_REPORT_SPAM}\">".$lang['confirm_report_spam']."</a>"], $page_entry[$i]);
+					$page_entry[$i] = mgb_template_replace(['ENTRY_REPORT_SPAM' => "&nbsp;-&nbsp;<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=report_to_stopforumspam".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_REPORT_TO_STOPFORUMSPAM}'); submit();\" title=\"{LANG_REPORT_SPAM}\">".$lang['confirm_report_spam']."</a>"], $page_entry[$i]);
 				} else {
 					$page_entry[$i] = mgb_template_replace(['ENTRY_REPORT_SPAM' => ""], $page_entry[$i]);
 				}
 				$page_entry[$i] = mgb_template_replace([
-					'ENTRY_EMAIL' 				=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_email_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\"title=\"".$lang['spam_add_to_email_banlist']."\">".$entry[$i]['email']."</a>",
-					'ENTRY_DOMAIN' 				=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_domain_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\"title=\"".$lang['spam_add_to_domain_banlist']."\">".$entry_domain[1]."</a>",
+					'ENTRY_EMAIL' 				=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_email_banlist".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\"title=\"".$lang['spam_add_to_email_banlist']."\">".$entry[$i]['email']."</a>",
+					'ENTRY_DOMAIN' 				=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_domain_banlist".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\"title=\"".$lang['spam_add_to_domain_banlist']."\">".$entry_domain[1]."</a>",
 					'ENTRY_HP' 					=> mgb_format($entry[$i]['hp']),
 					'ENTRY_COMMENT' 			=> mgb_format($entry[$i]['comment']),
 					'LANG_QUOTE' 				=> $lang['quote'],
-					'DELETE' 					=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>",
+					'DELETE' 					=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=delete".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>",
 					'SPAM_ADD_TO_BLOCKLISTS' 	=> "",
-					'NO_SPAM_DEACTIVATE'		=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=nospam_deactivate".$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/nospam2.png\" title=\"".$lang['nospam_deactivate_entry']."\" alt=\"".$lang['nospam_deactivate_entry']."\"></a>",
-					'NO_SPAM' 					=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=nospam&amp;notify=".$entry[$i]['user_notification'].$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/nospam.png\" title=\"".$lang['nospam_entry']."\" alt=\"".$lang['nospam_entry']."\"></a>",
+					'NO_SPAM_DEACTIVATE'		=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=nospam_deactivate".$add_page_nr."\"><img class=\"icon\" src=\"templates/default/images/nospam2.png\" title=\"".$lang['nospam_deactivate_entry']."\" alt=\"".$lang['nospam_deactivate_entry']."\"></a>",
+					'NO_SPAM' 					=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=nospam&amp;notify=".$entry[$i]['user_notification'].$add_page_nr."\"><img class=\"icon\" src=\"templates/default/images/nospam.png\" title=\"".$lang['nospam_entry']."\" alt=\"".$lang['nospam_entry']."\"></a>",
 					'REPORT_AS_NO_SPAM' 		=> ""
 				], $page_entry[$i]);
 

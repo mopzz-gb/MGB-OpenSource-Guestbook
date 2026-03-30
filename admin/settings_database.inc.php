@@ -545,7 +545,7 @@
 			// start replacement for template
 			
 			// replacement that has nothing to do with front end
-			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_database".$sid], $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_database"], $page_include);
 
 			// value replacement
 			include("../includes/config.inc.php");

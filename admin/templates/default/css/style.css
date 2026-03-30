@@ -432,6 +432,23 @@ td.version_overall {
 	text-align: left;
 	width: 100%;
 	height: 2px; }
+	
+table.statistics {
+	border: 1px solid #EBF3FC;
+	background-color: #DAE8FA;
+	width: 350px;
+	margin: 2px; }
+
+td.statistics_l {
+	border: 1px solid #EBF3FC;
+	text-align: left;
+	width: 200px;
+	padding: 3px; }
+
+td.statistics_r {
+	border: 1px solid #EBF3FC;
+	text-align: center;
+	padding: 3px; }
 
 table.dropbox {
 	border: none;

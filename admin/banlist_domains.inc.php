@@ -44,7 +44,7 @@
 			if(!empty($_POST['dropbox'])) {
 				if($_POST['dropbox'] == 1) { // Delete all spam entries
 					mgb_sql_connect($mysqli, "TRUNCATE ".$db['prefix']."banlist_domains", "Error while deleting all domain entries.", 0);
-				} elseif($_POST['dropbox'] == 8) { // export as sql dump
+				} elseif($_POST['dropbox'] == 12) { // export as sql dump
 					$script_time_start = microtime(true);
 					include("../includes/config.inc.php");
 
@@ -78,17 +78,27 @@
 							$template_message = "<span class='old_version'>".$lang['errormessage'][17]."</span>";
 						}
 					}
-				} elseif($_POST['dropbox'] == 9) { // export as csv
+				} elseif($_POST['dropbox'] == 13) { // export as txt
 					$script_time_start = microtime(true);
 
-					$result = mgb_sql_connect($mysqli, "SELECT banned_domain, timestamp FROM ".$db['prefix']."banlist_domains ORDER BY banned_domain ASC", "Error while loading data from banlist_domains for csv export.", 1);
-					for($i = 0; $i < mysqli_num_rows($result); $i++) {
-						$export[$i] = mysqli_fetch_array($result, MYSQLI_ASSOC);
-						$ID = $i + 1;
-						$csv.= $ID.":".$export[$i]['banned_domain'].":".$export[$i]['timestamp']."\n";
+					header('Content-Type: text/plain; charset=utf-8');
+					header('Content-Disposition: attachment; filename=banlist_domains.txt');
+					
+					$output = fopen('php://output', 'w');
+					
+					$sql = "SELECT banned_domain FROM ".$db['prefix']."banlist_domains";
+					$result = mgb_sql_connect($mysqli, $sql, "Error while selecting banned domains.", 1, null, null);
+
+					if ($result->num_rows > 0) {
+						while($row = $result->fetch_assoc()) {
+							fwrite($output, trim($row['banned_domain']) . "\n");
+						}
 					}
 
-					if(file_exists("../save") AND is_writable("../save")) {
+					fclose($output);
+					exit;
+
+					/* if(file_exists("../save") AND is_writable("../save")) {
 						$timestamp = time();
 						if(mgb_write_export_file("../save/".$timestamp."-".$db['prefix']."banlist_domains.csv", $csv) === TRUE) {
 							$script_time_end = microtime(true);
@@ -99,14 +109,14 @@
 						}
 					} else {
 						$template_message = "<span class='old_version'>".$lang['errormessage'][18]."</span>";
-					}
+					} */					
 				}
 			}
 
 			if(isset($_GET['id'])) {
 				if(isset($_GET['spam_action'])) {
 					if($_GET['spam_action'] == 'delete') {
-						mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."banlist_domains` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting a single domain entry.", 0);
+						mgb_sql_connect($mysqli, "DELETE FROM `".$db['prefix']."banlist_domains` WHERE ID=".secure_value($_GET['id'])." LIMIT 1", "Error while deleting a single domain entry.", 0, null, null);
 					}
 				}
 			}
@@ -147,7 +157,7 @@
 			if ($_GET['orderby'] == "content") { $_GET['orderby'] = "banned_domain"; }
 
 			if ($_GET['p'] == 1) {
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				if ($pages_total >= 3 ) {
 					$sf_last = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
@@ -156,21 +166,21 @@
 
 			if ($_GET['p'] > 1) {
 				if (($pages_total >= 3) AND ($_GET['p'] > 2)) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				if (($pages_total >= 3) AND ($_GET['p'] < ($pages_total - 1))) {
-					$sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".$pages_total.$sid."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
+					$sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
 				}
 			}
 
 			if ($_GET['p'] == $pages_total) {
 				if ($pages_total >= 3) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=banlist_domains&amp;orderby=".$_GET['orderby']."&amp;sort=".$_GET['sort']."&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				$sf_forwards = "";
 			}
@@ -233,7 +243,7 @@
 						'ENTRY_DOMAIN' 		=> $entry[$i]['banned_domain'],
 						'ENTRY_MATCHES' 	=> $entry[$i]['matches'],
 						'ENTRY_TIMESTAMP' 	=> $entry_timestamp,
-						'DELETE' 			=> "<a href=\"admin.php?action=banlist_domains&amp;id=".$entry[$i]['id']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('".$entry[$i]['id'].", ".$entry[$i]['banned_domain'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
+						'DELETE' 			=> "<a href=\"admin.php?action=banlist_domains&amp;id=".$entry[$i]['id']."&amp;spam_action=delete".$add_page_nr."\" onClick=\"return confirm('".$entry[$i]['id'].", ".$entry[$i]['banned_domain'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
 					], $page_entry[$i]);
 
 					if(!isset($page_include)) { $page_include = NULL; }

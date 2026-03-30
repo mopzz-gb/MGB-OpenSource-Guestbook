@@ -1,6 +1,13 @@
-[0.7.1.1]
+[0.7.2]
 
- [FIX] Fixed a typo in upgrade/0.7.1.php (now 0.7.1.1.php) that prevented properly upgrading to 0.7.1
+ [NEW] new page in administration: statistics
+ [UPD] sql field "settings.search_engines" modified from VARCHAR(255) to MEDIUMTEXT(1000)
+ [UPD] set minimum php requirements from 8 down to 7.1.33 after successfull testing
+ [UPD] curl_close() replaced with curl_reset() since it is deprecated in php 8.5
+ [UPD] removed constant SID since it is deprecated in php 8.4
+ [FIX] Refresh time after a successfull entry or sent email was not displayed properly
+ [FIX] icon for system log had the wrong alt-text
+ [FIX] in some rare cases language_path was wrong after upgrade
  
 [0.7.1]
 

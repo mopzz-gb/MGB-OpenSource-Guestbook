@@ -1,0 +1,7 @@
+<?php
+
+// NAVIGATION
+
+'statistics' => "Statistiken"
+
+?>

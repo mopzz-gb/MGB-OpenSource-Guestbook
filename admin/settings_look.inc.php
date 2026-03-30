@@ -160,7 +160,7 @@
 			}
 
 			// replacement that has nothing to do with front end
-			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_look".$sid], $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_look"], $page_include);
 
 			// value replacement
 			$page_include = mgb_template_replace([

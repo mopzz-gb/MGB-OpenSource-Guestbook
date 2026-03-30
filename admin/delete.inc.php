@@ -81,7 +81,7 @@
 			$pages_total = ceil($p);
 
 			if ($_GET['p'] === 1) {
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				if ($pages_total >= 3 ) {
 					$sf_last = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
@@ -90,21 +90,21 @@
 
 			if ($_GET['p'] > 1) {
 				if (($pages_total >= 3) AND ($_GET['p'] > 2)) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				if (($pages_total >= 3) AND ($_GET['p'] < ($pages_total - 1))) {
-					$sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".$pages_total.$sid."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
+					$sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
 				}
 			}
 
 			if ($_GET['p'] == $pages_total) {
 				if ($pages_total >= 3) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=delete&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				$sf_forwards = "";
 			}
@@ -170,7 +170,7 @@
 						'ENTRY_HP' 		=> mgb_format($entry[$i]['hp']),
 						'ENTRY_COMMENT' => mgb_render_text($entry[$i]['comment'], 2, 2, $mysqli),
 						'LANG_QUOTE' 	=> $lang['quote'],
-						'DELETE' 		=> $status."<br><a href=\"admin.php?action=delete&amp;id=".$entry[$i]['ID'].$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
+						'DELETE' 		=> $status."<br><a href=\"admin.php?action=delete&amp;id=".$entry[$i]['ID'].$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
 					], $page_entry[$i]);
 
 					if(!isset($page_include)) { $page_include = NULL; }

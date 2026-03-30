@@ -66,15 +66,13 @@
 							$login_status_text = $lang['login_ok'];
 							$login_status_img = NULL;
 							$login_is_ok = 1;
-							mgb_trigger_sys_log($mysqli, 1001, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog
-
-							if(SID != NULL) { $sid = "?".SID; } else {$sid = NULL; }
+							mgb_trigger_sys_log($mysqli, 1001, '', '', '', $_SESSION['user_name'], '', '', $_SERVER['REMOTE_ADDR'], $db['prefix']); // write the syslog							
 
 							if($user['logged_out'] == 0) {
 								$errorcode = 10;
-								$refresh = "<meta http-equiv=\"refresh\" content=\"5; URL=admin.php".$sid."\">";
+								$refresh = "<meta http-equiv=\"refresh\" content=\"5; URL=admin.php"."\">";
 							} else {
-								$refresh = "<meta http-equiv=\"refresh\" content=\"2; URL=admin.php".$sid."\">";
+								$refresh = "<meta http-equiv=\"refresh\" content=\"2; URL=admin.php"."\">";
 							}
 
 							mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `logged_in` = '".time()."', `logged_out` = '0' WHERE ID=".$user['ID']." LIMIT 1", "Error while logging in.", 0, null, null);

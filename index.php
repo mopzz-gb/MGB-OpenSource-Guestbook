@@ -23,7 +23,8 @@
 	*/
 
 	// show all errors
-	error_reporting(E_ALL & ~E_NOTICE);
+	ini_set('display_errors', '1');
+	error_reporting(E_ALL);		
 	
 	header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // date in the past
@@ -58,7 +59,11 @@
 	if(!empty($_GET['lang'])) {
 		MGB_ROOT."language/".$settings['language_path'] = mgb_get_language_path($_GET['lang']);
 	}
-
+	
+	if ($settings['language_path'] == "lang_german_formal_utf8") {
+		$settings['language_path'] = "lang_german_utf8";
+	}
+	
 	require (MGB_ROOT."language/".$settings['language_path'].'/lang_main.php');
 	require (MGB_ROOT."language/".$settings['language_path'].'/settings.php');
 
@@ -302,11 +307,18 @@
 				}
 				else {
 					$info_icons--;
+					$entry_email_path = "";
+					$entry_email_pic = "";
+					$entry_email_text = "";
 					$email = "";
+					
 				}
 			}
 			else {
 				$info_icons--;
+				$entry_email_path = "";
+				$entry_email_pic = "";
+				$entry_email_text = "";
 				$email = "";
 			}
 

@@ -32,6 +32,10 @@
 			require_once (MGB_ROOT."includes/config.inc.php");
 			require_once (MGB_ROOT."includes/load_settings.inc.php");
 			require_once (MGB_ROOT."language/".$settings['language_path']."/lang_admin.php");
+			
+			// Show all errors but no warnings
+			ini_set('display_errors', '1');
+			error_reporting(E_ALL & ~E_NOTICE);	
 
 			// load template
 			$content_activate = mgb_load_template("admin", "default", "activate", $settings['debug_mode']);
@@ -129,36 +133,36 @@
 			}
 
 			if(isset($_GET['id'])) {
-				if(isset($_GET['isspam']) AND $_GET['isspam'] === 1) {
+				if(isset($_GET['isspam']) AND $_GET['isspam'] == 1) {
 					// get data of the entry from database
 					$sql = "SELECT * FROM ".$db['prefix']."entries WHERE ID = ?";
 					$params = [$_GET['id']];
 					$types = "i";
 					$result = mgb_sql_connect($mysqli, $sql, "Error while loading entry from ".$db['prefix']."entries.", 1, $params, $types);
-					$spam = mysqli_fetch_all($result, MYSQLI_ASSOC);					
+					$spam = mysqli_fetch_assoc($result);					
 
 					// store entry in spam table
-					$sql = "INSERT INTO".$db['prefix']."spam (
+					$sql = "INSERT INTO `".$db['prefix']."spam` (
 						name, ip, email, city, hp, message, user_notification, user_show_email, captcha, sent_captcha, counter, user_agent, sneaked, timestamp
 					) VALUES (
 						?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 					)";
 					
 					$params = [
-						$spam[$_GET['id']]['name'],
-						$spam[$_GET['id']]['ip'],
-						$spam[$_GET['id']]['email'],
-						$spam[$_GET['id']]['city'],
-						$spam[$_GET['id']]['hp'],
-						$spam[$_GET['id']]['message'],
-						$spam[$_GET['id']]['user_notification'],
-						$spam[$_GET['id']]['user_show_email'],
+						$spam['name'],
+						$spam['ip'],
+						$spam['email'],
+						$spam['city'],
+						$spam['hp'],
+						$spam['message'],
+						$spam['user_notification'],
+						$spam['user_show_email'],
 						0,
 						0,
 						1,
-						$spam[$_GET['id']]['user_agent'],
+						$spam['user_agent'],
 						0,
-						$spam[$_GET['id']]['timestamp']					
+						$spam['timestamp']					
 					];
 					
 					$types = "ssssssiiiiisii";
@@ -260,7 +264,7 @@
 			$pages_total = ceil($p);
 
 			if ($_GET['p'] == 1) {
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				if ($pages_total >= 3 ) {
 					$sf_last = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
@@ -269,21 +273,21 @@
 
 			if ($_GET['p'] > 1) {
 				if (($pages_total >= 3) AND ($_GET['p'] > 2)) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				if (($pages_total >= 3) AND ($_GET['p'] < ($pages_total - 1))) {
-					 $sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".$pages_total.$sid."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
+					 $sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
 				}
 			}
 
 			if ($_GET['p'] == $pages_total) {
 				if ($pages_total >= 3) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=activate&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				$sf_forwards = "";
 			}
@@ -343,8 +347,8 @@
 						'ENTRY_HP' 		=> mgb_format($entry[$i]['hp']),
 						'ENTRY_COMMENT' => mgb_render_text($entry[$i]['comment'], 2, 2, $mysqli),
 						'LANG_QUOTE' 	=> $lang['quote'],
-						'ACTIVATE' 		=> "<a href=\"admin.php?action=activate&amp;id=".$entry[$i]['ID']."&amp;notify=".$entry[$i]['user_notification'].$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/activate.png\" title=\"".$lang['activate_entry']."\" alt=\"".$lang['activate_entry']."\"></a>",
-						'MARK_AS_SPAM' 	=> "<a href=\"admin.php?action=activate&amp;id=".$entry[$i]['ID']."&amp;isspam=1".$add_page_nr.$sid."\"><img class=\"icon\" src=\"templates/default/images/spam.png\" title=\"".$lang['mark_as_spam']."\" alt=\"".$lang['mark_as_spam']."\"></a>",
+						'ACTIVATE' 		=> "<a href=\"admin.php?action=activate&amp;id=".$entry[$i]['ID']."&amp;notify=".$entry[$i]['user_notification'].$add_page_nr."\"><img class=\"icon\" src=\"templates/default/images/activate.png\" title=\"".$lang['activate_entry']."\" alt=\"".$lang['activate_entry']."\"></a>",
+						'MARK_AS_SPAM' 	=> "<a href=\"admin.php?action=activate&amp;id=".$entry[$i]['ID']."&amp;isspam=1".$add_page_nr."\"><img class=\"icon\" src=\"templates/default/images/spam.png\" title=\"".$lang['mark_as_spam']."\" alt=\"".$lang['mark_as_spam']."\"></a>",
 						'TEMPLATE_PATH' => "templates/".$settings['template_path']
 					], $page_entry[$i]);
 

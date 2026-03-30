@@ -24,7 +24,7 @@
 	
 	return [
 		'version'		=>	'0.7.2',
-		'description'	=>	'Adding telemetry, updating structure of banlists, add new social networks',
+		'description'	=>	'Altering search_engines table, ...',
 		'sql'			=>	[
 			function(mysqli $mysqli, array $db) {
 				return "ALTER TABLE `".$db['prefix']."settings` CHANGE `search_engines` `search_engines` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;";

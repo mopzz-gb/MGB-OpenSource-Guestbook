@@ -393,6 +393,7 @@
 			if($settings['user_notification'] === 0 OR empty($entry_email)) { $user_notification = 0; } else { $user_notification = 1; }
 			if($settings['user_show_email'] === 0 OR empty($entry_email)) { $user_show_email = 0; } else { $user_show_email = 1; }
 			
+			$mark_as_spam = 1;
 			if(empty($mark_as_spam)) {
 				// Write data into database
 				$sql = "INSERT INTO ".$db['prefix']."entries (
@@ -405,7 +406,7 @@
 					$entry_city ?? '',
 					$entry_email ?? '',
 					$entry_hp ?? '',
-					$_POST['message'],
+					trim($_POST['message']),
 					$ip,
 					$_SERVER['HTTP_USER_AGENT'],
 					time(),
@@ -418,24 +419,25 @@
 			} else {
 				// Write data into database
 				$sql = "INSERT INTO ".$db['prefix']."spam (
-					name, city,	email, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, sent_captcha
+					name, city,	email, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, captcha, sent_captcha
 				) VALUES (
-				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 				)";
 				$params = [
 					$entry_name,
 					$entry_city ?? '',
 					$entry_email ?? '',
 					$entry_hp ?? '',
-					$_POST['message'],
+					trim($_POST['message']),
 					$ip,
 					$_SERVER['HTTP_USER_AGENT'],
 					time(),
 					$user_notification,
 					$user_show_email,
-					trim($_POST['captcha'], ENT_QUOTES)
+					$_SESSION['CAPTCHA_CODE'] ?? $_SESSION['CAPTCHA_SUM'],
+					trim($_POST['captcha'])
 				];
-				$types = "sssssssiiis";
+				$types = "sssssssiiiss";
 			}
 			
 			// saving entry
@@ -801,10 +803,10 @@
 			'TEMPLATE_HP' 							=> $content_newentry_body_hp,
 			'TEMPLATE_MASTODON'						=> $content_newentry_body_mastodon,
 			'TEMPLATE_BLUESKY'						=> $content_newentry_body_bluesky,
-			// 'TEMPLATE_W' 							=> $content_newentry_body_w,
-			// 'TEMPLATE_EU_VOICE'						=> $content_newentry_body_eu_voice,
-			// 'TEMPLATE_EU_VIDEO'						=> $content_newentry_body_eu_video,
-			// 'TEMPLATE_MONNETT'						=> $content_newentry_body_monnett,
+			// 'TEMPLATE_W' 						=> $content_newentry_body_w,
+			// 'TEMPLATE_EU_VOICE'					=> $content_newentry_body_eu_voice,
+			// 'TEMPLATE_EU_VIDEO'					=> $content_newentry_body_eu_video,
+			// 'TEMPLATE_MONNETT'					=> $content_newentry_body_monnett,
 			'TEMPLATE_SMILEYS' 						=> $content_newentry_smileys,
 			'TEMPLATE_BBCODES' 						=> $bbcodes,
 			'TEMPLATE_USER_NOTIFICATION' 			=> $user_notification,
@@ -989,6 +991,8 @@
 			$page_newentry_body = mgb_template_replace(['LANG_ENTRY_SUCCESS' => $lang['entry_success']], $page_newentry_body);
 		}
 
+		$page_newentry_body = mgb_template_language($page_newentry_body, MGB_ROOT."language/".$settings['language_path']."/lang_main.php", $settings['debug_mode']); // last number defines debug mode
+		
 		$page_newentry_body = mgb_template_replace([
 			'MGB_VERSION' 		=> $settings['version'],
 			'COPYRIGHT_DATE' 	=> date("Y"),
@@ -996,9 +1000,7 @@
 			'PARAMLANG_A' 		=> "?lang=".$_GET['lang'],
 			'PARAMLANG_B' 		=> "&amp;lang=".$_GET['lang'],
 			'REFRESH_TIME'		=> $settings['refresh_time']
-		], $page_newentry_body);
-
-		$page_newentry_body = mgb_template_language($page_newentry_body, MGB_ROOT."language/".$settings['language_path']."/lang_main.php", $settings['debug_mode']); // last number defines debug mode
+		], $page_newentry_body);		
 	}
 
 	// display the page

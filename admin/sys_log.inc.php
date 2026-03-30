@@ -109,7 +109,7 @@
 			$pages_total = ceil($p);
 
 			if ($_GET['p'] == 1) {
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				if ($pages_total >= 3 ) {
 					$sf_last = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
@@ -118,21 +118,21 @@
 
 			if ($_GET['p'] > 1) {
 				if (($pages_total >= 3) AND ($_GET['p'] > 2)) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
-				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".($_GET['p'] + 1).$sid."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
+				$sf_forwards = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".($_GET['p'] + 1)."\" title=\"".$lang['page_forwards']."\">".$lang['page_forwards_symbol']."</a>";
 				if (($pages_total >= 3) AND ($_GET['p'] < ($pages_total - 1))) {
-					$sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".$pages_total.$sid."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
+					$sf_last = "&nbsp;<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".$pages_total."\" title=\"".$lang['page_last']."\">".$lang['page_last_symbol']."</a>";
 				}
 			}
 
 			if ($_GET['p'] == $pages_total) {
 				if ($pages_total >= 3) {
-					$sf_first = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=1".$sid."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
+					$sf_first = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=1"."\" title=\"".$lang['page_first']."\">".$lang['page_first_symbol']."</a>";
 				}
-				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".($_GET['p'] - 1).$sid."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
+				$sf_backwards = "<a class=\"admin\" href=\"admin.php?action=sys_log".$show_url."&amp;p=".($_GET['p'] - 1)."\" title=\"".$lang['page_backwards']."\">".$lang['page_backwards_symbol']."</a>";
 				$sf_pagenumber = $_GET['p'];
 				$sf_forwards = "";
 			}
@@ -181,13 +181,13 @@
 					'ENTRY_TIMESTAMP' 	=> $entry_timestamp,
 					'ENTRY_TYPE' 		=> $lang['sys_log_type'][$entry[$i]['type']],
 					'ENTRY_NAME' 		=> mgb_format($entry[$i]['name']),
-					'ENTRY_EMAIL' 		=> "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_email_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_EMAIL_BANLIST}\">".$entry[$i]['email']."</a>",
+					'ENTRY_EMAIL' 		=> "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_email_banlist".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_EMAIL_BANLIST}\">".$entry[$i]['email']."</a>",
 					'ENTRY_TEXT' 		=> mgb_format($entry[$i]['text']),
-					'ENTRY_IP' 			=> "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_ip_banlist".$add_page_nr.$sid."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_IP_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_IP_BANLIST}\">".$entry[$i]['ip']."</a>",
+					'ENTRY_IP' 			=> "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_ip_banlist".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_IP_BLOCKLIST}'); submit();\" title=\"{LANG_SPAM_ADD_TO_IP_BANLIST}\">".$entry[$i]['ip']."</a>",
 					'ENTRY_USER' 		=> mgb_format($entry[$i]['user']),
 					'ENTRY_USER_NEW' 	=> mgb_format($entry[$i]['user_new']),
 					'ENTRY_USER_EDIT' 	=> mgb_format($entry[$i]['user_edit']),
-					'DELETE' 			=> "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=delete".$add_page_nr.$sid."\" onClick=\"return confirm('".$entry[$i]['ID'].", ".$entry[$i]['ip'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
+					'DELETE' 			=> "<a href=\"admin.php?action=sys_log&amp;id=".$entry[$i]['ID']."&amp;spam_action=delete".$add_page_nr."\" onClick=\"return confirm('".$entry[$i]['ID'].", ".$entry[$i]['ip'].":&nbsp;{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>"
 				], $page_entry[$i]);
 
 				if(!isset($page_include)) { $page_include = NULL; }

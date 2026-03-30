@@ -17,13 +17,13 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-	=====================
-	install.php - 0.7.1.1
-	=====================
+	===================
+	install.php - 0.7.2
+	===================
 	*/
 
 	// Show all errors but no warnings and make sure they are displayed
-	ini_set('display_errors', '1');
+	ini_set("display_errors", '1');
 	error_reporting(E_ALL & ~E_NOTICE);	
 
 	// set root path
@@ -37,7 +37,7 @@
 	require MGB_ROOT.'install/includes/functions.inc.php';
 
 	if(file_exists(MGB_ROOT.'includes/config.inc.php')) {
-		require (MGB_ROOT.'includes/config.inc.php');
+		require_once (MGB_ROOT.'includes/config.inc.php');
 		if((isset($mgb_installation_complete) AND ($mgb_installation_complete == TRUE)) || !empty($db['dbname']) || !empty($db['prefix'])) {
 			echo "<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: green;\">config.inc.php already exists. It seems that MGB has been already installed.</span><br><br>
 			<span style=\"font-family: verdana, arial, helvetica, sans-serif; font-size: 12px; font-weight: bold; color: darkblue;\">If you want to upgrade your MGB installation call <a href='upgrade.php'>upgrade.php</a> instead of install.php. If you want a new installation, delete ''config.inc.php'' in root/includes directory and try again.</span>";
@@ -49,9 +49,7 @@
 	session_name("sid");
 	ini_set('url_rewriter.tags', '');
 	session_start();
-	session_regenerate_id();
-
-	if(SID != NULL) { $sid = "?".SID; } else { $sid = NULL;	}
+	session_regenerate_id();	
 
 	// load template
 	require_once MGB_ROOT.'install/includes/load_templates.inc.php';
@@ -88,7 +86,7 @@
 			], $page_body);
 		} elseif(!empty($_POST['step']) AND $_POST['step'] == 1) {
 			if(isset($_POST['eula_agreement']) AND $_POST['eula_agreement'] == 1) {
-				switch(version_compare('8.0.0', phpversion())) {
+				switch(version_compare('7.1.33', phpversion())) {
 					case -1: $img_php = "<img src=\"template/images/ok.png\" alt=\"OK\">";
 						break;
 					case 0: $img_php = "<img src=\"template/images/ok.png\" alt=\"OK\">";
@@ -101,13 +99,11 @@
 				// is mysqli extension loaded?
 				if(extension_loaded('mysqli')) {
 					$mysqli_loaded_lang = $lang['yes'];
-					$img_mysqli = "<img src=\"template/images/ok.png\" alt=\"OK\">";
-					echo "yes";
+					$img_mysqli = "<img src=\"template/images/ok.png\" alt=\"OK\">";					
 				} else {
 					$mysqli_loaded_lang = $lang['no'];
 					$img_mysqli = "<img src=\"template/images/nok.png\" alt=\"NOT OK\">";
 					$error_mysqli = 1;
-					echo "no";
 				}
 
 				// does imagegd exist?
@@ -198,7 +194,7 @@
 				}
 
 				if(isset($show_next_step) AND $show_next_step == 1) {
-					$next_step = "<form action=\"install.php".$sid."\" method=\"post\">\n";
+					$next_step = "<form action=\"install.php\" method=\"post\">\n";
 					$next_step .= "<input type=\"hidden\" name=\"step\" value=\"2\">\n";
 					$next_step .= "<input type=\"submit\" class=\"install_button\" name=\"next\" value=\"{LANG_NEXT_STEP}\">\n";
 					$next_step .= "</form>";
@@ -500,7 +496,7 @@
 	$page_body = mgb_template_replace([
 		'TEMPLATE_HEADER' 		=> $page_header,
 		'TITLE' 				=> $lang['title'],
-		'INSTALL_FORM_ACTION' 	=> "install.php".$sid,
+		'INSTALL_FORM_ACTION' 	=> "install.php",
 		'LANG_NEXT_STEP' 		=> $lang['next_step'],
 		'TEMPLATE_COPYRIGHT' 	=> $content_install_copyright,
 		'TEMPLATE_FOOTER' 		=> $content_install_footer,

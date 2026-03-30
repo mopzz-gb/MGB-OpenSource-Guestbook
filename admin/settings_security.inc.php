@@ -232,7 +232,7 @@
 			// now start replacement for template
 
 			// replacement that has nothing to do with front end
-			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_security".$sid], $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_security"], $page_include);
 
 			// initiate variables
 			$selected_debug_mode_0 = "";

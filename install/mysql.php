@@ -181,7 +181,7 @@
 			`direct_access` TINYINT(1) NOT NULL DEFAULT '0',
 			`direct_access_text` VARCHAR(255) NOT NULL DEFAULT '',
 			`search_engines_excluded` TINYINT(1) NOT NULL DEFAULT '1',
-			`search_engines` VARCHAR(255) NOT NULL DEFAULT '',
+			`search_engines` MEDIUMTEXT NOT NULL,
 			`check_against_anti_spam_sites` INT(1) NOT NULL DEFAULT '0',
 			`sfs_username_frequency` INT(5) NOT NULL DEFAULT '30',
 			`sfs_email_frequency` INT(5) NOT NULL DEFAULT '1',

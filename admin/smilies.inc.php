@@ -173,7 +173,7 @@
 			$page_smiley = mgb_template_replace([
 				'TEMPLATE_SMILIES_SINGLE' 		=> $page_smilies_single,
 				'SMILEY_COUNT' 					=> $_SESSION['SMILEY_COUNT'],
-				'URL_SMILIES' 					=> "admin.php?action=smilies".$sid,
+				'URL_SMILIES' 					=> "admin.php?action=smilies",
 				'OPTION_DELETE_CHECKED_SMILIES' => "<option value='1'>{LANG_DELETE_CHECKED_SMILIES}</option>",
 				'OPTION_KEEP_CHECKED_SMILIES' 	=> "<option value='2'>{LANG_KEEP_CHECKED_SMILIES}</option>"
 		], $page_smiley);

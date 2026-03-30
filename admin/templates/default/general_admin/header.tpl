@@ -6,7 +6,7 @@
 <meta name="author" content="{H_AUTHOR}">
 <meta name="keywords" content="{H_KEYWORDS}">
 <meta name="description" content="{H_DESCRIPTION}">
-<meta name="copyright" content="MGB OpenSource Guestbook (C) 2004-{COPYRIGHT_DATE} by http://www.m-gb.org/">
+<meta name="copyright" content="MGB OpenSource Guestbook (C) 2004-{COPYRIGHT_DATE} by https://www.m-gb.org/">
 <meta name="robots" content="index,nofollow">
 <meta content="text/html; charset={H_CHARSET}" http-equiv="content-type">
 <meta http-equiv="pragma" content="no-cache">

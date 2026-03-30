@@ -68,7 +68,7 @@
 			// start replacement for template
 
 			// replacement that has nothing to do with front end
-			$page_include = mgb_template_replace(["URL_SETTINGS" => "admin.php?action=settings_telemetry".$sid], $page_include);
+			$page_include = mgb_template_replace(["URL_SETTINGS" => "admin.php?action=settings_telemetry"], $page_include);
 			
 			// initiate variables
 			$selected_telemetry_0 = "";

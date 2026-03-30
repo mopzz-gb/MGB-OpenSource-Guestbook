@@ -79,7 +79,7 @@
 			// start replacement for template
 
 			// replacement that has nothing to do with front end
-			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_bbcodes".$sid], $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_bbcodes"], $page_include);
 			
 			// initiate variables
 			$selected_bbcode_0 = "";

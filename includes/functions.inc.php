@@ -247,7 +247,7 @@
 				echo "<pre>\n";
 				echo "<span>---<br>";
 				echo "<b>mgb_template_language() :: debug mode</b><br>";
-				echo "---<br>";
+				echo "---<br><br>";
 				echo "<b>Language file path:</b> ".$language_file."<br>";
 				echo "<b>Number of found strings:</b> ".count($output[0])."</span>";
 				echo "<table>\n";
@@ -938,7 +938,7 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."', `user_agent` = '".$_SERVER['HTTP_USER_AGENT']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0, null, null);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".mgb_getUserIp()."', `user_agent` = '".$_SERVER['HTTP_USER_AGENT']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0, null, null);
 				return TRUE;
 			} elseif($user['user_password'] === $old_password) {
 				$newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -946,7 +946,7 @@
 				unset($user['user_password']);
 				unset($password);
 				// update user_ip in database
-				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".$_SERVER['REMOTE_ADDR']."', `user_agent` = '".$_SERVER['HTTP_USER_AGENT']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0, null, null);
+				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_ip` = '".mgb_getUserIp()."', `user_agent` = '".$_SERVER['HTTP_USER_AGENT']."' WHERE user_name='".$name."' LIMIT 1", "Error while updating user information.", 0, null, null);
 				// update user_password in database
 				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `user_password` = '".$newHash."' WHERE ID='".$ID."' LIMIT 1", "Error while updating user information.", 0, null, null);
 				return TRUE;
@@ -1183,32 +1183,34 @@
 
 			// check IP
 			if(!empty($debug_mode)) {
-				echo "<pre>";
-				echo "REMOTE_ADDR: ".$_SERVER['REMOTE_ADDR']."<br>";
-				echo "\$sessionip: ".$sessionip."<br>";
-				echo "</pre>";
+				echo "<pre>\n";
+				echo "<span>---<br>";
+				echo "<b>check_session() :: debug mode</b><br>";
+				echo "---<br><br>";
+				echo "1:<br>";
+				echo "<b>\$_SERVER['REMOTE_ADDR']:</b> ".$_SERVER['REMOTE_ADDR']."<br>";
+				echo "<b>\$sessionip:</b> ".$sessionip."<br>";
+				echo "<b>mgb_getUserIp():</b> ".mgb_getUserIp()."<br><br>";				
 			}
 			if($_SERVER['REMOTE_ADDR'] === $sessionip) {
 				$count_ok++;
 			}
 
 			// check session key
-			if(!empty($debug_mode)) {
-				echo "<pre>";
-				echo "user_key: ".$user['user_key']."<br>";
-				echo "\$sessionkey: ".$sessionkey."<br>";
-				echo "</pre>";
+			if(!empty($debug_mode)) {				
+				echo "2:<br>";
+				echo "<b>user_key:</b> ".$user['user_key']."<br>";
+				echo "<b>\$sessionkey:</b> ".$sessionkey."<br><br>";				
 			}
 			if($user['user_key'] === $sessionkey) {
 				$count_ok++;
 			}
 			
 			// check user agent
-			if(!empty($debug_mode)) {
-				echo "<pre>";
-				echo "user_agent: ".$user['user_agent']."<br>";
-				echo "\$sessionagent: ".$sessionagent."<br>";
-				echo "</pre>";
+			if(!empty($debug_mode)) {				
+				echo "3:<br>";
+				echo "<b>user_agent:</b> ".$user['user_agent']."<br>";
+				echo "<b>\$sessionagent:</b> ".$sessionagent."<br><br>";
 			}
 			if($user['user_agent'] === $sessionagent) {
 				$count_ok++;
@@ -1216,11 +1218,12 @@
 
 			// check session timeout
 			if(!empty($debug_mode)) {
-				echo "<pre>";
-				echo "time: ".time()."<br>";
-				echo "logged_in: ".$user['logged_in']."<br>";
-				echo "timeout: ".$timeout."<br>";
-				echo "</pre>";
+				echo "4:<br>";
+				echo "<b>time:</b> ".time()."<br>";
+				echo "<b>logged_in:</b> ".$user['logged_in']."<br>";
+				echo "<b>timeout:</b> ".$timeout." s<br>";
+				$time_left = $timeout - (time() - $user['logged_in']);
+				echo "<b>time left until logout:</b> ".$time_left." s<br><br>";
 			}
 			if(time() < ($user['logged_in'] + $timeout)) {
 				mgb_sql_connect($mysqli, "UPDATE ".$db['prefix']."user SET `logged_in` = '".time()."' WHERE ID=".$sessid." LIMIT 1", "Error while updating user information.", 0, null, null);
@@ -1229,8 +1232,8 @@
 
 			if($count_ok === 4) {
 				if(!empty($debug_mode)) {
-					echo "<pre>";
-					echo "count_ok: ".$count_ok."<br><br>";
+					echo "<b>count_ok:</b> ".$count_ok."<br><br>";					
+					echo "</span>";
 					echo "</pre>";
 				}
 				return TRUE;
@@ -1321,7 +1324,7 @@
 				curl_setopt ($ch, CURLOPT_HEADER, 0);
 				curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
 				$result = curl_exec ($ch);
-				curl_close ($ch);
+				curl_reset($ch);
 				return $result;
 			} else {
 				$result = "error with php function curl";
@@ -2265,7 +2268,7 @@
 			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, TRUE );
 
 			$data = curl_exec( $ch );
-			curl_close( $ch );
+			curl_reset( $ch );
 
 			return $data;
 		}

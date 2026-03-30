@@ -81,7 +81,7 @@
 			// start replacement for template
 
 			// replacement that has nothing to do with front end
-			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_fields".$sid], $page_include);
+			$page_include = mgb_template_replace(['URL_SETTINGS' => "admin.php?action=settings_fields"], $page_include);
 
 			// value replacement
 			if ($settings['show_field_city'] == "0" OR "") {

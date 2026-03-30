@@ -55,7 +55,8 @@
 		$_SESSION['server_SID'] = true;
 	}
 
-	if(SID != NULL) { $sid = "&amp;".SID; } else {$sid = NULL; }
+	// deprecated since 8.4 - will be removed later
+	// if(SID != NULL) { $sid = "&amp;".SID; } else {$sid = NULL; }
 
 	if(file_exists(MGB_ROOT."includes/config.inc.php")) {
 		// load settings and functions
@@ -83,7 +84,7 @@
 	if(function_exists("date_default_timezone_set")) {
 		date_default_timezone_set($settings['timezone']);
 	}
-
+	
 	// load necessary templates
 	$page_header = mgb_load_template("admin", "default/general_admin", "header", $settings['debug_mode']);
 	$page_admin = mgb_load_template("admin", "default", "admin", $settings['debug_mode']);
@@ -211,6 +212,9 @@
 		elseif(!empty($_GET['action']) AND ($_GET['action'] == "sys_log")) {
 			$include = "sys_log.inc.php";
 		}
+		elseif(!empty($_GET['action']) AND ($_GET['action'] == "statistics")) {
+			$include = "statistics.inc.php";
+		}
 		elseif(!empty($_GET['action']) AND ($_GET['action'] == "license")) {
 			$page_include = file_get_contents("license.html");
 		}
@@ -286,32 +290,33 @@
 	if(empty($page_navigation)) { $page_navigation = ""; }
 
 	$page_navigation = mgb_template_replace([
-		'LINK_SETTINGS' 			=> "admin.php?action=settings".$sid,
-		'LINK_SETTINGS_GENERAL' 	=> "admin.php?action=settings_general".$sid,
-		'LINK_SETTINGS_LOOK' 		=> "admin.php?action=settings_look".$sid,
-		'LINK_SETTINGS_FIELDS' 		=> "admin.php?action=settings_fields".$sid,
-		'LINK_SETTINGS_BBCODES' 	=> "admin.php?action=settings_bbcodes".$sid,
-		'LINK_SETTINGS_EMOTICONS' 	=> "admin.php?action=settings_emoticons".$sid,
-		'LINK_SETTINGS_GRAVATAR' 	=> "admin.php?action=settings_gravatar".$sid,
-		'LINK_SETTINGS_SECURITY' 	=> "admin.php?action=settings_security".$sid,
-		'LINK_SETTINGS_MAILS' 		=> "admin.php?action=settings_mails".$sid,
-		'LINK_SETTINGS_DATABASE' 	=> "admin.php?action=settings_database".$sid,
-		'LINK_SETTINGS_TELEMETRY'	=> "admin.php?action=settings_telemetry".$sid,
-		'LINK_ACTIVATE' 			=> "admin.php?action=activate".$sid,
-		'LINK_DEACTIVATE' 			=> "admin.php?action=deactivate".$sid,
-		'LINK_DELETE' 				=> "admin.php?action=delete".$sid,
-		'LINK_EDIT' 				=> "admin.php?action=edit".$sid,
-		'LINK_SPAM' 				=> "admin.php?action=spam".$sid,
-		'LINK_EDIT_SMILIES' 		=> "admin.php?action=smilies".$sid,
-		'LINK_EDIT_USERS' 			=> "admin.php?action=editusers".$sid,
-		'LINK_BANLIST_IPS' 			=> "admin.php?action=banlist_ips".$sid,
-		'LINK_BANLIST_EMAILS' 		=> "admin.php?action=banlist_emails".$sid,
-		'LINK_BANLIST_DOMAINS' 		=> "admin.php?action=banlist_domains".$sid,
-		'LINK_SPAM_LOG' 			=> "admin.php?action=spam_log".$sid,
-		'LINK_SYS_LOG' 				=> "admin.php?action=sys_log".$sid,
-		'LINK_LICENSE' 				=> "admin.php?action=license".$sid,
+		'LINK_SETTINGS' 			=> "admin.php?action=settings",
+		'LINK_SETTINGS_GENERAL' 	=> "admin.php?action=settings_general",
+		'LINK_SETTINGS_LOOK' 		=> "admin.php?action=settings_look",
+		'LINK_SETTINGS_FIELDS' 		=> "admin.php?action=settings_fields",
+		'LINK_SETTINGS_BBCODES' 	=> "admin.php?action=settings_bbcodes",
+		'LINK_SETTINGS_EMOTICONS' 	=> "admin.php?action=settings_emoticons",
+		'LINK_SETTINGS_GRAVATAR' 	=> "admin.php?action=settings_gravatar",
+		'LINK_SETTINGS_SECURITY' 	=> "admin.php?action=settings_security",
+		'LINK_SETTINGS_MAILS' 		=> "admin.php?action=settings_mails",
+		'LINK_SETTINGS_DATABASE' 	=> "admin.php?action=settings_database",
+		'LINK_SETTINGS_TELEMETRY'	=> "admin.php?action=settings_telemetry",
+		'LINK_ACTIVATE' 			=> "admin.php?action=activate",
+		'LINK_DEACTIVATE' 			=> "admin.php?action=deactivate",
+		'LINK_DELETE' 				=> "admin.php?action=delete",
+		'LINK_EDIT' 				=> "admin.php?action=edit",
+		'LINK_SPAM' 				=> "admin.php?action=spam",
+		'LINK_EDIT_SMILIES' 		=> "admin.php?action=smilies",
+		'LINK_EDIT_USERS' 			=> "admin.php?action=editusers",
+		'LINK_BANLIST_IPS' 			=> "admin.php?action=banlist_ips",
+		'LINK_BANLIST_EMAILS' 		=> "admin.php?action=banlist_emails",
+		'LINK_BANLIST_DOMAINS' 		=> "admin.php?action=banlist_domains",
+		'LINK_SPAM_LOG' 			=> "admin.php?action=spam_log",
+		'LINK_SYS_LOG' 				=> "admin.php?action=sys_log",
+		'LINK_STATISTICS'			=> "admin.php?action=statistics",
+		'LINK_LICENSE' 				=> "admin.php?action=license",
 		'LINK_FORUM' 				=> "https://forum.m-gb.org/",
-		'LINK_VERSION' 				=> "admin.php?action=version".$sid,
+		'LINK_VERSION' 				=> "admin.php?action=version",
 		'LINK_MASTODON' 			=> "https://troet.cafe/@mgb",
 		'LINK_GITHUB'	 			=> "https://github.com/mopzz-gb/MGB-OpenSource-Guestbook",
 		'LINK_TO_GUESTBOOK' 		=> "../index.php",
@@ -462,7 +467,8 @@
 					'OPTION_SHOW_BANNED_BY_EMAIL_ONLY' 					=> "",
 					'OPTION_SHOW_BANNED_BY_DOMAIN_ONLY' 				=> "",
 					'OPTION_SHOW_BANNED_BY_KEYSTROKE_ONLY' 				=> "",
-					'OPTION_SHOW_BANNED_BY_CAPTCHA_ONLY' 				=> ""
+					'OPTION_SHOW_BANNED_BY_CAPTCHA_ONLY' 				=> "",
+					'OPTION_EXPORT_AS_TXT'				 				=> "<option value='13'>{LANG_EXPORT_AS_TXT}</option>"
 				], $page_admin);
 				// $page_admin = template("OPTION_EXPORT_AS_SQL_DUMP", "<option value='10'>{LANG_EXPORT_AS_SQL_DUMP}", $page_admin);
 				// $page_admin = template("OPTION_EXPORT_AS_CSV", "<option value='11'>{LANG_EXPORT_AS_CSV}", $page_admin);
@@ -563,8 +569,7 @@
 	
 	$page_admin = mgb_template_replace([
 		'ACTION' 						=> $_GET['action'],
-		'PAGE_NR' 						=> $add_page_nr,
-		'SID' 							=> $sid,
+		'PAGE_NR' 						=> $add_page_nr,		
 		'INCLUDE' 						=> $page_include,
 		'LANG_NEW_VERSION_AVAILABLE' 	=> $new_version_available,
 		'LATEST_VERSION' 				=> $latest_version,
