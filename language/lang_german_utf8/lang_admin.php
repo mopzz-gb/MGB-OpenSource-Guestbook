@@ -91,7 +91,7 @@
 		19 	=> "Beim Löschen des Backups ist ein Fehler aufgetreten!",
 		20 	=> "Es wurde kein Backup ausgewählt",
 		21 	=> "Es trat ein Fehler beim Wiederherstellen des Backups auf!",
-		22 	=> "Es trat ein Fehler beim Löschen der betroffenen Tabelle auf!"
+		22 	=> "Es trat ein Fehler beim Löschen der betroffenen Tabelle auf!"		
 	],
 
 	// ERRORMESSAGES EMPTY VALUES
@@ -145,17 +145,18 @@
 
 	// SPAM TYPES
 	'spam_entry_type' => [
-		1 	=> "Durch IP Bannliste abgewehrt.",
-		2 	=> "Auf Spam-Liste, aber nicht in der Blockliste.",
-		3 	=> "Durch E-Mail Bannliste abgewehrt.",
-		4 	=> "Durch Domain Bannliste abgewehrt.",
-		5 	=> "Durch Absendesperre abgewehrt.",
-		6 	=> "", // not set
+		0	=> "-",
+		1 	=> "Durch IP Bannliste abgewehrt",
+		2 	=> "Auf Spam-Liste, aber nicht in der Blockliste",
+		3 	=> "Durch E-Mail Bannliste abgewehrt",
+		4 	=> "Durch Domain Bannliste abgewehrt",
+		5 	=> "Durch Absendesperre abgewehrt",
+		6 	=> "Eintrag enthält zu viele Hyperlinks",
 		7 	=> "", // not set
-		8 	=> "Aktualisiert durch falsches Captcha.",
-		9 	=> "Durch Captcha abgewehrt.",
-		10 	=> "Captcha richtig, aber bereits auf Spam-Liste.",
-		11 	=> "Durch Tippgeschwindigkeitserkennung abgewehrt.",
+		8 	=> "Aktualisiert durch falsches Captcha",
+		9 	=> "Durch Captcha abgewehrt",
+		10 	=> "Captcha richtig, aber bereits auf Spam-Liste",
+		11 	=> "Durch Tippgeschwindigkeitserkennung abgewehrt",
 		12 	=> "HTTP_REFERER falsch",
 		13 	=> "Kein HTTP_REFERER, direkter Aufruf",
 		14 	=> "Durch stopforumspam geblockt"
@@ -204,12 +205,14 @@
 		3006 => "<b>newentry.php</b>: Es wurde eine Info-Mail an <b>{ENTRY_NAME} ({ENTRY_EMAIL})</b> in Folge eines validen Gästebucheintrages geschickt.",
 		3007 => "<b>newentry.php</b>: <b>stopforumspam</b> hat einen Eintrag akzeptiert, aber als Spam markiert => {ENTRY_NAME}, {ENTRY_EMAIL}",
 		3008 => "<b>newentry.php</b>: <b>stopforumspam</b> hat einen Eintrag abgelehnt => {ENTRY_NAME}, {ENTRY_EMAIL}",
+		3009 => "<b>newentry.php</b>: Ein Eintrag wurde aufgrund zu vieler Links abgelehnt.",
 		4001 => "<b>email.php</b> Eine E-Mail wurde verschickt.<br><br>Name: <b>{ENTRY_NAME}</b><br>E-Mail: <b>{ENTRY_EMAIL}</b><br>Text: <b>{ENTRY_TEXT}</b><br>IP: <b>{ENTRY_IP}</b>",
 		4002 => "<b>email.php</b>: Die IP <b>{ENTRY_IP}</b> wurde automatisch auf die Bannliste gesetzt.",
 		4003 => "<b>email.php</b>: Die IP <b>{ENTRY_IP}</b> wurde automatisch von der Bannliste gelöscht.",
 		4004 => "<b>email.php</b>: Das Captcha wurde von der IP <b>{ENTRY_IP}</b> falsch eingegeben.",
 		4005 => "<b>email.php</b>: Ein direkter Zugriff ohne Referer von der IP <b>{ENTRY_IP}</b> wurde geblockt.",
 		4006 => "<b>email.php</b>: <b>stopforumspam</b> hat einen Eintrag abgelehnt => {ENTRY_NAME}, {ENTRY_EMAIL}",
+		4007 => "<b>email.php</b>: Eine E-Mail wurde aufgrund zu vieler Links abgelehnt.",
 		5001 => "<b>upgrade.php</b> Ein Datenbankupgrade wurde erfolgreich durchgeführt."
 	],
 
@@ -276,7 +279,9 @@
 	'sfs_username' 				=> "Benutzername",
 	'sfs_email' 				=> "E-Mail",
 	'sfs_ip' 					=> "IP",
-
+	'no_reaction'				=> "Keine Reaktion",
+	'warning'					=> "Hinweis bei Eintrag",
+	
 	// GRAVATAR
 	'gravatar_position_left' 	=> "Links vom Eintrag",
 	'gravatar_position_right' 	=> "Rechts vom Eintrag",
@@ -409,6 +414,7 @@
 	'edit_caption_recaptcha' 						=> "reCaptcha",	
 	'edit_caption_dynamic_fieldnames' 				=> "Dynamische Feldvariablen",	
 	'edit_caption_time_lock' 						=> "Absendesperre",
+	'edit_caption_max_links'						=> "Hyperlinks in einem Eintrag",
 	'edit_caption_mail_settings' 					=> "E-Mail Konfiguration",
 	'edit_caption_smtp_settings' 					=> "Die folgenden Angaben werden nur benötigt, wenn der Versand über SMTP (phpmailer) beabsichtigt ist. Ansonsten einfach leer lassen.",
 	'edit_caption_email' 							=> "E-Mail-Texte",
@@ -477,6 +483,8 @@
 	'edit_time_lock_value' 					=> "Minimale Zeit für Absendesperre:",
 	'edit_time_lock_maxtime' 				=> "Maximale Zeit für Absendesperre:",
 	'edit_time_lock_spam_count' 			=> "Maximale Absendeversuche:",
+	'edit_max_links' 						=> "Umgang mit Hyperlinks:",
+	'edit_max_links_in_message'				=> "Maximale Hyperlinks in Einträgen:",
 	'edit_user_notification' 				=> "Benutzerbenachrichtigung:",
 	'edit_user_show_email' 					=> "Benutzer E-Mail im Gästebuch:",
 	'edit_session_timeout' 					=> "Ablaufzeit der Session:",
@@ -626,6 +634,8 @@
 	'edit_expl_time_lock_value' 					=> "Die minimale Zeit in Sekunden die der Benutzer warten muss, bis er das Formular absenden kann.",
 	'edit_expl_time_lock_maxtime' 					=> "Die maximale Zeit in Sekunden in der ein Benutzer Gelegenheit hat, einen Gästebucheintrag zu hinterlassen. Läuft die Zeit während des Gästebucheintrags ab, beginnt die Absendesperre von vorne.",
 	'edit_expl_time_lock_spam_count' 				=> "Die maximalen Absendeversuche die ein Nutzer in der gesperrten Zeit tätigen kann, bis er auf die <b>Spamliste</b> gesetzt wird.<br><br><b>Beispiel:</b> Ist die Absendesperre auf 30 Sekunden eingestellt, und ein Nutzer versucht trotz Hinweis, dass er noch warten muss, da die Zeit noch nicht abgelaufen ist, mehr als die voreingestellten Versuche das Formular abzusenden, wird er auf die Spamliste gesetzt. Das heißt aber noch nicht, dass er schon geblockt ist. Erst, wenn er das Maximum in dieser Spamliste erreicht hat, wird er dauerhaft geblockt.<br><br>Minimum: <b>5</b><br>Maximum: <b>99</b>",
+	'edit_expl_max_links' 							=> "Bestimmt wie mit zu vielen Hyperlinks in Einträgen umgegangen wird.<br><br><b>Keine Reaktion</b> = Links werden ignoriert<br><b>Hinweis bei Eintrag</b> = Der Nutzer wird darauf hingewiesen wenn sein Eintrag zu viele Hyperlinks enthält<br><b>Als Spam markieren</b> = Der Eintrag wird akzeptiert und als Spam markiert",
+	'edit_expl_max_links_in_message'				=> "Gibt die Maximale Anzahl an erlaubten Links in Einträgen an.<br><br><b>Standard: 3</b>",
 	'edit_expl_user_notification' 					=> "Ermöglicht es dem Benutzer zu entscheiden, ob er sich per E-Mail benachrichtigen lassen will wenn sein Eintrag freigeschaltet wurde.",
 	'edit_expl_user_show_email' 					=> "Ermöglicht es dem Benutzer zu entscheiden, ob seine E-Mail im Gästebuch angezeigt wird, oder nicht. Deaktiviert er das Kästchen kann ihm niemand außer der Administrator eine E-Mail schreiben.",
 	'edit_expl_session_timeout' 					=> "Ein Administrator / Moderator wird bei Inaktivität nach Ablauf dieser Zeit automatisch abgemeldet. Angabe in <b>Sekunden</b>. Wert muss >=> <b>60</b> sein.",

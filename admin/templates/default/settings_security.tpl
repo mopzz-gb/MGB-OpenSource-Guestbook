@@ -682,6 +682,36 @@
 	</tr> -->
 </table>
 <br>
+<table class="settings" summary="settings" cellspacing="0" cellpadding="2">
+	<tr>
+		<td colspan="2" class="settings_overall">
+		<center><span class="edit_caption">{LANG_EDIT_CAPTION_MAX_LINKS}</span></center>
+		</td>
+	</tr>
+	<tr>
+		<td class="settings_l">
+		<span><b>{LANG_EDIT_MAX_LINKS}</b></span><br>
+		<span>{LANG_EDIT_EXPL_MAX_LINKS}</span>
+		</td>
+		<td class="settings_r">
+		<select class="option" name="max_links" size="1">
+			<option{SELECTED_MAX_LINKS_0} value="0">{LANG_NO_REACTION}</option>
+			<option{SELECTED_MAX_LINKS_1} value="1">{LANG_WARNING}</option>
+			<option{SELECTED_MAX_LINKS_2} value="2">{LANG_MARK_AS_SPAM}</option>
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<td class="settings_l">
+		<span><b>{LANG_EDIT_MAX_LINKS_IN_MESSAGE}</b></span><br>
+		<span>{LANG_EDIT_EXPL_MAX_LINKS_IN_MESSAGE}</span>
+		</td>
+		<td class="settings_r">
+		<input class="textbox_nr" name="max_links_in_message" maxlength="3" size="50" value="{EDIT_MAX_LINKS_IN_MESSAGE}">
+		</td>
+	</tr>	
+</table>
+<br>
 <input type="submit" class="button" name="{LANG_SAVE}" value="{LANG_SAVE}">
 </center>
 </form>

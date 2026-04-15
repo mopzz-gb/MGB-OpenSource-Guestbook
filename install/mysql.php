@@ -203,6 +203,8 @@
 			`telemetry_ping` VARCHAR(255) NOT NULL DEFAULT 'https://ping.m-gb.org/ping.php',
 			`telemetry_install_id` CHAR(32),
 			`telemetry_last_ping` INT(11),
+			`max_links` TINYINT(1) NOT NULL DEFAULT '0',
+			`max_links_in_message` INT(3) NOT NULL DEFAULT '3',
 			`version` VARCHAR(20) NOT NULL,
 			PRIMARY KEY (`title`)
 			) DEFAULT CHARSET=utf8mb4 ;";
@@ -407,7 +409,8 @@
 			`sent_captcha` VARCHAR( 9 ) NOT NULL ,
 			`counter` TINYINT( 1 ) NOT NULL ,
 			`user_agent` VARCHAR( 255 ) NOT NULL ,
-			`sneaked` INT( 1 ) NOT NULL DEFAULT '0',
+			`sneaked` TINYINT( 1 ) NOT NULL DEFAULT '0',
+			`type` TINYINT( 1 ) NOT NULL DEFAULT '0',
 			`timestamp` INT( 11 ) NOT NULL
 			) DEFAULT CHARSET=utf8mb4 ;";
 

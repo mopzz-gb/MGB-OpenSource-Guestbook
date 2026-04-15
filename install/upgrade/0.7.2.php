@@ -18,16 +18,27 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301, USA.
 
 	========
-	071.php
+	072.php
 	========
 	*/
 	
 	return [
 		'version'		=>	'0.7.2',
-		'description'	=>	'Altering search_engines table, ...',
+		'description'	=>	'Altering search_engines table, adding max links in message, ...',
 		'sql'			=>	[
 			function(mysqli $mysqli, array $db) {
 				return "ALTER TABLE `".$db['prefix']."settings` CHANGE `search_engines` `search_engines` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;";
+			},
+			
+			function(mysqli $mysqli, array $db) {
+				return "ALTER TABLE `".$db['prefix']."settings`
+					ADD `max_links` TINYINT(1) NOT NULL DEFAULT '0' AFTER `telemetry_last_ping`,
+					ADD `max_links_in_message` INT(3) NOT NULL DEFAULT '3' AFTER `max_links`;";
+			},
+			
+			function(mysqli $mysqli, array $db) {
+				return "ALTER TABLE `".$db['prefix']."spam`
+					ADD `type` TINYINT(1) NOT NULL DEFAULT '0' AFTER `sneaked`;";
 			}			
 		]
 	];

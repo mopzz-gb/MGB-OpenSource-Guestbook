@@ -87,11 +87,21 @@
 		function mgb_isIpBanned(mysqli $mysqli, array $settings, array $db): bool
 			{
 			if (empty($settings['banlist_ips']) || $settings['banlist_ips'] != 1) {
+				if ($settings['debug_mode'] != 0) {
+					mgb_echo("<pre>");					
+					mgb_echo("<span>IP not banned</span><br><br>");
+					mgb_echo("</pre>");
+				}
 				return false;
 			}
 
 			$ip = mgb_getUserIp() ?? '';
 				if ($ip === '') {
+					if ($settings['debug_mode'] != 0) {
+						mgb_echo("<pre>");					
+						mgb_echo("<span>IP not banned</span><br><br>");
+						mgb_echo("</pre>");
+					}
 				return false;
 			}
 
@@ -108,6 +118,11 @@
 			$ban = $result->fetch_assoc();
 
 			if (!$ban) {
+				if ($settings['debug_mode'] != 0) {
+					mgb_echo("<pre>");					
+					mgb_echo("<span>IP not banned</span><br><br>");
+					mgb_echo("</pre>");
+				}
 				return false;
 			}
 
@@ -118,6 +133,11 @@
 				empty($settings['banlist_cleanup']) ||
 				$settings['banlist_cleanup'] != 1
 			) {
+				if ($settings['debug_mode'] != 0) {
+					mgb_echo("<pre>");					
+					mgb_echo("<span>IP banned!</span><br><br>");
+					mgb_echo("</pre>");
+				}
 				return true;
 			}
 
@@ -135,9 +155,19 @@
 				$del->bind_param('s', $ip);
 				$del->execute();
 
+			if ($settings['debug_mode'] != 0) {
+					mgb_echo("<pre>");					
+					mgb_echo("<span>IP not banned</span><br><br>");
+					mgb_echo("</pre>");
+				}
 			return false;
 			}
 
+		if ($settings['debug_mode'] != 0) {
+				mgb_echo("<pre>");					
+				mgb_echo("<span>IP banned!</span><br><br>");
+				mgb_echo("</pre>");
+			}
 		return true;
 		}
 	}
@@ -2429,6 +2459,16 @@
 			} else {
 				return $string;
 			}
+		}
+	}
+	
+	// MGB_FORMATFORM
+	// INFO: formats output
+	// CREATED: 23.01.2026
+	if(!function_exists("mgb_tooManyLinks")) {
+		function mgb_tooManyLinks(string $text, int $max_links = 2): bool {
+			preg_match_all('/https?:\/\/\S+/i', $text, $matches);
+			return count($matches[0]) > $max_links;
 		}
 	}
 ?>

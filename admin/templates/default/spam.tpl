@@ -9,7 +9,10 @@
 		<td class="entry_ip" colspan="2"><span><b>{ENTRY_IP}</b>{ENTRY_REPORT_SPAM}</span></td>
 		<td class="entry_message" colspan="2"><span><b>{ENTRY_EMAIL}&nbsp;|&nbsp;{ENTRY_DOMAIN}<br>{ENTRY_HP}</b></span></td>
 	</tr>
+	<tr>		
+		<td colspan="4" class="entry_type"><span><b>{ENTRY_TYPE}</b></span></td>
+	</tr>	
 	<tr>
-		<td class="entry_ip" colspan="4"><span><b>{ENTRY_COMMENT}</b></span></td>
+		<td colspan="4" class="entry_user_agent"><span><b>User Agent:</b> {ENTRY_USER_AGENT}</span></td>
 	</tr>
 </table>

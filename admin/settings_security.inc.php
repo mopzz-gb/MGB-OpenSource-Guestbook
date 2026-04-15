@@ -52,7 +52,6 @@
 				captcha_angle_1 *
 				captcha_angle_2 *
 				wrong_captcha_count
-				akismet_api
 				time_lock_value
 				time_lock_maxtime
 				time_lock_spamcount *
@@ -211,7 +210,9 @@
 						`sfs_email_required` = '".$_POST['sfs_email_required']."',
 						`sfs_ip_required` = '".$_POST['sfs_ip_required']."',
 						`sfs_mark_as_spam` = '".$_POST['sfs_mark_as_spam']."',
-						`sfs_api_key` = '".$_POST['sfs_api_key']."'";
+						`sfs_api_key` = '".$_POST['sfs_api_key']."',
+						`max_links` = '".$_POST['max_links']."',
+						`max_links_in_message` = '".$_POST['max_links_in_message']."'";
 
 					if(mgb_sql_connect($mysqli, $sql, "Error while saving security settings.", 0, null, null)) {
 						$saved_settings_successfull = 1;
@@ -312,6 +313,9 @@
 			$selected_sfs_ip_required = "";
 			$selected_sfs_mark_as_spam_0 = "";
 			$selected_sfs_mark_as_spam_1 = "";
+			$selected_max_links_0 = "";
+			$selected_max_links_1 = "";
+			$selected_max_links_2 = "";			
 			
 			if($settings['debug_mode'] == 0) {
 				$selected_debug_mode_0 = " selected";
@@ -538,9 +542,17 @@
 			}
 			
 			if($settings['sfs_mark_as_spam'] == 0) {
-				$selected_sfs_mark_as_spam_0 = "";
+				$selected_sfs_mark_as_spam_0 = " selected";
 			} else {
 				$selected_sfs_mark_as_spam_1 = " selected";
+			}
+			
+			if($settings['max_links'] == 0) {
+				$selected_max_links_0 = " selected";
+			} elseif($settings['max_links'] == 1) {
+				$selected_max_links_1 = " selected";
+			} else {
+				$selected_max_links_2 = " selected";
 			}
 
 			$page_include = mgb_template_replace([
@@ -630,6 +642,10 @@
 				'SELECTED_SFS_IP_REQUIRED' 					=> $selected_sfs_ip_required,
 				'SELECTED_SFS_MARK_AS_SPAM_0' 				=> $selected_sfs_mark_as_spam_0,
 				'SELECTED_SFS_MARK_AS_SPAM_1' 				=> $selected_sfs_mark_as_spam_1,
+				'SELECTED_MAX_LINKS_0' 						=> $selected_max_links_0,
+				'SELECTED_MAX_LINKS_1' 						=> $selected_max_links_1,
+				'SELECTED_MAX_LINKS_2' 						=> $selected_max_links_2,
+				'EDIT_MAX_LINKS_IN_MESSAGE'					=> mgb_formatForm($settings['max_links_in_message']),
 				'EDIT_DIRECT_ACCESS_TEXT' 					=> mgb_formatForm($settings['direct_access_text']),
 				'EDIT_SEARCH_ENGINES' 						=> mgb_formatForm($settings['search_engines']),
 				'EDIT_SFS_USERNAME_FREQUENCY' 				=> mgb_formatForm($settings['sfs_username_frequency']),

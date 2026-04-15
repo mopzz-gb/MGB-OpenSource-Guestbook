@@ -182,9 +182,9 @@
 		// ANTI-SPAM #1
 		// ============
 		// check www.stopforumspam.com if user is known for intense spamming
-		if($settings['check_against_anti_spam_sites'] === 1 && !empty($_POST['name']) && !empty($_POST['email'])) {
-			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SESSION['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) === 1) {
-				if($settings['sfs_mark_as_spam'] === 1) {
+		if($settings['check_against_anti_spam_sites'] == 1 && !empty($_POST['name']) && !empty($_POST['email'])) {
+			if(mgb_spam_request($_POST['name'], $_POST['email'], $_SESSION['REMOTE_ADDR'], $settings['sfs_username_frequency'], $settings['sfs_email_frequency'], $settings['sfs_ip_frequency'], $settings['sfs_username_required'], $settings['sfs_email_required'], $settings['sfs_ip_required']) == 1) {
+				if($settings['sfs_mark_as_spam'] == 1) {
 					$mark_as_spam = 1; // accept the entry, but mark it as spam
 					$noemail = 1;
 					mgb_trigger_sys_log($mysqli, 3007, $_POST['name'], $_POST['email'], '', '', '', '', $_SESSION['REMOTE_ADDR'], $db['prefix']); // write the syslog (entry accepted but marked as spam)
@@ -366,8 +366,21 @@
 		}
 
 		if(empty($_POST['name'])) { $errorcode = 3; } // name is required
+		
+		// check if there are too many links in the message
+		if($settings['max_links'] === 1) {
+			if(mgb_tooManyLinks($_POST['message'], $settings['max_links_in_message'])) {
+				$errorcode = 20; // too many links in message, show a warning
+			}
+		} elseif($settings['max_links'] === 2) {
+			if(mgb_tooManyLinks($_POST['message'], $settings['max_links_in_message'])) {
+				$mark_as_spam = 1; // too many links in message, accept the entry but mark it as spam
+				$type = 6;
+			}
+		}
 
-		if(empty($errorcode)) { // everything's ok, let's format and save the entry			
+		if(empty($errorcode)) {
+			// everything's ok, let's format and save the entry			
 			// delete bbcode except from message
 			if(isset($_POST['name'])) { $entry_name = bbcode_delete($_POST['name']); }
 			if(isset($_POST['city'])) { $entry_city = bbcode_delete($_POST['city']); }			
@@ -393,7 +406,6 @@
 			if($settings['user_notification'] === 0 OR empty($entry_email)) { $user_notification = 0; } else { $user_notification = 1; }
 			if($settings['user_show_email'] === 0 OR empty($entry_email)) { $user_show_email = 0; } else { $user_show_email = 1; }
 			
-			$mark_as_spam = 1;
 			if(empty($mark_as_spam)) {
 				// Write data into database
 				$sql = "INSERT INTO ".$db['prefix']."entries (
@@ -419,9 +431,9 @@
 			} else {
 				// Write data into database
 				$sql = "INSERT INTO ".$db['prefix']."spam (
-					name, city,	email, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, captcha, sent_captcha
+					name, city,	email, hp, message, ip, user_agent,	timestamp, user_notification, user_show_email, captcha, sent_captcha, type
 				) VALUES (
-				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+				   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 				)";
 				$params = [
 					$entry_name,
@@ -435,9 +447,10 @@
 					$user_notification,
 					$user_show_email,
 					$_SESSION['CAPTCHA_CODE'] ?? $_SESSION['CAPTCHA_SUM'],
-					trim($_POST['captcha'])
+					trim($_POST['captcha']),
+					$type
 				];
-				$types = "sssssssiiiss";
+				$types = "sssssssiiissi";
 			}
 			
 			// saving entry

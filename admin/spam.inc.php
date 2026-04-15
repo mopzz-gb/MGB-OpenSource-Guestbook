@@ -682,7 +682,7 @@
 			}
 
 			// load guestbook entries
-			$result = mgb_sql_connect($mysqli, "SELECT ID, name, message, ip, email, hp, comment, timestamp, counter, sneaked FROM ".$db['prefix']."spam ORDER BY counter DESC LIMIT $load_start, $load_end", "Error while loading guestbook entries.", 1, null, null);
+			$result = mgb_sql_connect($mysqli, "SELECT ID, name, message, ip, email, hp, comment, timestamp, counter, user_agent, sneaked, type FROM ".$db['prefix']."spam ORDER BY counter DESC LIMIT $load_start, $load_end", "Error while loading guestbook entries.", 1, null, null);
 
 			$counter = 0;
 
@@ -757,7 +757,8 @@
 					'ENTRY_EMAIL' 				=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_email_banlist".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\"title=\"".$lang['spam_add_to_email_banlist']."\">".$entry[$i]['email']."</a>",
 					'ENTRY_DOMAIN' 				=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=add_to_permanent_domain_banlist".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_ADD_TO_PERMANENT_EMAIL_BLOCKLIST}'); submit();\"title=\"".$lang['spam_add_to_domain_banlist']."\">".$entry_domain[1]."</a>",
 					'ENTRY_HP' 					=> mgb_format($entry[$i]['hp']),
-					'ENTRY_COMMENT' 			=> mgb_format($entry[$i]['comment']),
+					'ENTRY_USER_AGENT'			=> $entry[$i]['user_agent'],					
+					'ENTRY_TYPE'				=> $lang['spam_entry_type'][$entry[$i]['type']],
 					'LANG_QUOTE' 				=> $lang['quote'],
 					'DELETE' 					=> "<a href=\"admin.php?action=spam&amp;id=".$entry[$i]['ID']."&amp;spam_action=delete".$add_page_nr."\" onClick=\"return confirm('{LANG_CONFIRM_DELETE}'); submit();\"><img class=\"icon\" src=\"templates/default/images/delete.png\" title=\"".$lang['delete_entry']."\" alt=\"".$lang['delete_entry']."\"></a>",
 					'SPAM_ADD_TO_BLOCKLISTS' 	=> "",
